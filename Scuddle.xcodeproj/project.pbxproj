@@ -7,12 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DF8B4E091B30A05700825935 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E081B30A05700825935 /* README.md */; };
+		DF8B4E0C1B30AEE300825935 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */; };
+		DF8B4E0D1B30AEE300825935 /* ScuddleBody.h in Headers */ = {isa = PBXBuildFile; fileRef = DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */; };
+		DF8B4E101B30C29400825935 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */; };
+		DF8B4E131B30CDF800825935 /* ScuddleCoordinate2D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E111B30CDF800825935 /* ScuddleCoordinate2D.cpp */; };
+		DF8B4E141B30CDF800825935 /* ScuddleCoordinate2D.h in Headers */ = {isa = PBXBuildFile; fileRef = DF8B4E121B30CDF800825935 /* ScuddleCoordinate2D.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		DF8B4DF81B309B8600825935 /* libScuddle.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libScuddle.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF8B4E081B30A05700825935 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleBody.cpp; sourceTree = "<group>"; };
+		DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleBody.h; sourceTree = "<group>"; };
+		DF8B4E0E1B30B33E00825935 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScuddleDataTypes.h; sourceTree = "<group>"; };
+		DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleMain.cpp; sourceTree = "<group>"; };
+		DF8B4E111B30CDF800825935 /* ScuddleCoordinate2D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleCoordinate2D.cpp; sourceTree = "<group>"; };
+		DF8B4E121B30CDF800825935 /* ScuddleCoordinate2D.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleCoordinate2D.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -30,6 +40,12 @@
 			isa = PBXGroup;
 			children = (
 				DF8B4E081B30A05700825935 /* README.md */,
+				DF8B4E111B30CDF800825935 /* ScuddleCoordinate2D.cpp */,
+				DF8B4E121B30CDF800825935 /* ScuddleCoordinate2D.h */,
+				DF8B4E0E1B30B33E00825935 /* ScuddleDataTypes.h */,
+				DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */,
+				DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */,
+				DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */,
 				DF8B4DF91B309B8600825935 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,6 +65,8 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF8B4E0D1B30AEE300825935 /* ScuddleBody.h in Headers */,
+				DF8B4E141B30CDF800825935 /* ScuddleCoordinate2D.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,7 +126,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF8B4E091B30A05700825935 /* README.md in Sources */,
+				DF8B4E131B30CDF800825935 /* ScuddleCoordinate2D.cpp in Sources */,
+				DF8B4E0C1B30AEE300825935 /* ScuddleBody.cpp in Sources */,
+				DF8B4E101B30C29400825935 /* ScuddleMain.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
