@@ -38,6 +38,8 @@
 
 #include "ScuddleBody.h"
 
+#include <iostream>
+
 #if defined(__APPLE__)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -58,6 +60,24 @@ using namespace Scuddle;
 #if defined(__APPLE__)
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
+
+static const Coordinate2D lLeftElbow(90, 140);
+static const Coordinate2D lLeftFoot(70, 290);
+static const Coordinate2D lLeftHip(120, 220);
+static const Coordinate2D lLeftKnee(120, 280);
+static const Coordinate2D lLeftShoulder(110, 100);
+static const Coordinate2D lLeftWrist(110, 200);
+
+static const Coordinate2D lNeck(155, 110);
+
+static const Coordinate2D lRightElbow(230, 145);
+static const Coordinate2D lRightFoot(190, 340);
+static const Coordinate2D lRightHip(190, 220);
+static const Coordinate2D lRightKnee(190, 280);
+static const Coordinate2D lRightShoulder(200, 100);
+static const Coordinate2D lRightWrist(260, 120);
+
+static const Coordinate2D lTail(155, 210);
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -83,60 +103,21 @@ using namespace Scuddle;
 # pragma mark Global functions
 #endif // defined(__APPLE__)
 
-
-
-
-
-
+/*! @brief The entry point for calculating the movement parameter vectors.
+ 
+ Standard output will receive a list of the movement parameter vectors.
+ @param argc The number of arguments in 'argv'.
+ @param argv The arguments to be used with the application.
+ @returns @c 0 on a successful test and @c 1 on failure. */
+int main(int            argc,
+         const char * * argv)
+{
+    // insert code here...
+    std::cout << "Hello, World!\n";
+    return 0;
+} // main
 
 #if 0
-
-//Initialize variables
-//** Shoulder and Hip coordinates need to stay the same to keep body location on the screen** Elbow/Knee + Wrist/Foot can be changed to 0
-
-//Coordinates for drawing body position
-//Left Arm Joints
-//Wrist, Elbow, Shoulder X+Y
-public float WristLeftX = 110;
-public float WristLeftY = 200;
-public float ElbowLeftX = 90;
-public float ElbowLeftY = 140;
-public float ShoulderLeftX = 110;
-public float ShoulderLeftY = 100;
-
-//Right Arm Joints
-//Wrist, Elbow, Shoulder X+Y
-public float WristRightX = 260;
-public float WristRightY = 120;
-public float ElblowRightX = 230;
-public float ElblowRightY = 145;
-public float ShoulderRightX = 200;
-public float ShoulderRightY = 100;
-
-//spine
-//Neck and Tail X+Y
-public float NeckX = 155;
-public float NeckY = 110;
-public float TailX = 155;
-public float TailY = 210;
-
-// Left Leg Joints
-//Hip, Knee, Foot X+Y
-public float HipLeftX = 120;
-public float HipLeftY = 220;
-public float KneeLeftX = 120;
-public float KneeLeftY = 280;
-public float FootLeftX = 70;
-public float FootLeftY = 290;
-
-// Right Leg Joints
-//Hip, Knee, Foot X+Y
-public float HipRightX = 190;
-public float HipRightY = 220;
-public float KneeRightX = 190;
-public float KneeRightY = 280;
-public float FootRightX = 190;
-public float FootRightY = 340;
 
 //Polar Coordinate to change the joint angle
 public float radius = 60;
@@ -182,28 +163,6 @@ float[] scorePosition;
 float[] scoreAccumulate;
 float[] scoreFinal;
 
-//
-//PFont font;
-//
-//import controlP5.*;
-//ControlP5 controlP5;
-//controlP5.Button getStart;
-//controlP5.Button getClear;
-//controlP5.Button getWatch;
-//controlP5.Button getPause;
-//controlP5.Button getSave;
-//controlP5.Button getBack;
-
-
-//public boolean active = false;
-//boolean startMovie=false;
-//int i=0;
-
-//Body position = new Body(60, 200, 40, 140, 60, 100, 210, 120, 180, 145, 150, 100, 70, 220, 70, 280, 20, 290, 140, 220, 140, 280, 140, 340, 105, 110, 105, 210, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-//Body position1 = new Body(60, 200, 40, 140, 60, 100, 210, 120, 180, 145, 150, 100, 70, 220, 70, 280, 20, 290, 140, 220, 140, 280, 140, 340, 105, 110, 105, 210, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-//Body position2 = new Body(60, 200, 40, 140, 60, 100, 210, 120, 180, 145, 150, 100, 70, 220, 70, 280, 20, 290, 140, 220, 140, 280, 140, 340, 105, 110, 105, 210, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-//Body position3 = new Body(60, 200, 40, 140, 60, 100, 210, 120, 180, 145, 150, 100, 70, 220, 70, 280, 20, 290, 140, 220, 140, 280, 140, 340, 105, 110, 105, 210, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-
 // SETUP ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 void setup(){
@@ -230,18 +189,6 @@ void setup(){
     map7 = new float[pop];
     map8 = new float[pop];
     
-//    //Buttons for Interface
-//    controlP5 = new ControlP5(this);
-//    getStart = controlP5.addButton("button", 0, 10, 410, 40, 25);
-//    getStart.setLabel("Start");
-//    getClear = controlP5.addButton("buttonClear", 0, 250, 410, 40, 25);
-//    getClear.setLabel ("Clear");
-//    getWatch = controlP5.addButton("buttonWatch", 0, 70, 410, 40, 25);
-//    getWatch.setLabel ("Watch");
-//    getPause = controlP5.addButton("buttonPause", 0, 130, 410, 40, 25);
-//    getPause.setLabel ("Pause");
-//    getBack = controlP5.addButton("buttonBack", 0, 190, 410, 40, 25);
-//    getBack.setLabel ("Back");
 }
 
 // DRAW +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -272,7 +219,8 @@ void draw(){
 
 // GENERATE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-void generate(){
+void generate()
+{
     
     //generate population
     println("Generate,");
@@ -741,7 +689,8 @@ void mutate(){
             println(" New Mutate: " + position3.angle8);
         } } }
 
-void selectionFinal(){
+void selectionFinal()
+{
     float sumOfScore = 0;
     int index = 0;
     
@@ -786,13 +735,15 @@ void selectionFinal(){
             }
         }}}
 
-void button(){
+void button()
+{
     
     //Runs GA
     
     generate();
     
-    for(int k = 0; k < 5; k++){
+    for(int k = 0; k < 5; k++)
+    {
         mapAngles();
         fitness();
         selection();
@@ -800,54 +751,5 @@ void button(){
         mutate();
     }
     selectionFinal();
-}
-
-void buttonWatch(){
-    //To view drawing of individuals
-    
-    if(startMovie==false)
-        startMovie=true;
-    else
-        startMovie=false;
-}
-
-void buttonPause(){
-    // To pause playback
-    
-    if(startMovie==true)
-        startMovie=false;
-}
-
-void buttonClear(){
-    // To clear storage and start GA fresh
-    
-    background (50);
-    fill(0);
-    rect(10,10,330, 390);
-    
-    StoreDataA.clear();
-    StoreDataB.clear();
-    i=0;
-}
-
-void buttonBack(){
-    // To view the previous catalyst
-    
-    if(startMovie==true)
-        startMovie=false;
-    
-    if(i==0)
-        i=5;
-    
-    background (50);
-    fill(255);
-    rect(10,10,380, 390);
-    
-    Body position = (Body)StoreDataB.get(i);
-    position.drawBody();
-    text("Score: " + scoreFinal[i], 180, 35);
-    text("Number: " + i, 300, 35);
-    
-    i--;
 }
 #endif//0

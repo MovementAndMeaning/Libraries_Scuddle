@@ -7,22 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DF8B4E0C1B30AEE300825935 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */; };
-		DF8B4E0D1B30AEE300825935 /* ScuddleBody.h in Headers */ = {isa = PBXBuildFile; fileRef = DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */; };
-		DF8B4E101B30C29400825935 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */; };
+		DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */; };
+		DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		DF8B4E1C1B30D77200825935 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		DF8B4DF81B309B8600825935 /* libScuddle.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = libScuddle.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF8B4E081B30A05700825935 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleBody.cpp; sourceTree = "<group>"; };
-		DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleBody.h; sourceTree = "<group>"; };
-		DF8B4E0E1B30B33E00825935 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ScuddleDataTypes.h; sourceTree = "<group>"; };
-		DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleMain.cpp; sourceTree = "<group>"; };
+		DF8B4E1E1B30D77200825935 /* Scuddle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Scuddle; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF8B4E281B30D7AB00825935 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
+		DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleBody.cpp; sourceTree = SOURCE_ROOT; };
+		DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleBody.h; sourceTree = SOURCE_ROOT; };
+		DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleDataTypes.h; sourceTree = SOURCE_ROOT; };
+		DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleMain.cpp; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		DF8B4DF51B309B8600825935 /* Frameworks */ = {
+		DF8B4E1B1B30D77200825935 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -32,47 +43,44 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		DF8B4DEF1B309B8600825935 = {
+		DF8B4E151B30D77200825935 = {
 			isa = PBXGroup;
 			children = (
-				DF8B4E081B30A05700825935 /* README.md */,
-				DF8B4E0E1B30B33E00825935 /* ScuddleDataTypes.h */,
-				DF8B4E0A1B30AEE300825935 /* ScuddleBody.cpp */,
-				DF8B4E0B1B30AEE300825935 /* ScuddleBody.h */,
-				DF8B4E0F1B30C29400825935 /* ScuddleMain.cpp */,
-				DF8B4DF91B309B8600825935 /* Products */,
+				DF8B4E201B30D77200825935 /* Scuddle */,
+				DF8B4E1F1B30D77200825935 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		DF8B4DF91B309B8600825935 /* Products */ = {
+		DF8B4E1F1B30D77200825935 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DF8B4DF81B309B8600825935 /* libScuddle.dylib */,
+				DF8B4E1E1B30D77200825935 /* Scuddle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
+		DF8B4E201B30D77200825935 /* Scuddle */ = {
+			isa = PBXGroup;
+			children = (
+				DF8B4E281B30D7AB00825935 /* README.md */,
+				DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */,
+				DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */,
+				DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */,
+				DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */,
+			);
+			path = Scuddle;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		DF8B4DF61B309B8600825935 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DF8B4E0D1B30AEE300825935 /* ScuddleBody.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		DF8B4DF71B309B8600825935 /* Scuddle */ = {
+		DF8B4E1D1B30D77200825935 /* Scuddle */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF8B4E031B309B8600825935 /* Build configuration list for PBXNativeTarget "Scuddle" */;
+			buildConfigurationList = DF8B4E251B30D77200825935 /* Build configuration list for PBXNativeTarget "Scuddle" */;
 			buildPhases = (
-				DF8B4DF41B309B8600825935 /* Sources */,
-				DF8B4DF51B309B8600825935 /* Frameworks */,
-				DF8B4DF61B309B8600825935 /* Headers */,
+				DF8B4E1A1B30D77200825935 /* Sources */,
+				DF8B4E1B1B30D77200825935 /* Frameworks */,
+				DF8B4E1C1B30D77200825935 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -80,54 +88,54 @@
 			);
 			name = Scuddle;
 			productName = Scuddle;
-			productReference = DF8B4DF81B309B8600825935 /* libScuddle.dylib */;
-			productType = "com.apple.product-type.library.dynamic";
+			productReference = DF8B4E1E1B30D77200825935 /* Scuddle */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		DF8B4DF01B309B8600825935 /* Project object */ = {
+		DF8B4E161B30D77200825935 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Movement Meaning";
 				TargetAttributes = {
-					DF8B4DF71B309B8600825935 = {
+					DF8B4E1D1B30D77200825935 = {
 						CreatedOnToolsVersion = 6.3;
 					};
 				};
 			};
-			buildConfigurationList = DF8B4DF31B309B8600825935 /* Build configuration list for PBXProject "Scuddle" */;
+			buildConfigurationList = DF8B4E191B30D77200825935 /* Build configuration list for PBXProject "Scuddle" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = DF8B4DEF1B309B8600825935;
-			productRefGroup = DF8B4DF91B309B8600825935 /* Products */;
+			mainGroup = DF8B4E151B30D77200825935;
+			productRefGroup = DF8B4E1F1B30D77200825935 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DF8B4DF71B309B8600825935 /* Scuddle */,
+				DF8B4E1D1B30D77200825935 /* Scuddle */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		DF8B4DF41B309B8600825935 /* Sources */ = {
+		DF8B4E1A1B30D77200825935 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF8B4E0C1B30AEE300825935 /* ScuddleBody.cpp in Sources */,
-				DF8B4E101B30C29400825935 /* ScuddleMain.cpp in Sources */,
+				DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */,
+				DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		DF8B4E011B309B8600825935 /* Debug */ = {
+		DF8B4E231B30D77200825935 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -169,7 +177,7 @@
 			};
 			name = Debug;
 		};
-		DF8B4E021B309B8600825935 /* Release */ = {
+		DF8B4E241B30D77200825935 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -204,28 +212,16 @@
 			};
 			name = Release;
 		};
-		DF8B4E041B309B8600825935 /* Debug */ = {
+		DF8B4E261B30D77200825935 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
 		};
-		DF8B4E051B309B8600825935 /* Release */ = {
+		DF8B4E271B30D77200825935 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = lib;
-				GCC_ENABLE_CPP_EXCEPTIONS = YES;
-				GCC_ENABLE_CPP_RTTI = YES;
-				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -233,25 +229,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		DF8B4DF31B309B8600825935 /* Build configuration list for PBXProject "Scuddle" */ = {
+		DF8B4E191B30D77200825935 /* Build configuration list for PBXProject "Scuddle" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF8B4E011B309B8600825935 /* Debug */,
-				DF8B4E021B309B8600825935 /* Release */,
+				DF8B4E231B30D77200825935 /* Debug */,
+				DF8B4E241B30D77200825935 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DF8B4E031B309B8600825935 /* Build configuration list for PBXNativeTarget "Scuddle" */ = {
+		DF8B4E251B30D77200825935 /* Build configuration list for PBXNativeTarget "Scuddle" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF8B4E041B309B8600825935 /* Debug */,
-				DF8B4E051B309B8600825935 /* Release */,
+				DF8B4E261B30D77200825935 /* Debug */,
+				DF8B4E271B30D77200825935 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = DF8B4DF01B309B8600825935 /* Project object */;
+	rootObject = DF8B4E161B30D77200825935 /* Project object */;
 }

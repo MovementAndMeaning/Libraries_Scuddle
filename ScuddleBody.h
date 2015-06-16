@@ -39,7 +39,7 @@
 #if (! defined(Scuddle_Body_H_))
 # define Scuddle_Body_H_ /* Header guard */
 
-# include "ScuddleCoordinate2D.h"
+# include "ScuddleDataTypes.h"
 
 # if defined(__APPLE__)
 #  pragma clang diagnostic push
