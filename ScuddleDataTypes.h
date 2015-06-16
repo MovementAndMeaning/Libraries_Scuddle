@@ -39,6 +39,8 @@
 #if (! defined(Scuddle_DataTypes_H_))
 # define Scuddle_DataTypes_H_ /* Header guard */
 
+# include <complex>
+
 namespace Scuddle
 {
     /*! @brief Flow Effort Qualities. */
@@ -103,6 +105,8 @@ namespace Scuddle
         kWeightStrong
         
     }; // WeightQuality
+    
+    typedef std::complex<float> Coordinate2D;
     
 } // Scuddle
 
