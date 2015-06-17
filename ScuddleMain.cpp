@@ -39,6 +39,7 @@
 #include "ScuddleBody.h"
 
 #include <iostream>
+#include <vector>
 
 #if defined(__APPLE__)
 # pragma clang diagnostic push
@@ -61,23 +62,72 @@ using namespace Scuddle;
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
 
+#define PRINT_VALUES_ /* Print out values of interest. */
+
+typedef std::vector<Body *> BodyVector;
+
+/*! @brief The initial position of the left elbow for new Body objects. */
 static const Coordinate2D lLeftElbow(90, 140);
+
+/*! @brief The initial position of the left foot for new Body objects. */
 static const Coordinate2D lLeftFoot(70, 290);
+
+/*! @brief The initial position of the left side of the hips for new Body objects. */
 static const Coordinate2D lLeftHip(120, 220);
+
+/*! @brief The initial position of the left knee for new Body objects. */
 static const Coordinate2D lLeftKnee(120, 280);
+
+/*! @brief The initial position of the left shoulder for new Body objects. */
 static const Coordinate2D lLeftShoulder(110, 100);
+
+/*! @brief The initial position of the left wrist for new Body objects. */
 static const Coordinate2D lLeftWrist(110, 200);
 
+/*! @brief The initial position of the neck for new Body objects. */
 static const Coordinate2D lNeck(155, 110);
 
+/*! @brief The initial position of the right elbow for new Body objects. */
 static const Coordinate2D lRightElbow(230, 145);
+
+/*! @brief The initial position of the right foot for new Body objects. */
 static const Coordinate2D lRightFoot(190, 340);
+
+/*! @brief The initial position of the right side of the hips for new Body objects. */
 static const Coordinate2D lRightHip(190, 220);
+
+/*! @brief The initial position of the right knee for new Body objects. */
 static const Coordinate2D lRightKnee(190, 280);
+
+/*! @brief The initial position of the right shoulder for new Body objects. */
 static const Coordinate2D lRightShoulder(200, 100);
+
+/*! @brief The initial position of the right wrist for new Body objects. */
 static const Coordinate2D lRightWrist(260, 120);
 
+/*! @brief The initial position of the 'tail' for new Body objects. */
 static const Coordinate2D lTail(155, 210);
+
+/*! @brief The number of selections to present when finished. */
+static const int kFinalSelectionCount = 5;
+
+/*! @brief The number of iterations to perform. */
+static const int kIterationCount = 5;
+
+/*! @brief The number of Body objects to generate. */
+static const int kPopulationSize = 200; // MUST BE EVEN!!!
+
+/*! @brief The fraction of the set of Body objects that are to be mutated. */
+static const realType kMutationFraction = 0.10;
+
+/*! @brief The fraction of the set of Body objects that are selected. */
+static const realType kSelectionFraction = 0.20;
+
+/*! @brief The set of Body objects that are worked on. */
+static BodyVector lPopulation;
+
+/*! @brief The set of Body objects that have been selected. */
+static BodyVector lSelection;
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -86,6 +136,294 @@ static const Coordinate2D lTail(155, 210);
 #if defined(__APPLE__)
 # pragma mark Local functions
 #endif // defined(__APPLE__)
+
+/*! @brief Update the fitness value for the Body objects. */
+static void calculateFitnessValues(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Calculating fitness." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            aBody->updateFitness();
+#if defined(PRINT_VALUES_)
+            std::cout << " Fitness score = " << aBody->getFitnessScore() << std::endl;
+#endif // defined(PRINT_VALUES_)
+        }
+    }
+} // calculateFitnessValues
+
+/*! @brief Release the objects that were created earlier. */
+static void cleanup(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Cleaning up." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            delete aBody;
+        }
+    }
+    lPopulation.clear();
+    lSelection.clear();
+} // cleanup
+
+/*! @brief Create a set of Body objects to work with. */
+static void generateBodies(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Generating " << kPopulationSize << " objects." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    for (int ii = 0; kPopulationSize > ii; ++ii)
+    {
+        Body * aBody = new Body(lLeftElbow, lLeftFoot, lLeftHip, lLeftKnee, lLeftShoulder,
+                                lLeftWrist, lNeck, lRightElbow, lRightFoot, lRightHip, lRightKnee,
+                                lRightShoulder, lRightWrist, lTail);
+        
+        lPopulation.push_back(aBody);
+#if defined(PRINT_VALUES_)
+        std::cout << RadiansToDegrees(aBody->getLeftShoulderToElbowAngle()) << "," <<
+                    RadiansToDegrees(aBody->getLeftElbowToWristAngle()) << "," <<
+                    RadiansToDegrees(aBody->getRightShoulderToElbowAngle()) << "," <<
+                    RadiansToDegrees(aBody->getRightElbowToWristAngle()) << "," <<
+                    RadiansToDegrees(aBody->getLeftHipToKneeAngle()) << "," <<
+                    RadiansToDegrees(aBody->getLeftKneeToFootAngle()) << "," <<
+                    RadiansToDegrees(aBody->getRightHipToKneeAngle()) << "," <<
+                    RadiansToDegrees(aBody->getRightKneeToFootAngle()) << "," <<
+                    MapWeightToReal(aBody->getWeight()) << "," <<
+                    MapSpaceToReal(aBody->getSpace()) << "," <<
+                    MapTimeToReal(aBody->getTime()) << "," << MapFlowToReal(aBody->getFlow()) <<
+                    std::endl;
+#endif // defined(PRINT_VALUES_)
+    }
+} // generateBodies
+
+/*! @brief Update the quadrant information for the Body objects. */
+static void mapQuadrants(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Mapping quadrants." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            aBody->determineQuadrants();
+        }
+    }
+} // mapQuadrants
+
+/*! @brief Make the selections for this iteration. */
+static void makeSelection(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Making selection." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    realType sumOfScore = 0;
+    
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            sumOfScore += aBody->getFitnessScore();
+        }
+    }
+    lSelection.clear();
+    for (size_t ii = 0, imax = static_cast<size_t>(lPopulation.size() * kSelectionFraction);
+         imax > ii; )
+    {
+        realType sumOfArrayIndices = 0;
+        realType chooseArray = RandInRange(0, sumOfScore);
+        
+        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+             ++walker)
+        {
+            Body * aBody = *walker;
+            
+            if (aBody && (! aBody->isMarked()))
+            {
+                realType score = aBody->getFitnessScore();
+                
+                if ((chooseArray > sumOfArrayIndices) &&
+                    (chooseArray < (sumOfArrayIndices + score)))
+                {
+                    aBody->setMark();
+                    sumOfArrayIndices += score;
+                    lSelection.push_back(aBody);
+                    ++ii;
+                }
+                else
+                {
+                    sumOfArrayIndices += score;
+                }
+            }
+        }
+    }
+} // makeSelection
+
+/*! @brief Generate a new set of objects, using the selected parents. */
+static void doCrossovers(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Doing crossover." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    bool keepGoing;
+    
+    // We have an initial population, from the previous generation, and we will create two new
+    // 'children' for each parent pair.
+    // Remove all the objects that are not propagating forward, which are unmarked - the selection
+    // vector has pointers to the marked ones.
+    do
+    {
+        keepGoing = false;
+        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+             ++walker)
+        {
+            Body * aBody = *walker;
+            
+            if (aBody && (! aBody->isMarked()))
+            {
+                lPopulation.erase(walker);
+                keepGoing = true;
+                break;
+            }
+            
+        }
+    }
+    while (keepGoing);
+    // Clear the marks!
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+         ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            aBody->clearMark();
+        }
+    }
+    for (keepGoing = true; keepGoing; )
+    {
+        // Pick two 'parent' objects:
+        size_t popSize = lPopulation.size() - 1;
+        size_t firstChoice = RandInRange(0, popSize);
+        size_t secondChoice;
+        
+        for ( ; ; )
+        {
+            secondChoice = RandInRange(0, popSize);
+            if (firstChoice != secondChoice)
+            {
+                break;
+            }
+            
+        }
+        Body * firstParent = lPopulation[firstChoice];
+        Body * secondParent = lPopulation[secondChoice];
+        
+        if (firstParent && secondParent)
+        {
+            Body * firstChild = new Body(*firstParent);
+            Body * secondChild = new Body(*secondParent);
+            
+            // Crossover an attribute:
+            lPopulation.push_back(firstChild);
+            lPopulation.push_back(secondChild);
+            firstChild->swapValues(*secondChild, 2);
+            if (kPopulationSize <= lPopulation.size())
+            {
+                keepGoing = false;
+            }
+        }
+    }
+} // doCrossovers
+
+/*! @brief Mutate some of the objects. */
+static void doMutate(void)
+{
+#if defined(PRINT_VALUES_)
+    std::cout << "Doing mutations." << std::endl;
+#endif // defined(PRINT_VALUES_)
+    // Mark the objects to be mutated:
+    for (size_t ii = 0, imax = static_cast<size_t>(kMutationFraction * lPopulation.size());
+         imax > ii;)
+    {
+        Body * aBody = lPopulation[ii];
+        
+        if (aBody && (! aBody->isMarked()))
+        {
+            aBody->setMark();
+            ++ii;
+        }
+    }
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody && aBody->isMarked())
+        {
+            aBody->mutate();
+        }
+    }
+} // doMutate
+
+/*! @brief Make the final selections. */
+static void makeFinalSelection(void)
+{
+    realType sumOfScore = 0;
+    
+    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+         ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            sumOfScore += aBody->getFitnessScore();
+        }
+    }
+    lSelection.clear();
+    lSelection.resize(kFinalSelectionCount);
+    for (size_t ii = 0, imax = kFinalSelectionCount; imax > ii; ++ii)
+    {
+        realType sumOfArrayIndices = 0;
+        realType chooseArray = RandInRange(0, sumOfScore);
+        
+        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+             ++walker)
+        {
+            Body * aBody = *walker;
+            
+            if (aBody)
+            {
+                realType score = aBody->getFitnessScore();
+                
+                if ((chooseArray > sumOfArrayIndices) &&
+                    (chooseArray < (sumOfArrayIndices + score)))
+                {
+                    sumOfArrayIndices += score;
+                    lSelection[ii] = aBody;
+                }
+                else
+                {
+                    sumOfArrayIndices += score;
+                }
+            }
+        }
+    }
+} // makeFinalSelection
 
 #if defined(__APPLE__)
 # pragma mark Class methods
@@ -112,644 +450,41 @@ static const Coordinate2D lTail(155, 210);
 int main(int            argc,
          const char * * argv)
 {
-    // insert code here...
-    std::cout << "Hello, World!\n";
+    generateBodies();
+    for (int kk = 0; kIterationCount > kk; ++kk)
+    {
+        mapQuadrants();
+        calculateFitnessValues();
+        makeSelection();
+        doCrossovers();
+        doMutate();
+    }
+    makeFinalSelection();
+#if defined(PRINT_VALUES_)
+    for (BodyVector::iterator walker(lSelection.begin()); lSelection.end() != walker;
+         ++walker)
+    {
+        Body * aBody = *walker;
+        
+        if (aBody)
+        {
+            std::cout << "Final Selection: " <<
+                        RadiansToDegrees(aBody->getLeftShoulderToElbowAngle()) << "," <<
+                        RadiansToDegrees(aBody->getLeftElbowToWristAngle()) << "," <<
+                        RadiansToDegrees(aBody->getRightShoulderToElbowAngle()) << "," <<
+                        RadiansToDegrees(aBody->getRightElbowToWristAngle()) << "," <<
+                        RadiansToDegrees(aBody->getLeftHipToKneeAngle()) << "," <<
+                        RadiansToDegrees(aBody->getLeftKneeToFootAngle()) << "," <<
+                        RadiansToDegrees(aBody->getRightHipToKneeAngle()) << "," <<
+                        RadiansToDegrees(aBody->getRightKneeToFootAngle()) << "," <<
+                        MapWeightToReal(aBody->getWeight()) << "," <<
+                        MapSpaceToReal(aBody->getSpace()) << "," <<
+                        MapTimeToReal(aBody->getTime()) << "," <<
+                        MapFlowToReal(aBody->getFlow()) << "," <<
+                        MapHeightToReal(aBody->getHeight()) << std::endl;
+        }
+    }
+#endif // defined(PRINT_VALUES_)
+    cleanup();
     return 0;
 } // main
-
-#if 0
-
-//Polar Coordinate to change the joint angle
-public float radius = 60;
-public float radius1 = 90;
-public float radius2 = 40;
-
-//New joint angle
-public float angle1, angle2, angle3, angle4, angle5, angle6, angle7, angle8, angle9;
-
-//Offset shoulder location for aesthetic in drawing
-public float random1, random2, random3, random4, random5, random6, random7, random8;
-
-//map joint angles to quadrants 1-4
-float[] map1;
-float[] map2;
-float[] map3;
-float[] map4;
-float[] map5;
-float[] map6;
-float[] map7;
-float[] map8;
-
-
-public float Weight = 0;
-public float Space = 0;
-public float Time = 0;
-public float Flow = 0;
-public float Height = 0;
-
-public float chooseArray = 0;
-public int chooseArray2 = 0;
-public int chooseArray3 = 0;
-public int chooseIndex1 = 0;
-public int chooseIndex2 = 0;
-public float sumOfArrayIndexes = 0;
-
-int pop = 200;
-
-ArrayList StoreDataA;
-ArrayList HoldData;
-ArrayList StoreDataB;
-float[] scorePosition;
-float[] scoreAccumulate;
-float[] scoreFinal;
-
-// SETUP ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void setup(){
-    size (400,440);
-    background (50);
-    fill(255);
-    smooth();
-    rect(10,10,380, 390);
-    noStroke ();
-    font = loadFont("AgencyFB-Reg-28.vlw");
-    textFont(font);
-    
-    StoreDataA = new ArrayList();
-    StoreDataB = new ArrayList();
-    scorePosition = new float[pop];
-    scoreAccumulate = new float[pop];
-    scoreFinal = new float[pop];
-    map1 = new float[pop];
-    map2 = new float[pop];
-    map3 = new float[pop];
-    map4 = new float[pop];
-    map5 = new float[pop];
-    map6 = new float[pop];
-    map7 = new float[pop];
-    map8 = new float[pop];
-    
-}
-
-// DRAW +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void draw(){
-//    frameRate(.5);
-//    //Allows for playing and pausing the looping playback
-//    if(startMovie==true && StoreDataA.size()!=0){
-//        if(i<6){
-//            background (50);
-//            fill(255);
-//            rect(10,10,380, 390);
-    
-            Body position = (Body)StoreDataB.get(i);
-            //Body position = (Body)StoreDataA.get(i);
-            position.drawBody();
-            
-//            fill(0);
-//            text("Score: " + nf(scoreFinal[i], 2, 2), 180, 35);
-//            text("Number: " + i, 300, 35);
-//            //saveFrame();
-//            i++;
-//        } else{
-//            i=0;
-//        }
-//    }
-}
-
-// GENERATE ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void generate()
-{
-    
-    //generate population
-    println("Generate,");
-    for( int a = 0; a < pop; a++)
-    {
-        
-        position = new Body(WristLeftX, WristLeftY, ElbowLeftX, ElbowLeftY, ShoulderLeftX, ShoulderLeftY, WristRightX, WristRightY, ElblowRightX, ElblowRightY, ShoulderRightX, ShoulderRightY, HipLeftX, HipLeftY, KneeLeftX, KneeLeftY, FootLeftX, FootLeftY, HipRightX, HipRightY, KneeRightX, KneeRightY, FootRightX, FootRightY, NeckX, NeckY, TailX, TailY, angle1, angle2, angle3, angle4, angle5, angle6, angle7, angle8, angle9, Weight, Space, Time, Flow, Height);
-        position.makeNew();
-        
-        StoreDataA.add(position);
-        
-        //print data
-        print(position.angle1 + ",");
-        print(position.angle2 + ",");
-        print(position.angle3 + ",");
-        print(position.angle4 + ",");
-        print(position.angle5 + ",");
-        print(position.angle6 + ",");
-        print(position.angle7 + ",");
-        print(position.angle8 + ",");
-        print(position.angle9 + ",");
-        print(position.Weight + ",");
-        print(position.Space + ",");
-        print(position.Time + ",");
-        print(position.Flow + ",");
-        println(position.Height);
-    }
-}
-
-// MAP +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void mapAngles(){
-    print("Mapping");
-    //Map angles into quadrants for scoring purposes
-    for(int i = 0; i < StoreDataA.size(); i++){
-        Body position = (Body)StoreDataA.get(i);
-        
-        if ((position.angle1) < 90){
-            map1[i]=1;
-        }        else if((position.angle1) > 90 && (position.angle1) <180){
-            map1[i]= 2;
-        }          else if ((position.angle1) > 180 && (position.angle1) < 270){
-            map1[i]= 1;
-        }            else{
-            map1[i]=4;
-        }
-        
-        if ((position.angle2) < 45){
-            map2[i]=1;
-        }        else if((position.angle2) > 45 && (position.angle2) <90){
-            map2[i]= 2;
-        }          else if ((position.angle2) > 90 && (position.angle2) < 135){
-            map2[i]= 1;
-        }            else{
-            map2[i]=4;
-        }
-        
-        if ((position.angle3) < 90){
-            map3[i]=2;
-        }        else if((position.angle3) > 90 && (position.angle3) <180){
-            map3[i]= 1;
-        }          else if ((position.angle3) > 180 && (position.angle3) < 270){
-            map3[i]= 4;
-        }            else{
-            map3[i]=1;
-        }
-        
-        if ((position.angle4) < 45){
-            map4[i]=2;
-        }        else if((position.angle4) > 45 && (position.angle4) <90){
-            map4[i]= 1;
-        }          else if ((position.angle4) > 90 && (position.angle4) < 135){
-            map4[i]= 4;
-        }            else{
-            map4[i]=1;
-        }
-        
-        if ((position.angle5) < 90){
-            map5[i]=4;
-        }        else if((position.angle5) > 90 && (position.angle5) <180){
-            map5[i]= 1;
-        }          else if ((position.angle5) > 180 && (position.angle5) < 270){
-            map5[i]= 2;
-        }            else{
-            map5[i]=1;
-        }
-        
-        if ((position.angle6) < 45){
-            map6[i]=4;
-        }        else if((position.angle6) > 45 && (position.angle6) <90){
-            map6[i]= 1;
-        }          else if ((position.angle6) > 90 && (position.angle6) < 135){
-            map6[i]= 2;
-        }            else{
-            map6[i]=1;
-        }
-        
-        if ((position.angle7) < 90){
-            map7[i]=1;
-        }        else if((position.angle7) > 90 && (position.angle7) <180){
-            map7[i]= 4;
-        }          else if ((position.angle7) > 180 && (position.angle7) < 270){
-            map7[i]= 1;
-        }            else{
-            map7[i]=2;
-        }
-        
-        
-        if ((position.angle8) < 45){
-            map8[i]=1;
-        }        else if((position.angle8) > 45 && (position.angle8) <90){
-            map8[i]= 4;
-        }          else if ((position.angle8) > 90 && (position.angle8) < 135){
-            map8[i]= 1;
-        }            else{
-            map8[i]=2;
-        }
-        
-        //Sum of quadrants values to depict score
-        scorePosition[i] = map1[i] + map2[i] + map3[i] + map4[i] + map5[i] + map6[i] + map7[i] + map8[i];
-        //Print data
-        print(i + ", Angle Sum," + scorePosition[i] + ",");
-        print("map1" + map1[i] + ",");
-        print("map2" + map2[i] + ",");
-        print("map3" + map3[i] + ",");
-        print("map4" + map4[i] + ",");
-        print("map5" + map5[i] + ",");
-        print("map6" + map6[i] + ",");
-        print("map7" + map7[i] + ",");
-        println("map8" + map8[i] + ",");
-    }
-}
-
-// FITNESS +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void fitness(){
-    float percentageBartenieff = 0;
-    float percentageEffort = 0;
-    float percentageHeight = 0;
-    
-    println("Fitness,");
-    
-    //Emphasizing contralateral positions that are not fully distal or medial in extension
-    //Emphasizing efforts that are not fully fighting or indulging
-    //Emphasizing heights that are 'in-between', not fully jumping, standing or sitting
-    for(int i = 0; i < StoreDataA.size(); i++){
-        Body position = (Body)StoreDataA.get(i);
-        
-        //Fitness Function
-        //distal
-        if ((scorePosition[i] == 8) && ((map1[i] == map2[i]) && (map3[i] == map4[i]) && (map5[i] == map6[i]) && (map7[i] == map8[i]))) {
-            percentageBartenieff = 0.4;
-        }
-        //medial
-        else if ((scorePosition[i] == 12) && ((map1[i] == map2[i]) && (map3[i] == map4[i]) && (map5[i] == map6[i]) && (map7[i] == map8[i]))) {
-            percentageBartenieff = 0.7;
-        }
-        //homolateral
-        else if ((((abs(position.angle1 - position.angle5) > 30) && (abs(position.angle2 - position.angle6) > 30))) || (((abs(position.angle3 - position.angle7) > 30) && (abs(position.angle4 - position.angle8) > 30)))){
-            percentageBartenieff = 0.5;
-        }
-        //contralateral
-        else if ((((abs(position.angle1 - position.angle7) > 30) && (abs(position.angle2 - position.angle8) > 30))) || (((abs(position.angle3 - position.angle5) > 30) && (abs(position.angle4 - position.angle6) > 30)))){
-            percentageBartenieff = 1.3;
-        }
-        
-        //homologous
-        else if (((map1[i] == map3[i]) && (map2[i] == map4[i])) || ((map5[i] == map7[i]) && (map6[i] == map8[i]))){
-            percentageBartenieff = 0.4;
-        }
-        
-        //laban
-        if (((Weight==1) && (Space==1) && (Time==1) && (Flow == 1)) || ((Weight==2) && (Space==2) && (Time==2) && (Flow == 2))){
-            percentageEffort = 0.6;
-        }
-        else if (((Weight==Space) && (Time==Flow)) || ((Weight==Time) && (Space==Flow)) || ((Weight==Flow) && (Space==Time))){
-            percentageEffort = 1.2;
-        }
-        else{
-            percentageEffort = 1.4;
-        }
-        
-        
-        //height
-        if ((Height == 0) || (Height == 2) || (Height == 4)){
-            //make another variable so can track which height is picked
-            scorePosition[i] = scorePosition[i] + 1;
-        }
-        
-        else{
-            scorePosition[i] = scorePosition[i] + 3;
-        }
-        
-        if ((Height == 1) || (Height == 2) || (Height == 3)){
-            
-            //one leg is fully extended
-            if ((map5[i] == 1) || (map5[i] == 2) || (map7[i] == 1) || (map7[i] == 2) && (map6[i] == 1) || (map6[i] == 2) || (map8[i] == 1) || (map8[i] == 2)){
-                percentageHeight = 1.1;
-            }
-            
-            // only the lower leg is extended
-            else if((map6[i] == 1) || (map6[i] == 2) || (map8[i] == 1) || (map8[i] == 2)){
-                percentageHeight = 1.3;
-            }
-            
-            // no leg is extended - cannot jump without legs in a crouch!
-            else{
-                percentageHeight = 0.3;
-            }
-        }  //close height
-        
-        //Accumulate + Modify score
-        scoreAccumulate[i] = (percentageBartenieff + percentageEffort + percentageHeight) * scorePosition[i];
-        
-        //print modifiers and final score
-        // print(i+ " Bartenieff " + percentageBartenieff + ",");
-        // print(" Laban " + percentageEffort + ",");
-        // print(" Height " + percentageHeight + ",");
-        print(" FinalScore, " + scoreAccumulate[i] + ", ");
-    }
-}
-
-// SELECTION +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-void selection(){
-    println("Selection,");
-    float sumOfScore = 0;
-    int index = 0;
-    
-    //Calculate sum of scores in array
-    for(int a = 0; a < pop; a++){
-        sumOfScore = sumOfScore + scoreAccumulate[a];
-    }
-    
-    //Likelihood proportional to fitness
-    for(int k = 0; k < (pop/5); k++){
-        sumOfArrayIndexes = 0;
-        chooseArray = (random(0,sumOfScore));
-        
-        for(int f = 0; f < pop; f++){
-            Body position = (Body)StoreDataA.get(f);
-            
-            if ((chooseArray > sumOfArrayIndexes) && (chooseArray < (sumOfArrayIndexes + scoreAccumulate[f]))){
-                scoreFinal[index] = scoreAccumulate[f];
-                sumOfArrayIndexes = sumOfArrayIndexes + scoreAccumulate[f];
-                StoreDataB.add(position);
-                index = index + 1;
-                print(k + " " + scoreAccumulate[f] + ", ");
-            }
-            
-            else{
-                sumOfArrayIndexes = sumOfArrayIndexes + scoreAccumulate[f];
-            }
-        }
-    }
-}
-
-void crossover(){
-    int q = 0;
-    float hold = 0;
-    println("CrossOver");
-    
-    // 2-point crossover regenerates population until reaches original size (pop/2 because 2 new individuals produced for each breeding)
-    for(int c = 0; c < (pop/2); c++){
-        
-        //choose the array # out of the arraylist (and out of the 40 lists selected)
-        chooseArray2 = (round(random(0,39)));
-        chooseArray3 = (round(random(0,39)));
-        
-        // chooses the index # out of the array (only 42 elements long)
-        chooseIndex1 = (round(random(29, 42)));
-        chooseIndex2 = (round(random(29, 42)));
-        
-        //Print data
-        println(c + "  Array1 " + chooseArray2 + "  Array2 " + chooseArray3 + "  Index1 " + chooseIndex1 + " Index2 " + chooseIndex2);
-        
-        //Get data from index location and extract into arrays
-        Body position = (Body)StoreDataA.get(chooseArray2);
-        Body position1 = (Body)StoreDataA.get(chooseArray3);
-        
-        if (chooseIndex1 < chooseIndex2){
-            if (chooseIndex1 == 29){
-                hold = position.angle1;
-                position.angle1 = position1.angle1;
-                position1.angle1 = hold;
-            } else if (chooseIndex1 == 30){
-                hold = position.angle2;
-                position.angle2 = position1.angle2;
-                position1.angle2 = hold;
-            } else if (chooseIndex1 == 31){
-                hold = position.angle3;
-                position.angle3 = position1.angle3;
-                position1.angle3 = hold;
-            } else if (chooseIndex1 == 32){
-                hold = position.angle4;
-                position.angle4 = position1.angle4;
-                position1.angle4 = hold;
-            } else if (chooseIndex1 == 33){
-                hold = position.angle5;
-                position.angle5 = position1.angle5;
-                position1.angle5 = hold;
-            } else if (chooseIndex1 == 34){
-                hold = position.angle6;
-                position.angle6 = position1.angle6;
-                position1.angle6 = hold;
-            } else if (chooseIndex1 == 35){
-                hold = position.angle7;
-                position.angle7 = position1.angle7;
-                position1.angle7 = hold;
-            } else if (chooseIndex1 == 36){
-                hold = position.angle8;
-                position.angle8 = position1.angle8;
-                position1.angle8 = hold;
-            } else if (chooseIndex1 == 37){
-                hold = position.angle9;
-                position.angle9 = position1.angle9;
-                position1.angle9 = hold;
-            } else if (chooseIndex1 == 38){
-                hold = position.Weight;
-                position.Weight = position1.Weight;
-                position1.Weight = hold;
-            } else if (chooseIndex1 == 39){
-                hold = position.Space;
-                position.Space = position1.Space;
-                position1.Space = hold;
-            } else if (chooseIndex1 == 40){
-                hold = position.Time;
-                position.Time = position1.Time;
-                position1.Time = hold;
-            } else if (chooseIndex1 == 41){
-                hold = position.Flow;
-                position.Flow = position1.Flow;
-                position1.Flow = hold;
-            } else {
-                hold = position.Height;
-                position.Height = position1.Height;
-                position1.Height = hold;
-            }}
-        
-        else{
-            if (chooseIndex2 == 29){
-                hold = position.angle1;
-                position.angle1 = position1.angle1;
-                position1.angle1 = hold;
-            } else if (chooseIndex2 == 30){
-                hold = position.angle2;
-                position.angle2 = position1.angle2;
-                position1.angle2 = hold;
-            } else if (chooseIndex2 == 31){
-                hold = position.angle3;
-                position.angle3 = position1.angle3;
-                position1.angle3 = hold;
-            } else if (chooseIndex2 == 32){
-                hold = position.angle4;
-                position.angle4 = position1.angle4;
-                position1.angle4 = hold;
-            } else if (chooseIndex2 == 33){
-                hold = position.angle5;
-                position.angle5 = position1.angle5;
-                position1.angle5 = hold;
-            } else if (chooseIndex2 == 34){
-                hold = position.angle6;
-                position.angle6 = position1.angle6;
-                position1.angle6 = hold;
-            } else if (chooseIndex2 == 35){
-                hold = position.angle7;
-                position.angle7 = position1.angle7;
-                position1.angle7 = hold;
-            } else if (chooseIndex2 == 36){
-                hold = position.angle8;
-                position.angle8 = position1.angle8;
-                position1.angle8 = hold;
-            } else if (chooseIndex2 == 37){
-                hold = position.angle9;
-                position.angle9 = position1.angle9;
-                position1.angle9 = hold;
-            } else if (chooseIndex2 == 38){
-                hold = position.Weight;
-                position.Weight = position1.Weight;
-                position1.Weight = hold;
-            } else if (chooseIndex2 == 39){
-                hold = position.Space;
-                position.Space = position1.Space;
-                position1.Space = hold;
-            } else if (chooseIndex2 == 40){
-                hold = position.Time;
-                position.Time = position1.Time;
-                position1.Time = hold;
-            } else if (chooseIndex2 == 41){
-                hold = position.Flow;
-                position.Flow = position1.Flow;
-                position1.Flow = hold;
-            } else {
-                hold = position.Height;
-                position.Height = position1.Height;
-                position1.Height = hold;
-            }}
-    }}
-
-void mutate(){
-    int chooseArrayMutate = 0;
-    int chooseIndexMutate = 0;
-    int mutateValueMedial = 0;
-    int mutateValueDistal = 0;
-    println("Mutate!!!");
-    
-    //Mutate 10% of second generation
-    //Selections joint angles, efforts and height - DOES NOT change coordinates directly
-    for( int n = 0; n < (pop/10); n++){
-        
-        //choose random Array in generationA to mutate
-        chooseArrayMutate = round(random(0, StoreDataA.size()));
-        //retreive Array from arraylist
-        Body position3 = (Body)StoreDataA.get(chooseArrayMutate);
-        //choose random index in array (between angles 1-9) to mutate
-        chooseIndexMutate = round(random(0, 8));
-        //choose new random value for mutation :: Medial = shoulders/ hips (with 360 rotation) :: Distal = elbows/ knees (with 180 hinge)
-        mutateValueMedial = round(random(0, 360));
-        mutateValueDistal = round(random(0, 180));
-        
-        
-        
-        print(n + " Array Number: " + chooseArrayMutate + " Index Value " + chooseIndexMutate + " Mutate Value: " + mutateValueMedial + " " + mutateValueDistal);
-        // println("chooseIndexMutate: " + chooseIndexMutate);
-        
-        //     for(int i=1; i<11; i++){
-        if (chooseIndexMutate == 29){
-            print(" Old Mutate: " + position3.angle1);
-            position3.angle1 = mutateValueMedial;
-            println(" New Mutate: " + position3.angle1);
-        }
-        
-        else if (chooseIndexMutate == 30){
-            print(" Old Mutate: " + position3.angle2);
-            position3.angle2 = mutateValueDistal;
-            println(" New Mutate: " + position3.angle2);
-        }
-        else if (chooseIndexMutate == 31){
-            print(" Old Mutate: " + position3.angle3);
-            position3.angle3 = mutateValueMedial;
-            println(" New Mutate: " + position3.angle3);
-        }
-        else if (chooseIndexMutate == 32){
-            print(" Old Mutate: " + position3.angle4);
-            position3.angle4 = mutateValueDistal;
-            println(" New Mutate: " + position3.angle4);
-        }
-        else if (chooseIndexMutate == 33){
-            print(" Old Mutate: " + position3.angle5);
-            position3.angle5 = mutateValueMedial;
-            println(" New Mutate: " + position3.angle5);
-        }
-        else if (chooseIndexMutate == 34){
-            print(" Old Mutate: " + position3.angle6);
-            position3.angle6 = mutateValueDistal;
-            println(" New Mutate: " + position3.angle6);
-        }
-        else if (chooseIndexMutate == 35){
-            print(" Old Mutate: " + position3.angle7);
-            position3.angle7 = mutateValueMedial;
-            println(" New Mutate: " + position3.angle7);
-        }
-        else {
-            print(" Old Mutate: " + position3.angle8);
-            position3.angle8 = mutateValueDistal;
-            println(" New Mutate: " + position3.angle8);
-        } } }
-
-void selectionFinal()
-{
-    float sumOfScore = 0;
-    int index = 0;
-    
-    //Final Selection of individuals with likelihood proportional to their fitness
-    for(int gm = 0; gm < pop; gm++){
-        sumOfScore = sumOfScore + scoreAccumulate[gm];
-        // println("SumScore: " + sumOfScore);
-    }
-    
-    for(int kk = 0; kk < (pop/40); kk++){
-        sumOfArrayIndexes = 0;
-        chooseArray = (random(0,sumOfScore));
-        
-        for(int ff = 0; ff < pop; ff++){
-            Body position = (Body)StoreDataA.get(ff);
-            
-            if ((chooseArray > sumOfArrayIndexes) && (chooseArray < (sumOfArrayIndexes + scoreAccumulate[ff]))){
-                scoreFinal[index] = scoreAccumulate[ff];
-                sumOfArrayIndexes = sumOfArrayIndexes + scoreAccumulate[ff];
-                StoreDataB.add(kk, position);
-                index = index + 1;
-                
-                println("Final Selection: ");
-                print(position.angle1 + ",");
-                print(position.angle2 + ",");
-                print(position.angle3 + ",");
-                print(position.angle4 + ",");
-                print(position.angle5 + ",");
-                print(position.angle6 + ",");
-                print(position.angle7 + ",");
-                print(position.angle8 + ",");
-                print(position.angle9 + ",");
-                print(position.Weight + ",");
-                print(position.Space + ",");
-                print(position.Time + ",");
-                print(position.Flow + ",");
-                println(position.Height);
-            }
-            
-            else{
-                sumOfArrayIndexes = sumOfArrayIndexes + scoreAccumulate[ff];
-            }
-        }}}
-
-void button()
-{
-    
-    //Runs GA
-    
-    generate();
-    
-    for(int k = 0; k < 5; k++)
-    {
-        mapAngles();
-        fitness();
-        selection();
-        crossover();
-        mutate();
-    }
-    selectionFinal();
-}
-#endif//0

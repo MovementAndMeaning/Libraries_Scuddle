@@ -71,6 +71,7 @@ namespace Scuddle
         
         /*! @brief 'High' height. */
         kHeightHigh
+        
     }; // HeightValue
     
     /*! @brief Space Effort Qualities. */
@@ -106,7 +107,11 @@ namespace Scuddle
         
     }; // WeightQuality
     
-    typedef std::complex<float> Coordinate2D;
+    /*! @brief The floating-point data type to use. */
+    typedef double realType;
+    
+    /*! @brief The two-dimensional coordinate data type. */
+    typedef std::complex<realType> Coordinate2D;
     
 } // Scuddle
 

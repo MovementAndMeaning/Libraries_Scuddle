@@ -38,6 +38,8 @@
 
 #include "ScuddleBody.h"
 
+#include <vector>
+
 #if defined(__APPLE__)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -59,6 +61,18 @@ using namespace Scuddle;
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
 
+/*! @brief The maximum amount to perturb a coordinate. */
+static const realType kPerturbation = 5;
+
+/*! @brief The joint radius */
+static const realType kJointRadius = 60;
+
+/*! @brief The number of angles that can be mutated. */
+static const size_t kNumAngles = 8;
+
+/*! @brief The number of attributes that can be swapped. */
+static const size_t kNumAttributes = 13;
+
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
 #endif // defined(__APPLE__)
@@ -66,6 +80,64 @@ using namespace Scuddle;
 #if defined(__APPLE__)
 # pragma mark Local functions
 #endif // defined(__APPLE__)
+
+static Coordinate2D generateRandomPerturbation(void)
+{
+    Coordinate2D result(RandInRange(- kPerturbation, kPerturbation),
+                        RandInRange(- kPerturbation, kPerturbation));
+
+    return result;
+} // generateRandomPerturbation
+
+/*! @brief Convert an angle (in radians) to the desired quadrant.
+ @param angle The input angle.
+ @param firstAngle The angle corresponding to the first quadrant.
+ @param firstQuadrant The quadrant value for the first quadrant.
+ @param secondAngle The angle corresponding to the second quadrant.
+ @param secondQuadrant The quadrant value for the second quadrant.
+ @param thirdAngle The angle corresponding to the third quadrant.
+ @param thirdQuadrant The quadrant value for the third quadrant.
+ @param fourthQuadrant The quadrant value for the fourth quadrant. */
+static int mapAngleToQuadrant(const realType angle,
+                              const realType firstAngle,
+                              const int      firstQuadrant,
+                              const realType secondAngle,
+                              const int      secondQuadrant,
+                              const realType thirdAngle,
+                              const int      thirdQuadrant,
+                              const int      fourthQuadrant)
+{
+    int      result;
+    realType asDegrees = RadiansToDegrees(angle) - gEpsilon;
+
+    if (firstAngle >= asDegrees)
+    {
+        result = firstQuadrant;
+    }
+    else if (secondAngle >= asDegrees)
+    {
+        result = secondQuadrant;
+    }
+    else if (thirdAngle >= asDegrees)
+    {
+        result = thirdQuadrant;
+    }
+    else
+    {
+        result = fourthQuadrant;
+    }
+    return result;
+} // mapAngleToQuadrant
+
+/*! @brief Compare two floating-point numbers and determine if they are very close in value.
+ @param firstValue The first value to compare.
+ @param secondValue The second value to compare.
+ @returns @c true if the two values are within epsilon of each other and @c false otherwise. */
+static inline bool reallyClose(const realType firstValue,
+                               const realType secondValue)
+{
+    return (std::abs(firstValue - secondValue) < gEpsilon);
+} // reallyClose
 
 #if defined(__APPLE__)
 # pragma mark Class methods
@@ -76,10 +148,58 @@ using namespace Scuddle;
 #endif // defined(__APPLE__)
 
 Body::Body(void) :
-    _leftElbow(), _leftFoot(), _leftHips(), _leftKnee(), _leftShoulder(), _leftWrist(), _neck(),
-    _rightElbow(), _rightFoot(), _rightHips(), _rightKnee(), _rightShoulder(), _rightWrist(),
-    _tail()
+    _leftElbow(), _leftFoot(), _leftHip(), _leftKnee(), _leftShoulder(), _leftWrist(), _neck(),
+    _rightElbow(), _rightFoot(), _rightHip(), _rightKnee(), _rightShoulder(), _rightWrist(),
+    _tail(), _leftElbowToWristQuadrant(-1), _leftHipToKneeQuadrant(-1), _leftKneeToFootQuadrant(-1),
+    _leftShoulderToElbowQuadrant(-1), _quadrantScore(-1), _rightElbowToWristQuadrant(-1),
+    _rightHipToKneeQuadrant(-1), _rightKneeToFootQuadrant(-1), _rightShoulderToElbowQuadrant(-1),
+    _leftElbowToWristAngle(0), _leftHipToKneeAngle(0), _leftKneeToFootAngle(0),
+    _leftShoulderToElbowAngle(0), _rightElbowToWristAngle(0), _rightHipToKneeAngle(0),
+    _rightKneeToFootAngle(0), _rightShoulderToElbowAngle(0), _flow(kFlowFree), _height(kHeightLow),
+    _space(kSpaceIndirect), _time(kTimeSustained), _weight(kWeightLight)
 {
+} // Body::Body
+
+Body::Body(const Coordinate2D & leftElbow,
+           const Coordinate2D & leftFoot,
+           const Coordinate2D & leftHip,
+           const Coordinate2D & leftKnee,
+           const Coordinate2D & leftShoulder,
+           const Coordinate2D & leftWrist,
+           const Coordinate2D & neck,
+           const Coordinate2D & rightElbow,
+           const Coordinate2D & rightFoot,
+           const Coordinate2D & rightHip,
+           const Coordinate2D & rightKnee,
+           const Coordinate2D & rightShoulder,
+           const Coordinate2D & rightWrist,
+           const Coordinate2D & tail) :
+    _leftElbow(leftElbow), _leftFoot(leftFoot), _leftHip(leftHip), _leftKnee(leftKnee),
+    _leftShoulder(leftShoulder), _leftWrist(leftWrist), _neck(neck), _rightElbow(rightElbow),
+    _rightFoot(rightFoot), _rightHip(rightHip), _rightKnee(rightKnee),
+    _rightShoulder(rightShoulder), _rightWrist(rightWrist), _tail(tail), _marked(false)
+{
+    perturb();
+} // Body::Body
+
+Body::Body(const Body & other) :
+    _leftElbow(other._leftElbow), _leftFoot(other._leftFoot), _leftHip(other._leftHip),
+    _leftKnee(other._leftKnee), _leftShoulder(other._leftShoulder), _leftWrist(other._leftWrist),
+    _neck(other._neck), _rightElbow(other._rightElbow), _rightFoot(other._rightFoot),
+    _rightHip(other._rightHip), _rightKnee(other._rightKnee),
+    _rightShoulder(other._rightShoulder), _rightWrist(other._rightWrist), _tail(other._tail),
+    _leftElbowToWristAngle(other._leftElbowToWristAngle),
+    _leftHipToKneeAngle(other._leftHipToKneeAngle),
+    _leftKneeToFootAngle(other._leftKneeToFootAngle),
+    _leftShoulderToElbowAngle(other._leftShoulderToElbowAngle),
+    _rightElbowToWristAngle(other._rightElbowToWristAngle),
+    _rightHipToKneeAngle(other._rightHipToKneeAngle),
+    _rightKneeToFootAngle(other._rightKneeToFootAngle),
+    _rightShoulderToElbowAngle(other._rightShoulderToElbowAngle), _flow(other._flow),
+    _height(other._height), _space(other._space), _time(other._time), _weight(other._weight),
+    _marked(false)
+{
+    perturb();
 } // Body::Body
 
 Body::~Body(void)
@@ -90,252 +210,347 @@ Body::~Body(void)
 # pragma mark Actions and Accessors
 #endif // defined(__APPLE__)
 
+void Body::determineQuadrants(void)
+{
+    // Calculate the quadrants:
+    _leftShoulderToElbowQuadrant = mapAngleToQuadrant(_leftShoulderToElbowAngle, 90, 1, 180, 2, 270,
+                                                      1, 4);
+    _rightShoulderToElbowQuadrant = mapAngleToQuadrant(_rightShoulderToElbowAngle, 90, 2, 180, 1,
+                                                       270, 4, 1);
+    _leftElbowToWristQuadrant = mapAngleToQuadrant(_leftElbowToWristAngle, 45, 1, 90, 2, 135, 1, 4);
+    _rightElbowToWristQuadrant = mapAngleToQuadrant(_rightElbowToWristAngle, 45, 2, 90, 1, 135, 4,
+                                                    1);
+    _leftHipToKneeQuadrant = mapAngleToQuadrant(_leftHipToKneeAngle, 90, 4, 180, 1, 270, 2, 1);
+    _rightHipToKneeQuadrant = mapAngleToQuadrant(_rightHipToKneeAngle, 90, 1, 180, 4, 270, 1, 2);
+    _leftKneeToFootQuadrant = mapAngleToQuadrant(_leftKneeToFootAngle, 45, 4, 90, 1, 135, 2, 1);
+    _rightKneeToFootQuadrant = mapAngleToQuadrant(_rightKneeToFootAngle, 45, 1, 90, 4, 135, 1, 2);
+    _quadrantScore = _leftShoulderToElbowQuadrant + _rightShoulderToElbowQuadrant +
+                        _leftElbowToWristQuadrant + _rightElbowToWristQuadrant +
+                        _leftHipToKneeQuadrant + _rightHipToKneeQuadrant + _leftKneeToFootQuadrant +
+                        _rightKneeToFootQuadrant;
+} // Body::determineQuadrants
+
+void Body::mutate(void)
+{
+    // There are eight angles that can be mutated - pick one!
+    realType distalValue = DegreesToRadians(RandInRange(0, 180));
+    realType medialValue = DegreesToRadians(RandInRange(0, 360));
+    size_t   whichAngle = static_cast<size_t>(RandInRange(0, kNumAngles));
+    
+    switch (whichAngle)
+    {
+        case 0 :
+            _leftShoulderToElbowAngle = medialValue;
+            break;
+            
+        case 1 :
+            _leftElbowToWristAngle = distalValue;
+            break;
+            
+        case 2 :
+            _rightShoulderToElbowAngle = medialValue;
+            break;
+            
+        case 3 :
+            _rightElbowToWristAngle = distalValue;
+            break;
+            
+        case 4 :
+            _leftHipToKneeAngle = medialValue;
+            break;
+            
+        case 5 :
+            _leftKneeToFootAngle = distalValue;
+            break;
+            
+        case 6 :
+            _rightHipToKneeAngle = medialValue;
+            break;
+            
+        case 7 :
+            _rightKneeToFootAngle = distalValue;
+            break;
+            
+        default :
+            break;
+            
+    }
+} // Body::mutate
+
+void Body::perturb(void)
+{
+    // Generate random angles for joints: shoulder and hip locations affect elbow and knees.
+    _leftShoulderToElbowAngle = DegreesToRadians(RandInRange(0, 360));
+    _leftElbowToWristAngle = DegreesToRadians(RandInRange(0, 180));
+    _rightShoulderToElbowAngle = DegreesToRadians(RandInRange(0, 360));
+    _rightElbowToWristAngle = DegreesToRadians(RandInRange(0, 180));
+    _leftHipToKneeAngle = DegreesToRadians(RandInRange(0, 360));
+    _leftKneeToFootAngle = DegreesToRadians(RandInRange(0, 180));
+    _rightHipToKneeAngle = DegreesToRadians(RandInRange(0, 360));
+    _rightKneeToFootAngle = DegreesToRadians(RandInRange(0, 180));
+    
+    _leftElbow = _leftShoulder + std::polar(kJointRadius, _leftShoulderToElbowAngle);
+    _leftWrist = _leftElbow + std::polar(kJointRadius, _leftElbowToWristAngle);
+    _leftShoulder += generateRandomPerturbation();
+
+    _rightElbow = _rightShoulder + std::polar(kJointRadius, _rightShoulderToElbowAngle);
+    _rightWrist = _rightElbow + std::polar(kJointRadius, _rightElbowToWristAngle);
+    _rightShoulder += generateRandomPerturbation();
+    
+    _leftKnee = _leftHip + std::polar(kJointRadius, _leftHipToKneeAngle);
+    _leftFoot = _leftKnee + std::polar(kJointRadius, _leftKneeToFootAngle);
+    _leftHip += generateRandomPerturbation();
+
+    _rightKnee = _rightHip + std::polar(kJointRadius, _rightHipToKneeAngle);
+    _rightFoot = _rightKnee + std::polar(kJointRadius, _rightKneeToFootAngle);
+    _rightHip += generateRandomPerturbation();
+    realType centre = _leftHip.real() + (std::abs(_rightHip.real() - _leftHip.real()) / 2);
+    
+    _neck.real(centre);
+    _tail.real(centre);
+    _flow = ((0.5 <= RandInRange(0, 1)) ? kFlowBound : kFlowFree);
+    _space = ((0.5 <= RandInRange(0, 1)) ? kSpaceDirect : kSpaceIndirect);
+    _time = ((0.5 <= RandInRange(0, 1)) ? kTimeSudden : kTimeSustained);
+    _weight = ((0.5 <= RandInRange(0, 1)) ? kWeightStrong : kWeightLight);
+    realType aNumb = RandInRange(0, 1);
+    
+    if (0.8 <= aNumb)
+    {
+        _height = kHeightHigh;
+    }
+    else if (0.6 <= aNumb)
+    {
+        _height = kHeightMidHigh;
+    }
+    else if (0.4 <= aNumb)
+    {
+        _height = kHeightMiddle;
+    }
+    else if (0.2 <= aNumb)
+    {
+        _height = kHeightMidLow;
+    }
+    else
+    {
+        _height = kHeightLow;
+    }
+} // Body::perturb
+
+void Body::swapValues(Body &       other,
+                      const size_t numSwap)
+{
+    // We have 13 values that we can work with.
+    size_t realSwap;
+    
+    if (kNumAttributes < numSwap)
+    {
+        realSwap = kNumAttributes;
+    }
+    else
+    {
+        realSwap = numSwap;
+    }
+    // Collect a set of indices to swap.
+    std::vector<size_t> indices;
+    
+    for (bool tryAgain = true; tryAgain; )
+    {
+        size_t anIndex = static_cast<size_t>(RandInRange(0, kNumAttributes));
+        
+        tryAgain = false;
+        for (std::vector<size_t>::iterator walker(indices.begin()); indices.end() != walker;
+             ++walker)
+        {
+            if (anIndex == *walker)
+            {
+                tryAgain = true;
+                break;
+            }
+            
+        }
+        if (! tryAgain)
+        {
+            indices.push_back(anIndex);
+            if (realSwap > indices.size())
+            {
+                tryAgain = true;
+            }
+        }
+    }
+    for (std::vector<size_t>::iterator walker(indices.begin()); indices.end() != walker;
+         ++walker)
+    {
+        switch (*walker)
+        {
+            case 0 :
+                std::swap(_leftShoulderToElbowAngle, other._leftShoulderToElbowAngle);
+                break;
+                
+            case 1 :
+                std::swap(_leftElbowToWristAngle, other._leftElbowToWristAngle);
+                break;
+                
+            case 2 :
+                std::swap(_rightShoulderToElbowAngle, other._rightShoulderToElbowAngle);
+                break;
+                
+            case 3 :
+                std::swap(_rightElbowToWristAngle, other._rightElbowToWristAngle);
+                break;
+                
+            case 4 :
+                std::swap(_leftHipToKneeAngle, other._leftHipToKneeAngle);
+                break;
+                
+            case 5 :
+                std::swap(_leftKneeToFootAngle, other._leftKneeToFootAngle);
+                break;
+                
+            case 6 :
+                std::swap(_rightHipToKneeAngle, other._rightHipToKneeAngle);
+                break;
+                
+            case 7 :
+                std::swap(_rightKneeToFootAngle, other._rightKneeToFootAngle);
+                break;
+                
+            case 8 :
+                std::swap(_weight, other._weight);
+                break;
+                
+            case 9 :
+                std::swap(_space, other._space);
+                break;
+                
+            case 10 :
+                std::swap(_time, other._time);
+                break;
+                
+            case 11 :
+                std::swap(_flow, other._flow);
+                break;
+                
+            case 12 :
+                std::swap(_height, other._height);
+                break;
+                
+            default :
+                break;
+                
+        }
+    }
+} // Body::swapValues
+
+void Body::updateFitness(void)
+{
+    realType criticalAngle = DegreesToRadians(30);
+    realType percentageBartenieff;
+    realType percentageEffort        = 0;
+    realType percentageHeight        = 0;
+    
+    if ((8 == _quadrantScore) &&
+        ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
+         (_rightShoulderToElbowQuadrant == _rightElbowToWristQuadrant) &&
+         (_leftHipToKneeQuadrant == _leftKneeToFootQuadrant) &&
+         (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
+    {
+        // Distal
+        percentageBartenieff = 0.4;
+    }
+    else if ((12 == _quadrantScore) &&
+             ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
+              (_rightShoulderToElbowQuadrant == _rightElbowToWristQuadrant) &&
+              (_leftHipToKneeQuadrant == _leftKneeToFootQuadrant) &&
+              (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
+    {
+        // Medial
+        percentageBartenieff = 0.7;
+    }
+    else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
+               (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))) ||
+             (((std::abs(_rightShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
+               (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))))
+    {
+        // Homolateral
+        percentageBartenieff = 0.5;
+    }
+    else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
+               (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))) ||
+             (((std::abs(_rightShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
+               (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))))
+    {
+        // Contralateral
+        percentageBartenieff = 1.3;
+    }
+    else if (((_leftShoulderToElbowQuadrant == _rightShoulderToElbowQuadrant) &&
+              (_leftElbowToWristQuadrant == _rightElbowToWristQuadrant)) ||
+             ((_leftHipToKneeQuadrant == _rightHipToKneeQuadrant) &&
+              (_leftKneeToFootQuadrant == _rightKneeToFootQuadrant)))
+    {
+        // Homologous
+        percentageBartenieff = 0.4;
+    }
+    else
+    {
+        percentageBartenieff = 0.0;
+    }
+    // Laban
+    if (((kWeightLight == _weight) && (kSpaceIndirect == _space) && (kTimeSustained == _time) &&
+         (kFlowFree == _flow)) || ((kWeightStrong == _weight) && (kSpaceDirect == _space) &&
+                                   (kTimeSudden == _time) && (kFlowBound == _flow)))
+    {
+        percentageEffort = 0.6;
+    }
+    else if ((reallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
+              reallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
+             (reallyClose(MapWeightToReal(_weight), MapTimeToReal(_time)) &&
+              reallyClose(MapSpaceToReal(_space), MapFlowToReal(_flow))) ||
+             (reallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
+              reallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
+    {
+        percentageEffort = 1.2;
+    }
+    else
+    {
+        percentageEffort = 1.4;
+    }
+    // Height
+    if ((kHeightLow == _height) || (kHeightMiddle == _height) || (kHeightHigh == _height))
+    {
+        // Make another variable so can track which height is picked
+        _quadrantScore = _quadrantScore + 1;
+    }
+    else
+    {
+        _quadrantScore = _quadrantScore + 3;
+    }
+    if ((kHeightMidLow == _height) || (kHeightMiddle == _height) || (kHeightMidHigh == _height))
+    {
+        if ((1 == _leftHipToKneeQuadrant) || (2 == _leftHipToKneeQuadrant) ||
+            (1 == _rightHipToKneeQuadrant) || ((2 == _rightHipToKneeQuadrant) &&
+            (1 == _leftKneeToFootQuadrant)) || (2 == _leftKneeToFootQuadrant) ||
+            (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
+        {
+            // One leg is fully extended
+            percentageHeight = 1.1;
+        }
+        
+        else if ((1 == _leftKneeToFootQuadrant) || (2 == _leftKneeToFootQuadrant) ||
+                 (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
+        {
+            // Only the lower leg is extended
+            percentageHeight = 1.3;
+        }
+        else
+        {
+            // No leg is extended - cannot jump without legs in a crouch!
+            percentageHeight = 0.3;
+        }
+    }
+    _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) *
+                         _quadrantScore);
+} // Body::updateFitness
+
 #if defined(__APPLE__)
 # pragma mark Global functions
 #endif // defined(__APPLE__)
-
-
-
-
-
-
-
-
-
-
-
-
-#if 0
-Body(float WristLeftX, float WristLeftY, float ElbowLeftX, float ElbowLeftY, float ShoulderLeftX, float ShoulderLeftY, float WristRightX, float WristRightY, float ElbowRightX, float ElbowRightY, float ShoulderRightX, float ShoulderRightY, float HipsLeftX, float HipsLeftY, float KneeLeftX, float KneeLeftY, float FootLeftX, float FootLeftY, float HipsRightX, float HipsRightY, float KneeRightX, float KneeRightY, float FootRightX, float FootRightY, float NeckX, float NeckY, float TailX, float TailY, float angle1, float angle2, float angle3, float angle4, float angle5, float angle6, float angle7, float angle8, float angle9, float Weight, float Space, float Time, float Flow, float Height)
-{
-    this.WristLeftX = WristLeftX;
-    this.WristLeftY = WristLeftY;
-    this.ElbowLeftX = ElbowLeftX;
-    this.ElbowLeftY = ElbowLeftY;
-    this.ShoulderLeftX = ShoulderLeftX;
-    this.ShoulderLeftY = ShoulderLeftY;
-    this.WristRightX = WristRightX;
-    this.WristRightY = WristRightY;
-    this.ElbowRightX = ElbowRightX;
-    this.ElbowRightY = ElbowRightY;
-    this.ShoulderRightX = ShoulderRightX;
-    this.ShoulderRightY = ShoulderRightY;
-    this.HipsLeftX = HipsLeftX;
-    this.HipsLeftY = HipsLeftY;
-    this.KneeLeftX = KneeLeftX;
-    this.KneeLeftY = KneeLeftY;
-    this.FootLeftX = FootLeftX;
-    this.FootLeftY = FootLeftY;
-    this.HipsRightX = HipsRightX;
-    this.HipsRightY = HipsRightY;
-    this.KneeRightX = KneeRightX;
-    this.KneeRightY = KneeRightY;
-    this.FootRightX = FootRightX;
-    this.FootRightY = FootRightY;
-    this.NeckX = NeckX;
-    this.NeckY = NeckY;
-    this.TailX = TailX;
-    this.TailY = TailY;
-    
-    this.angle1 = angle1;
-    this.angle2 = angle2;
-    this.angle3 = angle3;
-    this.angle4 = angle4;
-    this.angle5 = angle5;
-    this.angle6 = angle6;
-    this.angle7 = angle7;
-    this.angle8 = angle8;
-    this.angle9 = angle9;
-
-    this.Weight = Weight;
-    this.Space = Space;
-    this.Time = Time;
-    this.Flow = Flow;
-    this.Height = Height;
-}
-
-// combine ^^^ with vvv
-
-void makeNew()
-{
-    float NewJoint1x, NewJoint1y, NewJoint2x, NewJoint2y, NewJoint3x, NewJoint3y, NewJoint4x, NewJoint4y, NewJoint5x, NewJoint5y, NewJoint6x, NewJoint6y, NewJoint7x, NewJoint7y, NewJoint8x, NewJoint8y;
-    
-    //Offset shoulder+hip location for aesthetic in drawing
-    modShoulderLeftX = (random(-5, 5) + ShoulderLeftX);
-    modShoulderLeftY = (random(-5, 5) + ShoulderLeftY);
-    modShoulderRightX = (random(-5, 5) + ShoulderRightX);
-    modShoulderRightY = (random(-5, 5) + ShoulderRightY);
-    modHipsLeftX = (random(-5, 5) + HipsLeftX);
-    modHipsLeftY = (random(-5, 5) + HipsLeftY);
-    modHipsRightX = (random(-5, 5) + HipsRightX);
-    modHipsRightY = (random(-5,5) + HipsRightY);
-    
-    //generate random angles for joints: shoulder and hip locations affect elbow and knees
-    angle1 = random(0,360);
-    angle2 = random(0,180);
-    angle3 = random(0,360);
-    angle4 = random(0,180);
-    angle5 = random(0,360);
-    angle6 = random(0,180);
-    angle7 = random(0,360);
-    angle8 = random(0,180);
-    angle9 = random(0,180);
-    
-    //LArm
-    //create polar coordinates to adjust elbow and wrist locations
-    NewJoint1x = (cos(angle1) * radius);
-    NewJoint1y = (sin(angle1) * radius);
-    NewJoint2x = (cos(angle2) * radius);
-    NewJoint2y = (sin(angle2) * radius);
-    ElbowLeftX = ShoulderLeftX + NewJoint1x;
-    ElbowLeftY = ShoulderLeftY + NewJoint1y;
-    WristLeftX = ElbowLeftX + NewJoint2x;
-    WristLeftY = ElbowLeftY + NewJoint2y;
-    ShoulderLeftX = modShoulderLeftX;
-    ShoulderLeftY = modShoulderLeftY;
-    
-    //RArm
-    //create polar coordinate to adjust elbow and wrist locations
-    NewJoint3x = (cos(angle3) * radius);
-    NewJoint3y = (sin(angle3) * radius);
-    NewJoint4x = (cos(angle4) * radius);
-    NewJoint4y = (sin(angle4) * radius);
-    ElbowRightX = ShoulderRightX + NewJoint3x;
-    ElbowRightY = ShoulderRightY + NewJoint3y;
-    WristRightX = ElbowRightX + NewJoint4x;
-    WristRightY = ElbowRightY + NewJoint4y;
-    ShoulderRightX = modShoulderRightX;
-    ShoulderRightY = modShoulderRightY;
-    
-    //LLeg
-    //create polar coordinate to adjust elbow and wrist locations
-    NewJoint5x = (cos(angle5) * radius);
-    NewJoint5y = (sin(angle5) * radius);
-    NewJoint6x = (cos(angle6) * radius);
-    NewJoint6y = (sin(angle6) * radius);
-    KneeLeftX = HipsLeftX + NewJoint5x;
-    KneeLeftY = HipsLeftY + NewJoint5y;
-    FootLeftX = KneeLeftX + NewJoint6x;
-    FootLeftY = KneeLeftY + NewJoint6y;
-    HipsLeftX = modHipsLeftX;
-    HipsLeftY = modHipsLeftY;
-    
-    //RLeg
-    //create polar coordinate to adjust elbow and wrist locations
-    NewJoint7x = (cos(angle7) * radius);
-    NewJoint7y = (sin(angle7) * radius);
-    NewJoint8x = (cos(angle8) * radius);
-    NewJoint8y = (sin(angle8) * radius);
-    KneeRightX = HipsRightX + NewJoint7x;
-    KneeRightY = HipsRightY + NewJoint7y;
-    FootRightX = KneeRightX + NewJoint8x;
-    FootRightY = KneeRightY + NewJoint8y;
-    
-    
-    //Spine
-    //by controlling the curve a chest can be implied
-    NeckX = abs(HipsRightX - HipsLeftX) / 2 + HipsLeftX;
-    TailX = (abs(HipsRightX - HipsLeftX) / 2) + HipsLeftX;
-    
-    Weight = round(random(0, 1)); //(random(0.1, 0.2) * 100)
-    Space = round(random(0, 1));
-    Time = round(random(0, 1));
-    Flow = round(random(0, 1));
-    Height = round(random(0, 4));
-}
-
-void drawBody(void)
-{
-    //    noFill();
-    //    stroke(75);
-    
-    //LArm
-    //    strokeWeight(4);
-    //    line(modShoulderLeftX, modShoulderLeftY, ElbowLeftX, ElbowLeftY);
-    //    line(ElbowLeftX, ElbowLeftY, WristLeftX, WristLeftY);
-    //    strokeWeight(1);
-    //    ellipse(WristLeftX, WristLeftY, 10,10);
-    
-    //RArm
-    //    strokeWeight(4);
-    //    line(modShoulderRightX, modShoulderRightY, ElbowRightX, ElbowRightY);
-    //    line(ElbowRightX, ElbowRightY, WristRightX, WristRightY);
-    //    strokeWeight(1);
-    //    ellipse(WristRightX, WristRightY, 10,10);
-    
-    //    //LLeg
-    //    line(modHipsLeftX, modHipsLeftY, KneeLeftX, KneeLeftY);
-    //    line(KneeLeftX, KneeLeftY, FootLeftX, FootLeftY);
-    
-    //    //RLeg
-    //    line(modHipsRightX, modHipsRightY, KneeRightX, KneeRightY);
-    //    line(KneeRightX, KneeRightY, FootRightX, FootRightY);
-    
-    //    strokeWeight(2);
-    //    stroke(0);
-    
-    //    beginShape();
-    //    vertex ((random(-15, 15)+NeckX),(random(-15, 15)+ NeckY));
-    //    bezierVertex((random(-15, 15)+ NeckX), (random(-15, 15)+ NeckY), (random(-15, 15)+ TailX), (random(-15, 15)+ TailY),(random(-15, 15)+ TailX),(random(-15, 15)+ TailY));
-    //    endShape();
-    
-    //shoulder
-    //    beginShape();
-    //    vertex ((random(-15, 15)+ShoulderLeftX),(random(-15, 15)+ ShoulderLeftY));
-    //    bezierVertex((random(-15, 15)+ ShoulderLeftX), (random(-15, 15)+ ShoulderLeftY), (random(-15, 15)+ ShoulderRightX), (random(-15, 15)+ ShoulderRightY),(random(-15, 15)+ ShoulderRightX),(random(-15, 15)+ ShoulderRightY));
-    //    endShape();
-    
-    //hips
-    //    beginShape();
-    //    vertex ((random(-15, 15)+HipsLeftX),(random(-15, 15)+ HipsLeftY));
-    //    bezierVertex((random(-15, 15)+ HipsLeftX), (random(-15, 15)+ HipsLeftY), (random(-15, 15)+ HipsRightX), (random(-15, 15)+ HipsRightY),(random(-15, 15)+ HipsRightX),(random(-15, 15)+ HipsRightY));
-    //    endShape();
-    
-    //    fill(0);
-    //    if (Weight == 1){
-    //        Weight1 = "Strong";
-    //    }
-    //    else{
-    //        Weight1 = "Light";
-    //    }
-    //
-    //    if (Space == 1){
-    //        Space1 = "Direct";
-    //    }
-    //    else{
-    //        Space1 = "Indirect";
-    //    }
-    //
-    //    if (Time == 1){
-    //        Time1 = "Sudden";
-    //    }
-    //    else{
-    //        Time1 = "Sustained";
-    //    }
-    //
-    //    if (Flow == 1){
-    //        Flow1 = "Bound";
-    //    }
-    //    else{
-    //        Flow1 = "Free";
-    //    }
-    //
-    //    if (Height == 0){
-    //        Height1 = "Low";
-    //    }
-    //    else if (Height == 1){
-    //        Height1 = "Mid-Low";
-    //    }
-    //    else if (Height == 2){
-    //        Height1 = "Middle";
-    //    }
-    //    else if (Height == 3){
-    //        Height1 = "Mid-High";
-    //    }
-    //    else{
-    //        Height1 = "High";
-    //    }
-    
-}
-}
-#endif//0

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */; };
 		DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */; };
+		DF8B4E321B31DA1900825935 /* ScuddleCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +31,8 @@
 		DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleBody.h; sourceTree = SOURCE_ROOT; };
 		DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleDataTypes.h; sourceTree = SOURCE_ROOT; };
 		DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleMain.cpp; sourceTree = SOURCE_ROOT; };
+		DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleCommon.cpp; sourceTree = SOURCE_ROOT; };
+		DF8B4E311B31DA1900825935 /* ScuddleCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleCommon.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -65,6 +68,8 @@
 				DF8B4E281B30D7AB00825935 /* README.md */,
 				DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */,
 				DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */,
+				DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */,
+				DF8B4E311B31DA1900825935 /* ScuddleCommon.h */,
 				DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */,
 				DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */,
 			);
@@ -127,6 +132,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF8B4E321B31DA1900825935 /* ScuddleCommon.cpp in Sources */,
 				DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */,
 				DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */,
 			);
