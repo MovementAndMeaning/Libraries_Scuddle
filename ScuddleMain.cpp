@@ -253,7 +253,7 @@ static void makeSelection(void)
 static void doCrossovers(void)
 {
 #if defined(PRINT_VALUES_)
-    std::cout << "Doing crossover." << std::endl;
+    std::cout << "Doing crossovers." << std::endl;
 #endif // defined(PRINT_VALUES_)
     // We have an initial population, from the previous generation, and we will create two new
     // 'children' for each parent pair.
@@ -318,16 +318,17 @@ static void doCrossovers(void)
 } // doCrossovers
 
 /*! @brief Mutate some of the objects. */
-static void doMutate(void)
+static void doMutations(void)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing mutations." << std::endl;
 #endif // defined(PRINT_VALUES_)
     // Mark the objects to be mutated:
-    for (size_t ii = 0, imax = static_cast<size_t>(kMutationFraction * lPopulation->size());
-         imax > ii;)
+    for (size_t ii = 0, jmax = lPopulation->size(),
+         imax = static_cast<size_t>(kMutationFraction * jmax); imax > ii;)
     {
-        Body * aBody = (*lPopulation)[ii];
+        size_t jj = RandUnsignedInRange(jmax - 1);
+        Body * aBody = (*lPopulation)[jj];
         
         if (aBody && (! aBody->isMarked()))
         {
@@ -342,9 +343,10 @@ static void doMutate(void)
         if (aBody && aBody->isMarked())
         {
             aBody->mutate();
+            aBody->clearMark();
         }
     }
-} // doMutate
+} // doMutations
 
 /*! @brief Make the final selections. */
 static void makeFinalSelection(void)
@@ -433,7 +435,7 @@ int main(int            argc,
         calculateFitnessValues();
         makeSelection();
         doCrossovers();
-        doMutate();
+        doMutations();
     }
     makeFinalSelection();
 #if defined(PRINT_VALUES_)
