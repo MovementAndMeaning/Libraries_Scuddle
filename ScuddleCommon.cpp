@@ -59,6 +59,10 @@ using namespace Scuddle;
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
 
+/*! @brief The clip range for the random number generator - must be less than the output range of
+ the rand() function. */
+static const int kModulus = 1000;
+
 /*! @brief @c true if the value for PI has been set and @c false otherwise. */
 static bool lPiSet = false;
 
@@ -67,10 +71,6 @@ static bool lRandomSeeded = false;
 
 /*! @brief The value of PI. */
 static realType lPi = 3.14159265;
-
-/*! @brief The clip range for the random number generator - must be less than the output range of
- the rand() function. */
-static const int kModulus = 1000;
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
