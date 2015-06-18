@@ -83,8 +83,8 @@ static const size_t kNumAttributes = 13;
 
 static Coordinate2D generateRandomPerturbation(void)
 {
-    Coordinate2D result(RandInRange(- kPerturbation, kPerturbation),
-                        RandInRange(- kPerturbation, kPerturbation));
+    Coordinate2D result(RandRealInRange(- kPerturbation, kPerturbation),
+                        RandRealInRange(- kPerturbation, kPerturbation));
 
     return result;
 } // generateRandomPerturbation
@@ -129,16 +129,6 @@ static int mapAngleToQuadrant(const realType angle,
     return result;
 } // mapAngleToQuadrant
 
-/*! @brief Compare two floating-point numbers and determine if they are very close in value.
- @param firstValue The first value to compare.
- @param secondValue The second value to compare.
- @returns @c true if the two values are within epsilon of each other and @c false otherwise. */
-static inline bool reallyClose(const realType firstValue,
-                               const realType secondValue)
-{
-    return (std::abs(firstValue - secondValue) < gEpsilon);
-} // reallyClose
-
 #if defined(__APPLE__)
 # pragma mark Class methods
 #endif // defined(__APPLE__)
@@ -147,48 +137,23 @@ static inline bool reallyClose(const realType firstValue,
 # pragma mark Constructors and Destructors
 #endif // defined(__APPLE__)
 
-Body::Body(void) :
-    _leftElbow(), _leftFoot(), _leftHip(), _leftKnee(), _leftShoulder(), _leftWrist(), _neck(),
-    _rightElbow(), _rightFoot(), _rightHip(), _rightKnee(), _rightShoulder(), _rightWrist(),
-    _tail(), _leftElbowToWristQuadrant(-1), _leftHipToKneeQuadrant(-1), _leftKneeToFootQuadrant(-1),
-    _leftShoulderToElbowQuadrant(-1), _quadrantScore(-1), _rightElbowToWristQuadrant(-1),
-    _rightHipToKneeQuadrant(-1), _rightKneeToFootQuadrant(-1), _rightShoulderToElbowQuadrant(-1),
-    _leftElbowToWristAngle(0), _leftHipToKneeAngle(0), _leftKneeToFootAngle(0),
-    _leftShoulderToElbowAngle(0), _rightElbowToWristAngle(0), _rightHipToKneeAngle(0),
-    _rightKneeToFootAngle(0), _rightShoulderToElbowAngle(0), _flow(kFlowFree), _height(kHeightLow),
-    _space(kSpaceIndirect), _time(kTimeSustained), _weight(kWeightLight)
-{
-} // Body::Body
-
-Body::Body(const Coordinate2D & leftElbow,
-           const Coordinate2D & leftFoot,
-           const Coordinate2D & leftHip,
-           const Coordinate2D & leftKnee,
+Body::Body(const Coordinate2D & leftHip,
            const Coordinate2D & leftShoulder,
-           const Coordinate2D & leftWrist,
            const Coordinate2D & neck,
-           const Coordinate2D & rightElbow,
-           const Coordinate2D & rightFoot,
            const Coordinate2D & rightHip,
-           const Coordinate2D & rightKnee,
            const Coordinate2D & rightShoulder,
-           const Coordinate2D & rightWrist,
            const Coordinate2D & tail) :
-    _leftElbow(leftElbow), _leftFoot(leftFoot), _leftHip(leftHip), _leftKnee(leftKnee),
-    _leftShoulder(leftShoulder), _leftWrist(leftWrist), _neck(neck), _rightElbow(rightElbow),
-    _rightFoot(rightFoot), _rightHip(rightHip), _rightKnee(rightKnee),
-    _rightShoulder(rightShoulder), _rightWrist(rightWrist), _tail(tail), _marked(false)
+    _initLeftHip(leftHip), _initLeftShoulder(leftShoulder), _initRightHip(rightHip),
+    _initRightShoulder(rightShoulder), _neck(neck), _tail(tail), _marked(false)
 {
-    perturb();
+    setAttributes();
+    setPositions();
 } // Body::Body
 
 Body::Body(const Body & other) :
-    _leftElbow(other._leftElbow), _leftFoot(other._leftFoot), _leftHip(other._leftHip),
-    _leftKnee(other._leftKnee), _leftShoulder(other._leftShoulder), _leftWrist(other._leftWrist),
-    _neck(other._neck), _rightElbow(other._rightElbow), _rightFoot(other._rightFoot),
-    _rightHip(other._rightHip), _rightKnee(other._rightKnee),
-    _rightShoulder(other._rightShoulder), _rightWrist(other._rightWrist), _tail(other._tail),
-    _leftElbowToWristAngle(other._leftElbowToWristAngle),
+    _initLeftHip(other._initLeftHip), _initLeftShoulder(other._initLeftShoulder),
+    _initRightHip(other._initRightHip), _initRightShoulder(other._initRightShoulder),
+    _neck(other._neck), _tail(other._tail), _leftElbowToWristAngle(other._leftElbowToWristAngle),
     _leftHipToKneeAngle(other._leftHipToKneeAngle),
     _leftKneeToFootAngle(other._leftKneeToFootAngle),
     _leftShoulderToElbowAngle(other._leftShoulderToElbowAngle),
@@ -199,7 +164,7 @@ Body::Body(const Body & other) :
     _height(other._height), _space(other._space), _time(other._time), _weight(other._weight),
     _marked(false)
 {
-    perturb();
+    setPositions();
 } // Body::Body
 
 Body::~Body(void)
@@ -233,9 +198,9 @@ void Body::determineQuadrants(void)
 void Body::mutate(void)
 {
     // There are eight angles that can be mutated - pick one!
-    realType distalValue = DegreesToRadians(RandInRange(0, 180));
-    realType medialValue = DegreesToRadians(RandInRange(0, 360));
-    size_t   whichAngle = static_cast<size_t>(RandInRange(0, kNumAngles));
+    realType distalValue = RandomAngle(180);
+    realType medialValue = RandomAngle(360);
+    size_t   whichAngle = RandUnsignedInRange(kNumAngles - 1);
     
     switch (whichAngle)
     {
@@ -267,52 +232,35 @@ void Body::mutate(void)
             _rightHipToKneeAngle = medialValue;
             break;
             
-        case 7 :
+        case 7 : // This is (kNumAngles - 1).
             _rightKneeToFootAngle = distalValue;
             break;
             
         default :
+            // Should NEVER get here!!!
             break;
             
     }
+    setPositions();
 } // Body::mutate
 
-void Body::perturb(void)
+void Body::setAttributes(void)
 {
     // Generate random angles for joints: shoulder and hip locations affect elbow and knees.
-    _leftShoulderToElbowAngle = DegreesToRadians(RandInRange(0, 360));
-    _leftElbowToWristAngle = DegreesToRadians(RandInRange(0, 180));
-    _rightShoulderToElbowAngle = DegreesToRadians(RandInRange(0, 360));
-    _rightElbowToWristAngle = DegreesToRadians(RandInRange(0, 180));
-    _leftHipToKneeAngle = DegreesToRadians(RandInRange(0, 360));
-    _leftKneeToFootAngle = DegreesToRadians(RandInRange(0, 180));
-    _rightHipToKneeAngle = DegreesToRadians(RandInRange(0, 360));
-    _rightKneeToFootAngle = DegreesToRadians(RandInRange(0, 180));
+    _leftShoulderToElbowAngle = RandomAngle(360);
+    _leftElbowToWristAngle = RandomAngle(180);
+    _rightShoulderToElbowAngle = RandomAngle(360);
+    _rightElbowToWristAngle = RandomAngle(180);
+    _leftHipToKneeAngle = RandomAngle(360);
+    _leftKneeToFootAngle = RandomAngle(180);
+    _rightHipToKneeAngle = RandomAngle(360);
+    _rightKneeToFootAngle = RandomAngle(180);
     
-    _leftElbow = _leftShoulder + std::polar(kJointRadius, _leftShoulderToElbowAngle);
-    _leftWrist = _leftElbow + std::polar(kJointRadius, _leftElbowToWristAngle);
-    _leftShoulder += generateRandomPerturbation();
-
-    _rightElbow = _rightShoulder + std::polar(kJointRadius, _rightShoulderToElbowAngle);
-    _rightWrist = _rightElbow + std::polar(kJointRadius, _rightElbowToWristAngle);
-    _rightShoulder += generateRandomPerturbation();
-    
-    _leftKnee = _leftHip + std::polar(kJointRadius, _leftHipToKneeAngle);
-    _leftFoot = _leftKnee + std::polar(kJointRadius, _leftKneeToFootAngle);
-    _leftHip += generateRandomPerturbation();
-
-    _rightKnee = _rightHip + std::polar(kJointRadius, _rightHipToKneeAngle);
-    _rightFoot = _rightKnee + std::polar(kJointRadius, _rightKneeToFootAngle);
-    _rightHip += generateRandomPerturbation();
-    realType centre = _leftHip.real() + (std::abs(_rightHip.real() - _leftHip.real()) / 2);
-    
-    _neck.real(centre);
-    _tail.real(centre);
-    _flow = ((0.5 <= RandInRange(0, 1)) ? kFlowBound : kFlowFree);
-    _space = ((0.5 <= RandInRange(0, 1)) ? kSpaceDirect : kSpaceIndirect);
-    _time = ((0.5 <= RandInRange(0, 1)) ? kTimeSudden : kTimeSustained);
-    _weight = ((0.5 <= RandInRange(0, 1)) ? kWeightStrong : kWeightLight);
-    realType aNumb = RandInRange(0, 1);
+    _flow = ((0.5 <= RandRealInRange(0, 1)) ? kFlowBound : kFlowFree);
+    _space = ((0.5 <= RandRealInRange(0, 1)) ? kSpaceDirect : kSpaceIndirect);
+    _time = ((0.5 <= RandRealInRange(0, 1)) ? kTimeSudden : kTimeSustained);
+    _weight = ((0.5 <= RandRealInRange(0, 1)) ? kWeightStrong : kWeightLight);
+    realType aNumb = RandRealInRange(0, 1);
     
     if (0.8 <= aNumb)
     {
@@ -334,7 +282,27 @@ void Body::perturb(void)
     {
         _height = kHeightLow;
     }
-} // Body::perturb
+} // Body::setAttributes
+
+void Body::setPositions(void)
+{
+    _leftElbow = _initLeftShoulder + std::polar(kJointRadius, _leftShoulderToElbowAngle);
+    _leftWrist = _leftElbow + std::polar(kJointRadius, _leftElbowToWristAngle);
+    _leftShoulder = _initLeftShoulder + generateRandomPerturbation();
+    _rightElbow = _initRightShoulder + std::polar(kJointRadius, _rightShoulderToElbowAngle);
+    _rightWrist = _rightElbow + std::polar(kJointRadius, _rightElbowToWristAngle);
+    _rightShoulder = _initRightShoulder + generateRandomPerturbation();
+    _leftKnee = _initLeftHip + std::polar(kJointRadius, _leftHipToKneeAngle);
+    _leftFoot = _leftKnee + std::polar(kJointRadius, _leftKneeToFootAngle);
+    _leftHip = _initLeftHip + generateRandomPerturbation();
+    _rightKnee = _initRightHip + std::polar(kJointRadius, _rightHipToKneeAngle);
+    _rightFoot = _rightKnee + std::polar(kJointRadius, _rightKneeToFootAngle);
+    _rightHip = _initRightHip + generateRandomPerturbation();
+    realType centre = _leftHip.real() + (std::abs(_rightHip.real() - _leftHip.real()) / 2);
+    
+    _neck.real(centre);
+    _tail.real(centre);
+} // Body::setPositions
 
 void Body::swapValues(Body &       other,
                       const size_t numSwap)
@@ -355,7 +323,7 @@ void Body::swapValues(Body &       other,
     
     for (bool tryAgain = true; tryAgain; )
     {
-        size_t anIndex = static_cast<size_t>(RandInRange(0, kNumAttributes));
+        size_t anIndex = RandUnsignedInRange(kNumAttributes - 1);
         
         tryAgain = false;
         for (std::vector<size_t>::iterator walker(indices.begin()); indices.end() != walker;
@@ -377,8 +345,7 @@ void Body::swapValues(Body &       other,
             }
         }
     }
-    for (std::vector<size_t>::iterator walker(indices.begin()); indices.end() != walker;
-         ++walker)
+    for (std::vector<size_t>::iterator walker(indices.begin()); indices.end() != walker; ++walker)
     {
         switch (*walker)
         {
@@ -430,15 +397,18 @@ void Body::swapValues(Body &       other,
                 std::swap(_flow, other._flow);
                 break;
                 
-            case 12 :
+            case 12 : // This is (kNumAttributes - 1).
                 std::swap(_height, other._height);
                 break;
                 
             default :
+                // Should NEVER get here!!!
                 break;
                 
         }
     }
+    setPositions();
+    other.setPositions();
 } // Body::swapValues
 
 void Body::updateFitness(void)
@@ -501,12 +471,12 @@ void Body::updateFitness(void)
     {
         percentageEffort = 0.6;
     }
-    else if ((reallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
-              reallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
-             (reallyClose(MapWeightToReal(_weight), MapTimeToReal(_time)) &&
-              reallyClose(MapSpaceToReal(_space), MapFlowToReal(_flow))) ||
-             (reallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
-              reallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
+    else if ((ReallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
+              ReallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
+             (ReallyClose(MapWeightToReal(_weight), MapTimeToReal(_time)) &&
+              ReallyClose(MapSpaceToReal(_space), MapFlowToReal(_flow))) ||
+             (ReallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
+              ReallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
     {
         percentageEffort = 1.2;
     }

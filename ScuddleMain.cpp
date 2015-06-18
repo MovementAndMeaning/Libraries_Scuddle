@@ -66,47 +66,23 @@ using namespace Scuddle;
 
 typedef std::vector<Body *> BodyVector;
 
-/*! @brief The initial position of the left elbow for new Body objects. */
-static const Coordinate2D lLeftElbow(90, 140);
-
-/*! @brief The initial position of the left foot for new Body objects. */
-static const Coordinate2D lLeftFoot(70, 290);
-
 /*! @brief The initial position of the left side of the hips for new Body objects. */
-static const Coordinate2D lLeftHip(120, 220);
-
-/*! @brief The initial position of the left knee for new Body objects. */
-static const Coordinate2D lLeftKnee(120, 280);
+static const Coordinate2D kLeftHip(120, 220);
 
 /*! @brief The initial position of the left shoulder for new Body objects. */
-static const Coordinate2D lLeftShoulder(110, 100);
-
-/*! @brief The initial position of the left wrist for new Body objects. */
-static const Coordinate2D lLeftWrist(110, 200);
+static const Coordinate2D kLeftShoulder(110, 100);
 
 /*! @brief The initial position of the neck for new Body objects. */
-static const Coordinate2D lNeck(155, 110);
-
-/*! @brief The initial position of the right elbow for new Body objects. */
-static const Coordinate2D lRightElbow(230, 145);
-
-/*! @brief The initial position of the right foot for new Body objects. */
-static const Coordinate2D lRightFoot(190, 340);
+static const Coordinate2D kNeck(155, 110);
 
 /*! @brief The initial position of the right side of the hips for new Body objects. */
-static const Coordinate2D lRightHip(190, 220);
-
-/*! @brief The initial position of the right knee for new Body objects. */
-static const Coordinate2D lRightKnee(190, 280);
+static const Coordinate2D kRightHip(190, 220);
 
 /*! @brief The initial position of the right shoulder for new Body objects. */
-static const Coordinate2D lRightShoulder(200, 100);
-
-/*! @brief The initial position of the right wrist for new Body objects. */
-static const Coordinate2D lRightWrist(260, 120);
+static const Coordinate2D kRightShoulder(200, 100);
 
 /*! @brief The initial position of the 'tail' for new Body objects. */
-static const Coordinate2D lTail(155, 210);
+static const Coordinate2D kTail(155, 210);
 
 /*! @brief The number of selections to present when finished. */
 static const int kFinalSelectionCount = 5;
@@ -123,11 +99,14 @@ static const realType kMutationFraction = 0.10;
 /*! @brief The fraction of the set of Body objects that are selected. */
 static const realType kSelectionFraction = 0.20;
 
+/*! @brief The number of attributes to swap. */
+static const size_t kCrossoverCount = 2;
+
 /*! @brief The set of Body objects that are worked on. */
-static BodyVector lPopulation;
+static BodyVector * lPopulation = nullptr;
 
 /*! @brief The set of Body objects that have been selected. */
-static BodyVector lSelection;
+static BodyVector * lSelection = nullptr;
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -143,16 +122,13 @@ static void calculateFitnessValues(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Calculating fitness." << std::endl;
 #endif // defined(PRINT_VALUES_)
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
         
         if (aBody)
         {
             aBody->updateFitness();
-#if defined(PRINT_VALUES_)
-            std::cout << " Fitness score = " << aBody->getFitnessScore() << std::endl;
-#endif // defined(PRINT_VALUES_)
         }
     }
 } // calculateFitnessValues
@@ -163,7 +139,7 @@ static void cleanup(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Cleaning up." << std::endl;
 #endif // defined(PRINT_VALUES_)
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
         
@@ -172,8 +148,10 @@ static void cleanup(void)
             delete aBody;
         }
     }
-    lPopulation.clear();
-    lSelection.clear();
+    lPopulation->clear();
+    lSelection->clear();
+    delete lPopulation;
+    delete lSelection;
 } // cleanup
 
 /*! @brief Create a set of Body objects to work with. */
@@ -184,11 +162,9 @@ static void generateBodies(void)
 #endif // defined(PRINT_VALUES_)
     for (int ii = 0; kPopulationSize > ii; ++ii)
     {
-        Body * aBody = new Body(lLeftElbow, lLeftFoot, lLeftHip, lLeftKnee, lLeftShoulder,
-                                lLeftWrist, lNeck, lRightElbow, lRightFoot, lRightHip, lRightKnee,
-                                lRightShoulder, lRightWrist, lTail);
+        Body * aBody = new Body(kLeftHip, kLeftShoulder, kNeck, kRightHip, kRightShoulder, kTail);
         
-        lPopulation.push_back(aBody);
+        lPopulation->push_back(aBody);
 #if defined(PRINT_VALUES_)
         std::cout << RadiansToDegrees(aBody->getLeftShoulderToElbowAngle()) << "," <<
                     RadiansToDegrees(aBody->getLeftElbowToWristAngle()) << "," <<
@@ -212,7 +188,7 @@ static void mapQuadrants(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Mapping quadrants." << std::endl;
 #endif // defined(PRINT_VALUES_)
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
         
@@ -231,7 +207,7 @@ static void makeSelection(void)
 #endif // defined(PRINT_VALUES_)
     realType sumOfScore = 0;
     
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
         
@@ -240,14 +216,14 @@ static void makeSelection(void)
             sumOfScore += aBody->getFitnessScore();
         }
     }
-    lSelection.clear();
-    for (size_t ii = 0, imax = static_cast<size_t>(lPopulation.size() * kSelectionFraction);
+    lSelection->clear();
+    for (size_t ii = 0, imax = static_cast<size_t>(lPopulation->size() * kSelectionFraction);
          imax > ii; )
     {
         realType sumOfArrayIndices = 0;
-        realType chooseArray = RandInRange(0, sumOfScore);
+        realType chooseArray = RandRealInRange(0, sumOfScore);
         
-        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+        for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
              ++walker)
         {
             Body * aBody = *walker;
@@ -261,7 +237,7 @@ static void makeSelection(void)
                 {
                     aBody->setMark();
                     sumOfArrayIndices += score;
-                    lSelection.push_back(aBody);
+                    lSelection->push_back(aBody);
                     ++ii;
                 }
                 else
@@ -279,32 +255,23 @@ static void doCrossovers(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Doing crossover." << std::endl;
 #endif // defined(PRINT_VALUES_)
-    bool keepGoing;
-    
     // We have an initial population, from the previous generation, and we will create two new
     // 'children' for each parent pair.
     // Remove all the objects that are not propagating forward, which are unmarked - the selection
     // vector has pointers to the marked ones.
-    do
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
     {
-        keepGoing = false;
-        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
-             ++walker)
+        Body * aBody = *walker;
+        
+        if (aBody && (! aBody->isMarked()))
         {
-            Body * aBody = *walker;
-            
-            if (aBody && (! aBody->isMarked()))
-            {
-                lPopulation.erase(walker);
-                keepGoing = true;
-                break;
-            }
-            
+            delete aBody;
         }
     }
-    while (keepGoing);
+    *lPopulation = *lSelection;
     // Clear the marks!
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
          ++walker)
     {
         Body * aBody = *walker;
@@ -314,24 +281,24 @@ static void doCrossovers(void)
             aBody->clearMark();
         }
     }
-    for (keepGoing = true; keepGoing; )
+    for (bool keepGoing = true; keepGoing; )
     {
         // Pick two 'parent' objects:
-        size_t popSize = lPopulation.size() - 1;
-        size_t firstChoice = RandInRange(0, popSize);
+        size_t popSize = lPopulation->size();
+        size_t firstChoice = RandUnsignedInRange(popSize - 1);
         size_t secondChoice;
         
         for ( ; ; )
         {
-            secondChoice = RandInRange(0, popSize);
+            secondChoice = RandUnsignedInRange(popSize - 1);
             if (firstChoice != secondChoice)
             {
                 break;
             }
             
         }
-        Body * firstParent = lPopulation[firstChoice];
-        Body * secondParent = lPopulation[secondChoice];
+        Body * firstParent = (*lPopulation)[firstChoice];
+        Body * secondParent = (*lPopulation)[secondChoice];
         
         if (firstParent && secondParent)
         {
@@ -339,10 +306,10 @@ static void doCrossovers(void)
             Body * secondChild = new Body(*secondParent);
             
             // Crossover an attribute:
-            lPopulation.push_back(firstChild);
-            lPopulation.push_back(secondChild);
-            firstChild->swapValues(*secondChild, 2);
-            if (kPopulationSize <= lPopulation.size())
+            lPopulation->push_back(firstChild);
+            lPopulation->push_back(secondChild);
+            firstChild->swapValues(*secondChild, kCrossoverCount);
+            if (kPopulationSize <= lPopulation->size())
             {
                 keepGoing = false;
             }
@@ -357,10 +324,10 @@ static void doMutate(void)
     std::cout << "Doing mutations." << std::endl;
 #endif // defined(PRINT_VALUES_)
     // Mark the objects to be mutated:
-    for (size_t ii = 0, imax = static_cast<size_t>(kMutationFraction * lPopulation.size());
+    for (size_t ii = 0, imax = static_cast<size_t>(kMutationFraction * lPopulation->size());
          imax > ii;)
     {
-        Body * aBody = lPopulation[ii];
+        Body * aBody = (*lPopulation)[ii];
         
         if (aBody && (! aBody->isMarked()))
         {
@@ -368,7 +335,7 @@ static void doMutate(void)
             ++ii;
         }
     }
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker; ++walker)
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
         
@@ -384,7 +351,7 @@ static void makeFinalSelection(void)
 {
     realType sumOfScore = 0;
     
-    for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
          ++walker)
     {
         Body * aBody = *walker;
@@ -394,14 +361,14 @@ static void makeFinalSelection(void)
             sumOfScore += aBody->getFitnessScore();
         }
     }
-    lSelection.clear();
-    lSelection.resize(kFinalSelectionCount);
+    lSelection->clear();
+    lSelection->resize(kFinalSelectionCount);
     for (size_t ii = 0, imax = kFinalSelectionCount; imax > ii; ++ii)
     {
         realType sumOfArrayIndices = 0;
-        realType chooseArray = RandInRange(0, sumOfScore);
+        realType chooseArray = RandRealInRange(0, sumOfScore);
         
-        for (BodyVector::iterator walker(lPopulation.begin()); lPopulation.end() != walker;
+        for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
              ++walker)
         {
             Body * aBody = *walker;
@@ -414,7 +381,7 @@ static void makeFinalSelection(void)
                     (chooseArray < (sumOfArrayIndices + score)))
                 {
                     sumOfArrayIndices += score;
-                    lSelection[ii] = aBody;
+                    (*lSelection)[ii] = aBody;
                 }
                 else
                 {
@@ -447,9 +414,18 @@ static void makeFinalSelection(void)
  @param argc The number of arguments in 'argv'.
  @param argv The arguments to be used with the application.
  @returns @c 0 on a successful test and @c 1 on failure. */
+#if (! defined(__APPLE__))
+# pragma warning(push)
+# pragma warning(disable: 4100)
+#endif // ! defined(__APPLE__)
 int main(int            argc,
          const char * * argv)
 {
+#if defined(__APPLE__)
+# pragma unused(argc, argv)
+#endif // defined(__APPLE__)
+    lPopulation = new BodyVector;
+    lSelection = new BodyVector;
     generateBodies();
     for (int kk = 0; kIterationCount > kk; ++kk)
     {
@@ -461,7 +437,7 @@ int main(int            argc,
     }
     makeFinalSelection();
 #if defined(PRINT_VALUES_)
-    for (BodyVector::iterator walker(lSelection.begin()); lSelection.end() != walker;
+    for (BodyVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
          ++walker)
     {
         Body * aBody = *walker;
@@ -488,3 +464,6 @@ int main(int            argc,
     cleanup();
     return 0;
 } // main
+#if (! defined(__APPLE__))
+# pragma warning(pop)
+#endif // ! defined(__APPLE__)

@@ -70,7 +70,7 @@ static realType lPi = 3.14159265;
 
 /*! @brief The clip range for the random number generator - must be less than the output range of
  the rand() function. */
-static const int kModulus = 100000;
+static const int kModulus = 1000;
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -158,7 +158,7 @@ FlowQuality Scuddle::MapRealToFlow(const realType aValue)
 {
     FlowQuality result;
     
-    if (1 <= (aValue + gEpsilon))
+    if (ReallyClose(aValue, 1))
     {
         result = kFlowBound;
     }
@@ -173,19 +173,19 @@ HeightValue Scuddle::MapRealToHeight(const realType aValue)
 {
     HeightValue result;
     
-    if (4 <= (aValue + gEpsilon))
+    if (ReallyClose(aValue, 4))
     {
         result = kHeightHigh;
     }
-    else if (3 <= (aValue + gEpsilon))
+    else if (ReallyClose(aValue, 3))
     {
         result = kHeightMidHigh;
     }
-    else if (2 <= (aValue + gEpsilon))
+    else if (ReallyClose(aValue, 2))
     {
         result = kHeightMiddle;
     }
-    else if (1 <= (aValue + gEpsilon))
+    else if (ReallyClose(aValue, 1))
     {
         result = kHeightMidLow;
     }
@@ -200,7 +200,7 @@ SpaceQuality Scuddle::MapRealToSpace(const realType aValue)
 {
     SpaceQuality result;
     
-    if (1 <= (aValue + gEpsilon))
+    if (ReallyClose(aValue, 1))
     {
         result = kSpaceDirect;
     }
@@ -215,7 +215,7 @@ TimeQuality Scuddle::MapRealToTime(const realType aValue)
 {
     TimeQuality result;
     
-    if (1 <= (aValue + gEpsilon))
+    if (ReallyClose(aValue, 1))
     {
         result = kTimeSudden;
     }
@@ -230,7 +230,7 @@ WeightQuality Scuddle::MapRealToWeight(const realType aValue)
 {
     WeightQuality result;
     
-    if (1 <= (aValue + gEpsilon))
+    if (ReallyClose(aValue, 1))
     {
         result = kWeightStrong;
     }
@@ -305,8 +305,13 @@ realType Scuddle::RadiansToDegrees(const realType inAngle)
     return (180 * inAngle / lPi);
 } // Scuddle::RadiansToDegrees
 
-realType Scuddle::RandInRange(const realType lowValue,
-                              const realType highValue)
+realType Scuddle::RandomAngle(const realType maxAngle)
+{
+    return DegreesToRadians(RandRealInRange(0, maxAngle));
+} // Scuddle::RandomAngle
+
+realType Scuddle::RandRealInRange(const realType lowValue,
+                                  const realType highValue)
 {
     realType randNumb;
     
@@ -319,6 +324,23 @@ realType Scuddle::RandInRange(const realType lowValue,
 #endif // ! defined(__APPLE__)
         lRandomSeeded = true;
     }
-    randNumb = (static_cast<realType>(rand() % kModulus) / kModulus);
+    randNumb = (static_cast<realType>(rand() % kModulus) / (kModulus - 1));
     return (lowValue + (randNumb * (highValue - lowValue)));
-} // Scuddle::RandInRange
+} // Scuddle::RandRealInRange
+
+size_t Scuddle::RandUnsignedInRange(const size_t highValue)
+{
+    realType fraction = (1.0 / (highValue + 1));
+    realType randNumb = RandRealInRange(0, 1);
+    // We need to convert this value into a bucket, so that all the integers in the range
+    // 0...highValue, inclusively, are permitted.
+    size_t   bucket = static_cast<size_t>((randNumb / fraction) + gEpsilon);
+    
+    return bucket;
+} // Scuddle::RandUnsignedInRange
+
+bool Scuddle::ReallyClose(const realType firstValue,
+                          const realType secondValue)
+{
+    return (std::abs(firstValue - secondValue) < gEpsilon);
+} // Scuddle::ReallyClose

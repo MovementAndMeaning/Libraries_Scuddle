@@ -64,33 +64,17 @@ namespace Scuddle
     public :
         
         /*! @brief The constructor.
-         @param leftElbow The initial coordinates of the left elbow.
-         @param leftFoot The initial coordinates of the left foot.
          @param leftHip The initial coordinates of the left side of the hips.
-         @param leftKnee The initial coordinates of the left knee.
          @param leftShoulder The initial coordinates of the left shoulder.
-         @param leftWrist The initial coordinates of the left wrist.
          @param neck The initial coordinates of the neck.
-         @param rightElbow The initial coordinates of the right elbow.
-         @param rightFoot The initial coordinates of the right foot.
          @param rightHip The initial coordinates of the right side of the hips.
-         @param rightKnee The initial coordinates of the right knee.
          @param rightShoulder The initial coordinates of the right shoulder.
-         @param rightWrist The initial coordinates of the right wrist.
          @param tail The initial coordinates of the 'tail. */
-        Body(const Coordinate2D & leftElbow,
-             const Coordinate2D & leftFoot,
-             const Coordinate2D & leftHip,
-             const Coordinate2D & leftKnee,
+        Body(const Coordinate2D & leftHip,
              const Coordinate2D & leftShoulder,
-             const Coordinate2D & leftWrist,
              const Coordinate2D & neck,
-             const Coordinate2D & rightElbow,
-             const Coordinate2D & rightFoot,
              const Coordinate2D & rightHip,
-             const Coordinate2D & rightKnee,
              const Coordinate2D & rightShoulder,
-             const Coordinate2D & rightWrist,
              const Coordinate2D & tail);
 
         /*! @brief The copy constructor.
@@ -431,14 +415,29 @@ namespace Scuddle
         /*! @brief The constructor. */
         Body(void);
         
-        /*! @brief Tweak the values of the newly-constructed object. */
-        void perturb(void);
+        /*! @brief Set the attributes to random values. */
+        void setAttributes(void);
+        
+        /*! @brief Set the joint positions from the angles. */
+        void setPositions(void);
         
     public :
     
     protected :
     
     private :
+        
+        /*! @brief The initial position of the left side of the hips. */
+        Coordinate2D _initLeftHip;
+
+        /*! @brief The initial position of the left shoulder. */
+        Coordinate2D _initLeftShoulder;
+        
+        /*! @brief The initial position of the right side of the hips. */
+        Coordinate2D _initRightHip;
+        
+        /*! @brief The initial position of the right shoulder. */
+        Coordinate2D _initRightShoulder;
         
         /*! @brief The position of the left elbow. */
         Coordinate2D _leftElbow;

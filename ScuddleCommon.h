@@ -117,12 +117,29 @@ namespace Scuddle
      @returns The angle as degrees. */
     realType RadiansToDegrees(const realType inAngle);
 
+    /*! @brief Return a uniformly distributed random angle in the range 0..maxAngle, as radians.
+     @param maxAngle The upper bound for the output, in degrees.
+     @returns A uniformly distributed random angle in the range 0..maxAngle. */
+    realType RandomAngle(const realType maxAngle);
+    
     /*! @brief Return a uniformly distributed random number in the range lowValue..highValue.
      @param lowValue The lower bound for the output.
      @param highValue The upper bound for the output.
      @returns A uniformly distributed random number in the range lowValue..highValue. */
-    realType RandInRange(const realType lowValue,
-                         const realType highValue);
+    realType RandRealInRange(const realType lowValue,
+                             const realType highValue);
+
+    /*! @brief Return a uniformly distributed random number in the range 0..highValue.
+     @param highValue The upper bound for the output.
+     @returns A uniformly distributed random number in the range 0..highValue. */
+    size_t RandUnsignedInRange(const size_t highValue);
+
+    /*! @brief Compare two floating-point numbers and determine if they are very close in value.
+     @param firstValue The first value to compare.
+     @param secondValue The second value to compare.
+     @returns @c true if the two values are within epsilon of each other and @c false otherwise. */
+    bool ReallyClose(const realType firstValue,
+                     const realType secondValue);
 
     /*! @brief The comparison threshold used for conversion from floating-point numbers. */
     const realType gEpsilon = std::numeric_limits<realType>::epsilon();
