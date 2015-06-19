@@ -192,9 +192,17 @@ void Skeleton::setAttributes(const size_t numAngles)
 {
     for (size_t ii = 0; numAngles > ii; ++ii)
     {
-        _angles.push_back(RandomAngle(360));
         _quadrants.push_back(-1);
     }
+    _angles.resize(numAngles);
+    _angles[kLeftShoulderToElbow] = RandomAngle(360);
+    _angles[kLeftElbowToWrist] = RandomAngle(180);
+    _angles[kRightShoulderToElbow] = RandomAngle(360);
+    _angles[kRightElbowToWrist] = RandomAngle(180);
+    _angles[kLeftHipToKnee] = RandomAngle(360);
+    _angles[kLeftKneeToFoot] = RandomAngle(180);
+    _angles[kRightHipToKnee] = RandomAngle(360);
+    _angles[kRightKneeToFoot] = RandomAngle(180);
     _flow = ((0.5 <= RandRealInRange(0, 1)) ? kFlowBound : kFlowFree);
     _space = ((0.5 <= RandRealInRange(0, 1)) ? kSpaceDirect : kSpaceIndirect);
     _time = ((0.5 <= RandRealInRange(0, 1)) ? kTimeSudden : kTimeSustained);
