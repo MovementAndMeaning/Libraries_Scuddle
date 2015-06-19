@@ -72,6 +72,11 @@ typedef std::vector<Skeleton *> SkeletonVector;
 typedef std::vector<Body *> BodyVector;
 #endif // ! defined(USE_SKELETON_)
 
+#if defined(USE_SKELETON_)
+/*! @brief A sequence of indices of Skeleton objects. */
+typedef std::vector<int> IndexVector;
+#endif // defined(USE_SKELETON_)
+
 #if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the left side of the hips for new Body objects. */
 static const Coordinate2D kLeftHip(120, 220);
@@ -119,7 +124,7 @@ static const size_t kCrossoverCount = 2;
 
 #if defined(USE_SKELETON_)
 /*! @brief The number of angles in each Skeleton. */
-static const size_t kNumAngles = 38;
+static const size_t kNumDisplayedAngles = 31;
 #endif // defined(USE_SKELETON_)
 
 #if defined(USE_SKELETON_)
@@ -142,6 +147,10 @@ static SkeletonVector * lSelection = nullptr;
 #else // ! defined(USE_SKELETON_)
 /*! @brief The set of Body objects that have been selected. */
 static BodyVector * lSelection = nullptr;
+#endif // ! defined(USE_SKELETON_)
+
+#if defined(USE_SKELETON_)
+static IndexVector * lIndices = nullptr;
 #endif // ! defined(USE_SKELETON_)
 
 #if defined(__APPLE__)
@@ -213,19 +222,88 @@ static void cleanup(void)
     lPopulation->clear();
     lSelection->clear();
     delete lPopulation;
+    lPopulation = nullptr;
     delete lSelection;
+    lSelection = nullptr;
+#if defined(USE_SKELETON_)
+    delete lIndices;
+    lIndices = nullptr;
+#endif // defined(USE_SKELETON_)
 } // cleanup
+
+#if defined(USE_SKELETON_)
+/*! @brief Generate the mapping information for the quaternion outputs. */
+static void createMapForAngles(void)
+{
+    // DANGER!! DANGER!!
+    // Changing the CMU skeleton structure will break this!
+    for (size_t ii = 0; kNumDisplayedAngles > ii; ++ii)
+    {
+        int dispIndex;
+        
+        switch (ii)
+        {
+            case 1 :
+                dispIndex = Skeleton::kLeftHipToKnee;
+                break;
+                
+            case 4 :
+                dispIndex = Skeleton::kLeftKneeToFoot;
+                break;
+                
+            case 6 :
+                dispIndex = Skeleton::kRightHipToKnee;
+                break;
+                
+            case 9 :
+                dispIndex = Skeleton::kRightKneeToFoot;
+                break;
+                
+            case 17 :
+                dispIndex = Skeleton::kLeftShoulderToElbow;
+                break;
+                
+            case 19 :
+                dispIndex = Skeleton::kLeftElbowToWrist;
+                break;
+                
+            case 24 :
+                dispIndex = Skeleton::kRightShoulderToElbow;
+                break;
+                
+            case 26 :
+                dispIndex = Skeleton::kRightElbowToWrist;
+                break;
+                
+            default :
+                dispIndex = -1;
+                break;
+                
+        }
+        lIndices->push_back(dispIndex);
+    }
+} // createMapForAngles
+#endif // defined(USE_SKELETON_)
 
 #if defined(USE_SKELETON_)
 /*! @brief Print the parameters of a Skeleton object.
  @param aSkeleton The Skeleton object to be printed. */
 static void printSkeleton(Skeleton & aSkeleton)
 {
-    // kNumQuaternionsPerRow
-    for (size_t ii = 0, imax = aSkeleton.getNumAngles(), jj = 0; imax > ii; ++ii, ++jj)
+    for (size_t ii = 0, imax = lIndices->size(), jj = 0; imax > ii; ++ii, ++jj)
     {
-        glm::quat aQuat = aSkeleton.getAngleAsQuaternion(ii);
+        int       dispIndex = (*lIndices)[ii];
+        glm::quat aQuat;
         
+        if (0 <= dispIndex)
+        {
+            aQuat = aSkeleton.getAngleAsQuaternion(static_cast<size_t>(dispIndex));
+        }
+        else
+        {
+            aQuat = glm::quat_cast(glm::rotate(glm::mat4(1), static_cast<realType>(0),
+                                               glm::vec3(0, 0, 1)));
+        }
         if (0 < ii)
         {
             if (kNumQuaternionsPerRow <= jj)
@@ -242,8 +320,7 @@ static void printSkeleton(Skeleton & aSkeleton)
         {
             std::cout << " ";
         }
-        std::cout << "[" << aQuat.w << "," << aQuat.x << "," << aQuat.y << "," << aQuat.z <<
-                    "]";
+        std::cout << "[" << aQuat.w << "," << aQuat.x << "," << aQuat.y << "," << aQuat.z << "]";
     }
     std::cout << std::endl;
 } // printSkeleton
@@ -268,17 +345,15 @@ static void printBody(Body & aBody)
 
 #if defined(USE_SKELETON_)
 /*! @brief Create a set of Skeleton objects to work with.
- @param numSkeletons The number of Skeleton objects to create.
- @param numAngles The number of angles in each Skeleton. */
-static void generateSkeletons(const size_t numSkeletons,
-                              const size_t numAngles)
+ @param numSkeletons The number of Skeleton objects to create. */
+static void generateSkeletons(const size_t numSkeletons)
 {
 # if defined(PRINT_VALUES_)
     std::cout << "Generating " << numSkeletons << " objects." << std::endl;
 # endif // defined(PRINT_VALUES_)
     for (size_t ii = 0; numSkeletons > ii; ++ii)
     {
-        Skeleton * aSkeleton = new Skeleton(numAngles);
+        Skeleton * aSkeleton = new Skeleton;
         
         lPopulation->push_back(aSkeleton);
 # if defined(PRINT_VALUES_)
@@ -685,7 +760,9 @@ int main(int            argc,
 #if defined(USE_SKELETON_)
     lPopulation = new SkeletonVector;
     lSelection = new SkeletonVector;
-    generateSkeletons(kPopulationSize, kNumAngles);
+    lIndices = new IndexVector;
+    generateSkeletons(kPopulationSize);
+    createMapForAngles();
 #else // ! defined(USE_SKELETON_)
     lPopulation = new BodyVector;
     lSelection = new BodyVector;

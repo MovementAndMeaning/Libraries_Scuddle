@@ -72,10 +72,9 @@ namespace Scuddle
     {
     public :
         
-        /*! @brief The constructor.
-         @param numAngles The number of angles to be processed. */
-        Skeleton(const size_t numAngles);
-        
+        /*! @brief The constructor. */
+        Skeleton(void);
+                
         /*! @brief The copy constructor.
          @param other The Body to be copied. */
         Skeleton(const Skeleton & other);
@@ -184,8 +183,8 @@ namespace Scuddle
     
     private :
         
-        /*! @brief The constructor. */
-        Skeleton(void);
+        /*! @brief Determine the quadrants for the various angles. */
+        void determineQuadrants(void);
         
         /*! @brief Set the attributes to random values.
          @param numAngles The number of angles to be set up. */
@@ -193,6 +192,38 @@ namespace Scuddle
         
     public :
     
+        /*! @brief The number of angles in each Skeleton. */
+        static const size_t kNumCalculatedAngles = 8;
+        
+        /*! @brief The 'meaning' of the individual angles within the Skeleton object. */
+        enum AngleIndices
+        {
+            /*! @brief The angle from the left side of the hip to the left knee. */
+            kLeftHipToKnee,
+            
+            /*! @brief The angle from the left knee to the left foot. */
+            kLeftKneeToFoot,
+            
+            /*! @brief The angle from the right side of the hip to the right knee. */
+            kRightHipToKnee,
+
+            /*! @brief The angle from the right knee to the right foot. */
+            kRightKneeToFoot,
+            
+            /*! @brief The angle from the left shoulder to the left elbow. */
+            kLeftShoulderToElbow,
+            
+            /*! @brief The angle from the left elbow to the left wrist. */
+            kLeftElbowToWrist,
+            
+            /*! @brief The angle from the right shoulder to the right elbow. */
+            kRightShoulderToElbow,
+            
+            /*! @brief The angle from the right elbow to the right wrist. */
+            kRightElbowToWrist
+            
+        }; // AngleIndices
+        
     protected :
     
     private :
@@ -202,6 +233,12 @@ namespace Scuddle
         
         /*! @brief The angles (in radians) to be worked with. */
         std::vector<realType> _angles;
+
+        /*! @brief The quadrants corresponding to the angles being worked with. */
+        std::vector<int> _quadrants;
+        
+        /*! @brief The score contribution from the quadrants. */
+        int _quadrantScore;
 
         /*! @brief The Flow Effort Quality value. */
         FlowQuality _flow;

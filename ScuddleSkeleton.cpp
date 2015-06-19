@@ -80,10 +80,10 @@ static const size_t kNumFixedAttributes = 5;
 # pragma mark Constructors and Destructors
 #endif // defined(__APPLE__)
 
-Skeleton::Skeleton(const size_t numAngles) :
+Skeleton::Skeleton(void) :
     _marked(false)
 {
-    setAttributes(numAngles);
+    setAttributes(kNumCalculatedAngles);
 } // Skeleton::Skeleton
 
 Skeleton::Skeleton(const Skeleton & other) :
@@ -93,6 +93,7 @@ Skeleton::Skeleton(const Skeleton & other) :
     for (size_t ii = 0, imax = other._angles.size(); imax > ii; ++ii)
     {
         _angles.push_back(other._angles[ii]);
+        _quadrants.push_back(other._quadrants[ii]);
     }
 } // Skeleton::Skeleton
 
@@ -103,6 +104,34 @@ Skeleton::~Skeleton(void)
 #if defined(__APPLE__)
 # pragma mark Actions and Accessors
 #endif // defined(__APPLE__)
+
+void Skeleton::determineQuadrants(void)
+{
+    // Calculate the quadrants:
+    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow],
+                                                               90, 1, 180, 2, 270, 1, 4);
+    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow],
+                                                               90, 1, 180, 2, 270, 1, 4);
+    _quadrants[kRightShoulderToElbow] = MapAngleToQuadrant(_angles[kRightShoulderToElbow],
+                                                                90, 2, 180, 1, 270, 4, 1);
+    _quadrants[kLeftElbowToWrist] = MapAngleToQuadrant(_angles[kLeftElbowToWrist], 45, 1,
+                                                            90, 2, 135, 1, 4);
+    _quadrants[kRightElbowToWrist] = MapAngleToQuadrant(_angles[kRightElbowToWrist], 45,
+                                                             2, 90, 1, 135, 4, 1);
+    _quadrants[kLeftHipToKnee] = MapAngleToQuadrant(_angles[kLeftHipToKnee], 90, 4, 180,
+                                                         1, 270, 2, 1);
+    _quadrants[kRightHipToKnee] = MapAngleToQuadrant(_angles[kRightHipToKnee], 90, 1, 180,
+                                                          4, 270, 1, 2);
+    _quadrants[kLeftKneeToFoot] = MapAngleToQuadrant(_angles[kLeftKneeToFoot], 45, 4, 90,
+                                                          1, 135, 2, 1);
+    _quadrants[kRightKneeToFoot] = MapAngleToQuadrant(_angles[kRightKneeToFoot], 45, 1,
+                                                           90, 4, 135, 1, 2);
+    _quadrantScore = 0;
+    for (size_t ii = 0, imax = _quadrants.size(); imax > ii; ++ii)
+    {
+        _quadrantScore += _quadrants[ii];
+    }
+} // Skeleton::determineQuadrants
 
 realType Skeleton::getAngleAsDegrees(const size_t index)
 const
@@ -164,6 +193,7 @@ void Skeleton::setAttributes(const size_t numAngles)
     for (size_t ii = 0; numAngles > ii; ++ii)
     {
         _angles.push_back(RandomAngle(360));
+        _quadrants.push_back(-1);
     }
     _flow = ((0.5 <= RandRealInRange(0, 1)) ? kFlowBound : kFlowFree);
     _space = ((0.5 <= RandRealInRange(0, 1)) ? kSpaceDirect : kSpaceIndirect);
@@ -276,59 +306,55 @@ void Skeleton::swapValues(Skeleton &   other,
 
 void Skeleton::updateFitness(void)
 {
-#if 0
-    realType criticalAngle = DegreesToRadians(30);
-#endif//0
+    realType critAngle = DegreesToRadians(30);
     realType percentageBartenieff;
     realType percentageEffort = 0;
     realType percentageHeight = 0;
-    realType quadScore = 0;
     
-#if 0
+    determineQuadrants();
     if ((8 == _quadrantScore) &&
-        ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
-         (_rightShoulderToElbowQuadrant == _rightElbowToWristQuadrant) &&
-         (_leftHipToKneeQuadrant == _leftKneeToFootQuadrant) &&
-         (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
+        ((_quadrants[kLeftShoulderToElbow] == _quadrants[kLeftElbowToWrist]) &&
+         (_quadrants[kRightShoulderToElbow] == _quadrants[kRightElbowToWrist]) &&
+         (_quadrants[kLeftHipToKnee] == _quadrants[kLeftKneeToFoot]) &&
+         (_quadrants[kRightHipToKnee] == _quadrants[kRightKneeToFoot])))
     {
         // Distal
         percentageBartenieff = static_cast<realType>(0.4);
     }
     else if ((12 == _quadrantScore) &&
-             ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
-              (_rightShoulderToElbowQuadrant == _rightElbowToWristQuadrant) &&
-              (_leftHipToKneeQuadrant == _leftKneeToFootQuadrant) &&
-              (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
+             ((_quadrants[kLeftShoulderToElbow] == _quadrants[kLeftElbowToWrist]) &&
+              (_quadrants[kRightShoulderToElbow] == _quadrants[kRightElbowToWrist]) &&
+              (_quadrants[kLeftHipToKnee] == _quadrants[kLeftKneeToFoot]) &&
+              (_quadrants[kRightHipToKnee] == _quadrants[kRightKneeToFoot])))
     {
         // Medial
         percentageBartenieff = static_cast<realType>(0.7);
     }
-    else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))) ||
-             (((std::abs(_rightShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))))
+    else if ((((std::abs(_angles[kLeftShoulderToElbow] - _angles[kLeftHipToKnee]) > critAngle) &&
+               (std::abs(_angles[kLeftElbowToWrist] - _angles[kLeftKneeToFoot]) > critAngle))) ||
+             (((std::abs(_angles[kRightShoulderToElbow] - _angles[kRightHipToKnee]) > critAngle) &&
+               (std::abs(_angles[kRightElbowToWrist] - _angles[kRightKneeToFoot]) > critAngle))))
     {
         // Homolateral
         percentageBartenieff = static_cast<realType>(0.5);
     }
-    else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))) ||
-             (((std::abs(_rightShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))))
+    else if ((((std::abs(_angles[kLeftShoulderToElbow] - _angles[kRightHipToKnee]) > critAngle) &&
+               (std::abs(_angles[kLeftElbowToWrist] - _angles[kRightKneeToFoot]) > critAngle))) ||
+             (((std::abs(_angles[kRightShoulderToElbow] - _angles[kLeftHipToKnee]) > critAngle) &&
+               (std::abs(_angles[kRightElbowToWrist] - _angles[kLeftKneeToFoot]) > critAngle))))
     {
         // Contralateral
         percentageBartenieff = static_cast<realType>(1.3);
     }
-    else if (((_leftShoulderToElbowQuadrant == _rightShoulderToElbowQuadrant) &&
-              (_leftElbowToWristQuadrant == _rightElbowToWristQuadrant)) ||
-             ((_leftHipToKneeQuadrant == _rightHipToKneeQuadrant) &&
-              (_leftKneeToFootQuadrant == _rightKneeToFootQuadrant)))
+    else if (((_quadrants[kLeftShoulderToElbow] == _quadrants[kRightShoulderToElbow]) &&
+              (_quadrants[kLeftElbowToWrist] == _quadrants[kRightElbowToWrist])) ||
+             ((_quadrants[kLeftHipToKnee] == _quadrants[kRightHipToKnee]) &&
+              (_quadrants[kLeftKneeToFoot] == _quadrants[kRightKneeToFoot])))
     {
         // Homologous
         percentageBartenieff = static_cast<realType>(0.4);
     }
     else
-#endif //0
     {
         percentageBartenieff = 0.0;
     }
@@ -356,11 +382,11 @@ void Skeleton::updateFitness(void)
     if ((kHeightLow == _height) || (kHeightMiddle == _height) || (kHeightHigh == _height))
     {
         // Make another variable so can track which height is picked
-        quadScore = quadScore + 1;
+        _quadrantScore = _quadrantScore + 1;
     }
     else
     {
-        quadScore = quadScore + 3;
+        _quadrantScore = _quadrantScore + 3;
     }
     if ((kHeightMidLow == _height) || (kHeightMiddle == _height) || (kHeightMidHigh == _height))
     {
@@ -369,7 +395,8 @@ void Skeleton::updateFitness(void)
             percentageHeight = static_cast<realType>(0.3);
         }
     }
-    _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) * quadScore);
+    _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) *
+                         _quadrantScore);
 } // Skeleton::updateFitness
 
 #if defined(__APPLE__)

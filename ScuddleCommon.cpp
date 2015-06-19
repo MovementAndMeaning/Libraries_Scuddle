@@ -106,6 +106,37 @@ realType Scuddle::DegreesToRadians(const realType inAngle)
     return (lPi * inAngle / 180);
 } // Scuddle::DegreesToRadians
 
+int Scuddle::MapAngleToQuadrant(const realType angle,
+                                const realType firstAngle,
+                                const int      firstQuadrant,
+                                const realType secondAngle,
+                                const int      secondQuadrant,
+                                const realType thirdAngle,
+                                const int      thirdQuadrant,
+                                const int      fourthQuadrant)
+{
+    int      result;
+    realType asDegrees = RadiansToDegrees(angle) - gEpsilon;
+    
+    if (firstAngle >= asDegrees)
+    {
+        result = firstQuadrant;
+    }
+    else if (secondAngle >= asDegrees)
+    {
+        result = secondQuadrant;
+    }
+    else if (thirdAngle >= asDegrees)
+    {
+        result = thirdQuadrant;
+    }
+    else
+    {
+        result = fourthQuadrant;
+    }
+    return result;
+} // Scuddle::MapAngleToQuadrant
+
 realType Scuddle::MapFlowToReal(const FlowQuality aValue)
 {
     realType result;

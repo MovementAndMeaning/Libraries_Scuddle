@@ -66,6 +66,25 @@ namespace Scuddle
      @returns The angle as radians. */
     realType DegreesToRadians(const realType inAngle);
     
+    /*! @brief Convert an angle (in radians) to the desired quadrant.
+     @param angle The input angle.
+     @param firstAngle The angle corresponding to the first quadrant.
+     @param firstQuadrant The quadrant value for the first quadrant.
+     @param secondAngle The angle corresponding to the second quadrant.
+     @param secondQuadrant The quadrant value for the second quadrant.
+     @param thirdAngle The angle corresponding to the third quadrant.
+     @param thirdQuadrant The quadrant value for the third quadrant.
+     @param fourthQuadrant The quadrant value for the fourth quadrant.
+     @returns The resulting quadrant. */
+    int MapAngleToQuadrant(const realType angle,
+                           const realType firstAngle,
+                           const int      firstQuadrant,
+                           const realType secondAngle,
+                           const int      secondQuadrant,
+                           const realType thirdAngle,
+                           const int      thirdQuadrant,
+                           const int      fourthQuadrant);
+    
     /*! @brief Convert a Flow Quality value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Flow Quality value as a floating-point number. */

@@ -95,46 +95,6 @@ static Coordinate2D generateRandomPerturbation(void)
 } // generateRandomPerturbation
 #endif // defined(GENERATE_POSITIONS_)
 
-/*! @brief Convert an angle (in radians) to the desired quadrant.
- @param angle The input angle.
- @param firstAngle The angle corresponding to the first quadrant.
- @param firstQuadrant The quadrant value for the first quadrant.
- @param secondAngle The angle corresponding to the second quadrant.
- @param secondQuadrant The quadrant value for the second quadrant.
- @param thirdAngle The angle corresponding to the third quadrant.
- @param thirdQuadrant The quadrant value for the third quadrant.
- @param fourthQuadrant The quadrant value for the fourth quadrant. */
-static int mapAngleToQuadrant(const realType angle,
-                              const realType firstAngle,
-                              const int      firstQuadrant,
-                              const realType secondAngle,
-                              const int      secondQuadrant,
-                              const realType thirdAngle,
-                              const int      thirdQuadrant,
-                              const int      fourthQuadrant)
-{
-    int      result;
-    realType asDegrees = RadiansToDegrees(angle) - gEpsilon;
-
-    if (firstAngle >= asDegrees)
-    {
-        result = firstQuadrant;
-    }
-    else if (secondAngle >= asDegrees)
-    {
-        result = secondQuadrant;
-    }
-    else if (thirdAngle >= asDegrees)
-    {
-        result = thirdQuadrant;
-    }
-    else
-    {
-        result = fourthQuadrant;
-    }
-    return result;
-} // mapAngleToQuadrant
-
 #if defined(__APPLE__)
 # pragma mark Class methods
 #endif // defined(__APPLE__)
@@ -210,17 +170,17 @@ Body::~Body(void)
 void Body::determineQuadrants(void)
 {
     // Calculate the quadrants:
-    _leftShoulderToElbowQuadrant = mapAngleToQuadrant(_leftShoulderToElbowAngle, 90, 1, 180, 2, 270,
+    _leftShoulderToElbowQuadrant = MapAngleToQuadrant(_leftShoulderToElbowAngle, 90, 1, 180, 2, 270,
                                                       1, 4);
-    _rightShoulderToElbowQuadrant = mapAngleToQuadrant(_rightShoulderToElbowAngle, 90, 2, 180, 1,
+    _rightShoulderToElbowQuadrant = MapAngleToQuadrant(_rightShoulderToElbowAngle, 90, 2, 180, 1,
                                                        270, 4, 1);
-    _leftElbowToWristQuadrant = mapAngleToQuadrant(_leftElbowToWristAngle, 45, 1, 90, 2, 135, 1, 4);
-    _rightElbowToWristQuadrant = mapAngleToQuadrant(_rightElbowToWristAngle, 45, 2, 90, 1, 135, 4,
+    _leftElbowToWristQuadrant = MapAngleToQuadrant(_leftElbowToWristAngle, 45, 1, 90, 2, 135, 1, 4);
+    _rightElbowToWristQuadrant = MapAngleToQuadrant(_rightElbowToWristAngle, 45, 2, 90, 1, 135, 4,
                                                     1);
-    _leftHipToKneeQuadrant = mapAngleToQuadrant(_leftHipToKneeAngle, 90, 4, 180, 1, 270, 2, 1);
-    _rightHipToKneeQuadrant = mapAngleToQuadrant(_rightHipToKneeAngle, 90, 1, 180, 4, 270, 1, 2);
-    _leftKneeToFootQuadrant = mapAngleToQuadrant(_leftKneeToFootAngle, 45, 4, 90, 1, 135, 2, 1);
-    _rightKneeToFootQuadrant = mapAngleToQuadrant(_rightKneeToFootAngle, 45, 1, 90, 4, 135, 1, 2);
+    _leftHipToKneeQuadrant = MapAngleToQuadrant(_leftHipToKneeAngle, 90, 4, 180, 1, 270, 2, 1);
+    _rightHipToKneeQuadrant = MapAngleToQuadrant(_rightHipToKneeAngle, 90, 1, 180, 4, 270, 1, 2);
+    _leftKneeToFootQuadrant = MapAngleToQuadrant(_leftKneeToFootAngle, 45, 4, 90, 1, 135, 2, 1);
+    _rightKneeToFootQuadrant = MapAngleToQuadrant(_rightKneeToFootAngle, 45, 1, 90, 4, 135, 1, 2);
     _quadrantScore = _leftShoulderToElbowQuadrant + _rightShoulderToElbowQuadrant +
                         _leftElbowToWristQuadrant + _rightElbowToWristQuadrant +
                         _leftHipToKneeQuadrant + _rightHipToKneeQuadrant + _leftKneeToFootQuadrant +
@@ -451,7 +411,7 @@ void Body::swapValues(Body &       other,
 
 void Body::updateFitness(void)
 {
-    realType criticalAngle = DegreesToRadians(30);
+    realType critAngle = DegreesToRadians(30);
     realType percentageBartenieff;
     realType percentageEffort = 0;
     realType percentageHeight = 0;
@@ -475,18 +435,18 @@ void Body::updateFitness(void)
         // Medial
         percentageBartenieff = static_cast<realType>(0.7);
     }
-    else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))) ||
-             (((std::abs(_rightShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))))
+    else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > critAngle) &&
+               (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > critAngle))) ||
+             (((std::abs(_rightShoulderToElbowAngle - _rightHipToKneeAngle) > critAngle) &&
+               (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > critAngle))))
     {
         // Homolateral
         percentageBartenieff = static_cast<realType>(0.5);
     }
-    else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))) ||
-             (((std::abs(_rightShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
-               (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))))
+    else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > critAngle) &&
+               (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > critAngle))) ||
+             (((std::abs(_rightShoulderToElbowAngle - _leftHipToKneeAngle) > critAngle) &&
+               (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > critAngle))))
     {
         // Contralateral
         percentageBartenieff = static_cast<realType>(1.3);
