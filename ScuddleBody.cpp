@@ -164,7 +164,7 @@ Body::Body(void) :
 {
     setAttributes();
 } // Body::Body
-# endif // ! defined(GENERATE_POSITIONS_))
+#endif // ! defined(GENERATE_POSITIONS_))
 
 #if defined(GENERATE_POSITIONS_)
 Body::Body(const Body & other) :
@@ -453,9 +453,10 @@ void Body::updateFitness(void)
 {
     realType criticalAngle = DegreesToRadians(30);
     realType percentageBartenieff;
-    realType percentageEffort        = 0;
-    realType percentageHeight        = 0;
+    realType percentageEffort = 0;
+    realType percentageHeight = 0;
     
+    determineQuadrants();
     if ((8 == _quadrantScore) &&
         ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
          (_rightShoulderToElbowQuadrant == _rightElbowToWristQuadrant) &&
@@ -463,7 +464,7 @@ void Body::updateFitness(void)
          (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
     {
         // Distal
-        percentageBartenieff = 0.4;
+        percentageBartenieff = static_cast<realType>(0.4);
     }
     else if ((12 == _quadrantScore) &&
              ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
@@ -472,7 +473,7 @@ void Body::updateFitness(void)
               (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
     {
         // Medial
-        percentageBartenieff = 0.7;
+        percentageBartenieff = static_cast<realType>(0.7);
     }
     else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > criticalAngle) &&
                (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))) ||
@@ -480,7 +481,7 @@ void Body::updateFitness(void)
                (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))))
     {
         // Homolateral
-        percentageBartenieff = 0.5;
+        percentageBartenieff = static_cast<realType>(0.5);
     }
     else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > criticalAngle) &&
                (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > criticalAngle))) ||
@@ -488,7 +489,7 @@ void Body::updateFitness(void)
                (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > criticalAngle))))
     {
         // Contralateral
-        percentageBartenieff = 1.3;
+        percentageBartenieff = static_cast<realType>(1.3);
     }
     else if (((_leftShoulderToElbowQuadrant == _rightShoulderToElbowQuadrant) &&
               (_leftElbowToWristQuadrant == _rightElbowToWristQuadrant)) ||
@@ -496,7 +497,7 @@ void Body::updateFitness(void)
               (_leftKneeToFootQuadrant == _rightKneeToFootQuadrant)))
     {
         // Homologous
-        percentageBartenieff = 0.4;
+        percentageBartenieff = static_cast<realType>(0.4);
     }
     else
     {
@@ -507,7 +508,7 @@ void Body::updateFitness(void)
          (kFlowFree == _flow)) || ((kWeightStrong == _weight) && (kSpaceDirect == _space) &&
                                    (kTimeSudden == _time) && (kFlowBound == _flow)))
     {
-        percentageEffort = 0.6;
+        percentageEffort = static_cast<realType>(0.6);
     }
     else if ((ReallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
               ReallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
@@ -516,11 +517,11 @@ void Body::updateFitness(void)
              (ReallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
               ReallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
     {
-        percentageEffort = 1.2;
+        percentageEffort = static_cast<realType>(1.2);
     }
     else
     {
-        percentageEffort = 1.4;
+        percentageEffort = static_cast<realType>(1.4);
     }
     // Height
     if ((kHeightLow == _height) || (kHeightMiddle == _height) || (kHeightHigh == _height))
@@ -540,19 +541,19 @@ void Body::updateFitness(void)
             (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
         {
             // One leg is fully extended
-            percentageHeight = 1.1;
+            percentageHeight = static_cast<realType>(1.1);
         }
         
         else if ((1 == _leftKneeToFootQuadrant) || (2 == _leftKneeToFootQuadrant) ||
                  (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
         {
             // Only the lower leg is extended
-            percentageHeight = 1.3;
+            percentageHeight = static_cast<realType>(1.3);
         }
         else
         {
             // No leg is extended - cannot jump without legs in a crouch!
-            percentageHeight = 0.3;
+            percentageHeight = static_cast<realType>(0.3);
         }
     }
     _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) *

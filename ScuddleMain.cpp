@@ -37,9 +37,9 @@
 //--------------------------------------------------------------------------------------------------
 
 #include "ScuddleBody.h"
+#include "ScuddleSkeleton.h"
 
 #include <iostream>
-#include <vector>
 
 #if defined(__APPLE__)
 # pragma clang diagnostic push
@@ -65,10 +65,12 @@ using namespace Scuddle;
 #define PRINT_VALUES_ /* Print out values of interest. */
 
 #if defined(USE_SKELETON_)
+/*! @brief A sequence of Skeleton objects. */
+typedef std::vector<Skeleton *> SkeletonVector;
 #else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
-
+/*! @brief A sequence of Body objects. */
 typedef std::vector<Body *> BodyVector;
+#endif // ! defined(USE_SKELETON_)
 
 #if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the left side of the hips for new Body objects. */
@@ -107,22 +109,40 @@ static const int kFinalSelectionSize = 5;
 static const int kIterationCount = 5;
 
 /*! @brief The fraction of the set of Body objects that are to be mutated. */
-static const realType kMutationFraction = 0.10;
+static const realType kMutationFraction = static_cast<realType>(0.10);
 
 /*! @brief The fraction of the set of Body objects that are selected. */
-static const realType kSelectionFraction = 0.20;
+static const realType kSelectionFraction = static_cast<realType>(0.20);
 
 /*! @brief The number of attributes to swap. */
 static const size_t kCrossoverCount = 2;
 
+#if defined(USE_SKELETON_)
+/*! @brief The number of angles in each Skeleton. */
+static const size_t kNumAngles = 38;
+#endif // defined(USE_SKELETON_)
+
+#if defined(USE_SKELETON_)
+static const size_t kNumQuaternionsPerRow = 3;
+#endif // defined(USE_SKELETON_)
+
 /*! @brief The number of Body objects to generate. */
 static const size_t kPopulationSize = 200; // MUST BE EVEN!!!
 
+#if defined(USE_SKELETON_)
+static SkeletonVector * lPopulation = nullptr;
+#else // ! defined(USE_SKELETON_)
 /*! @brief The set of Body objects that are worked on. */
 static BodyVector * lPopulation = nullptr;
+#endif // ! defined(USE_SKELETON_)
 
+#if defined(USE_SKELETON_)
+/*! @brief The set of Skeleton objects that have been selected. */
+static SkeletonVector * lSelection = nullptr;
+#else // ! defined(USE_SKELETON_)
 /*! @brief The set of Body objects that have been selected. */
 static BodyVector * lSelection = nullptr;
+#endif // ! defined(USE_SKELETON_)
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -139,8 +159,17 @@ static void calculateFitnessValues(void)
     std::cout << "Calculating fitness." << std::endl;
 #endif // defined(PRINT_VALUES_)
 #if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            aSkeleton->updateFitness();
+        }
+    }
 #else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -150,6 +179,7 @@ static void calculateFitnessValues(void)
             aBody->updateFitness();
         }
     }
+#endif // ! defined(USE_SKELETON_)
 } // calculateFitnessValues
 
 /*! @brief Release the objects that were created earlier. */
@@ -159,8 +189,17 @@ static void cleanup(void)
     std::cout << "Cleaning up." << std::endl;
 #endif // defined(PRINT_VALUES_)
 #if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            delete aSkeleton;
+        }
+    }
 #else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -170,66 +209,110 @@ static void cleanup(void)
             delete aBody;
         }
     }
+#endif // ! defined(USE_SKELETON_)
     lPopulation->clear();
     lSelection->clear();
     delete lPopulation;
     delete lSelection;
 } // cleanup
 
-/*! @brief Create a set of Body objects to work with. */
+#if defined(USE_SKELETON_)
+/*! @brief Print the parameters of a Skeleton object.
+ @param aSkeleton The Skeleton object to be printed. */
+static void printSkeleton(Skeleton & aSkeleton)
+{
+    // kNumQuaternionsPerRow
+    for (size_t ii = 0, imax = aSkeleton.getNumAngles(), jj = 0; imax > ii; ++ii, ++jj)
+    {
+        glm::quat aQuat = aSkeleton.getAngleAsQuaternion(ii);
+        
+        if (0 < ii)
+        {
+            if (kNumQuaternionsPerRow <= jj)
+            {
+                std::cout << "," << std::endl << " ";
+                jj = 0;
+            }
+            else
+            {
+                std::cout << ", ";
+            }
+        }
+        else
+        {
+            std::cout << " ";
+        }
+        std::cout << "[" << aQuat.w << "," << aQuat.x << "," << aQuat.y << "," << aQuat.z <<
+                    "]";
+    }
+    std::cout << std::endl;
+} // printSkeleton
+#else // ! defined(USE_SKELETON_)
+/*! @brief Print the parameters of a Body object.
+ @param aBody The Body object to be printed. */
+static void printBody(Body & aBody)
+{
+    std::cout << RadiansToDegrees(aBody.getLeftShoulderToElbowAngle()) << "," <<
+                RadiansToDegrees(aBody.getLeftElbowToWristAngle()) << "," <<
+                RadiansToDegrees(aBody.getRightShoulderToElbowAngle()) << "," <<
+                RadiansToDegrees(aBody.getRightElbowToWristAngle()) << "," <<
+                RadiansToDegrees(aBody.getLeftHipToKneeAngle()) << "," <<
+                RadiansToDegrees(aBody.getLeftKneeToFootAngle()) << "," <<
+                RadiansToDegrees(aBody.getRightHipToKneeAngle()) << "," <<
+                RadiansToDegrees(aBody.getRightKneeToFootAngle()) << "," <<
+                MapWeightToReal(aBody.getWeight()) << "," << MapSpaceToReal(aBody.getSpace()) <<
+                "," << MapTimeToReal(aBody.getTime()) << "," << MapFlowToReal(aBody.getFlow()) <<
+                std::endl;
+} // printBody
+#endif // ! defined(USE_SKELETON_)
+
+#if defined(USE_SKELETON_)
+/*! @brief Create a set of Skeleton objects to work with.
+ @param numSkeletons The number of Skeleton objects to create.
+ @param numAngles The number of angles in each Skeleton. */
+static void generateSkeletons(const size_t numSkeletons,
+                              const size_t numAngles)
+{
+# if defined(PRINT_VALUES_)
+    std::cout << "Generating " << numSkeletons << " objects." << std::endl;
+# endif // defined(PRINT_VALUES_)
+    for (size_t ii = 0; numSkeletons > ii; ++ii)
+    {
+        Skeleton * aSkeleton = new Skeleton(numAngles);
+        
+        lPopulation->push_back(aSkeleton);
+# if defined(PRINT_VALUES_)
+        if (0 < ii)
+        {
+            std::cout << std::endl;
+        }
+        printSkeleton(*aSkeleton);
+# endif // defined(PRINT_VALUES_)
+    }
+} // generateSkeletons
+#else // ! defined(USE_SKELETON_)
+/*! @brief Create a set of Body objects to work with.
+ @param numBodies The number of Body objects to create. */
 static void generateBodies(const size_t numBodies)
 {
-#if defined(PRINT_VALUES_)
+# if defined(PRINT_VALUES_)
     std::cout << "Generating " << numBodies << " objects." << std::endl;
-#endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
+# endif // defined(PRINT_VALUES_)
     for (size_t ii = 0; numBodies > ii; ++ii)
     {
-#if defined(GENERATE_POSITIONS_)
+# if defined(GENERATE_POSITIONS_)
         Body * aBody = new Body(kLeftHip, kLeftShoulder, kNeck, kRightHip, kRightShoulder, kTail);
-#else // ! defined(GENERATE_POSITIONS_)
+# else // ! defined(GENERATE_POSITIONS_)
         Body * aBody = new Body;
-#endif // ! defined(GENERATE_POSITIONS_)
+# endif // ! defined(GENERATE_POSITIONS_)
         
         lPopulation->push_back(aBody);
-#if defined(PRINT_VALUES_)
-        std::cout << RadiansToDegrees(aBody->getLeftShoulderToElbowAngle()) << "," <<
-                    RadiansToDegrees(aBody->getLeftElbowToWristAngle()) << "," <<
-                    RadiansToDegrees(aBody->getRightShoulderToElbowAngle()) << "," <<
-                    RadiansToDegrees(aBody->getRightElbowToWristAngle()) << "," <<
-                    RadiansToDegrees(aBody->getLeftHipToKneeAngle()) << "," <<
-                    RadiansToDegrees(aBody->getLeftKneeToFootAngle()) << "," <<
-                    RadiansToDegrees(aBody->getRightHipToKneeAngle()) << "," <<
-                    RadiansToDegrees(aBody->getRightKneeToFootAngle()) << "," <<
-                    MapWeightToReal(aBody->getWeight()) << "," <<
-                    MapSpaceToReal(aBody->getSpace()) << "," <<
-                    MapTimeToReal(aBody->getTime()) << "," << MapFlowToReal(aBody->getFlow()) <<
-                    std::endl;
-#endif // defined(PRINT_VALUES_)
+# if defined(PRINT_VALUES_)
+        printBody(*aBody);
+# endif // defined(PRINT_VALUES_)
     }
 } // generateBodies
-
-/*! @brief Update the quadrant information for the Body objects. */
-static void mapQuadrants(void)
-{
-#if defined(PRINT_VALUES_)
-    std::cout << "Mapping quadrants." << std::endl;
-#endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
 #endif // ! defined(USE_SKELETON_)
-    for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
-    {
-        Body * aBody = *walker;
-        
-        if (aBody)
-        {
-            aBody->determineQuadrants();
-        }
-    }
-} // mapQuadrants
 
 /*! @brief Make the selections for this iteration. */
 static void makeSelection(void)
@@ -237,11 +320,20 @@ static void makeSelection(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Making selection." << std::endl;
 #endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     realType sumOfScore = 0;
     
+#if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            sumOfScore += aSkeleton->getFitnessScore();
+        }
+    }
+#else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -251,6 +343,7 @@ static void makeSelection(void)
             sumOfScore += aBody->getFitnessScore();
         }
     }
+#endif // ! defined(USE_SKELETON_)
     lSelection->clear();
     for (size_t ii = 0, imax = static_cast<size_t>(lPopulation->size() * kSelectionFraction);
          imax > ii; )
@@ -258,6 +351,31 @@ static void makeSelection(void)
         realType sumOfArrayIndices = 0;
         realType chooseArray = RandRealInRange(0, sumOfScore);
         
+#if defined(USE_SKELETON_)
+        for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+             ++walker)
+        {
+            Skeleton * aSkeleton = *walker;
+            
+            if (aSkeleton && (! aSkeleton->isMarked()))
+            {
+                realType score = aSkeleton->getFitnessScore();
+                
+                if ((chooseArray > sumOfArrayIndices) &&
+                    (chooseArray < (sumOfArrayIndices + score)))
+                {
+                    aSkeleton->setMark();
+                    sumOfArrayIndices += score;
+                    lSelection->push_back(aSkeleton);
+                    ++ii;
+                }
+                else
+                {
+                    sumOfArrayIndices += score;
+                }
+            }
+        }
+#else // ! defined(USE_SKELETON_)
         for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
              ++walker)
         {
@@ -281,6 +399,7 @@ static void makeSelection(void)
                 }
             }
         }
+#endif // ! defined(USE_SKELETON_)
     }
 } // makeSelection
 
@@ -290,13 +409,22 @@ static void doCrossovers(const size_t crossoverCount)
 #if defined(PRINT_VALUES_)
     std::cout << "Doing crossovers." << std::endl;
 #endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     // We have an initial population, from the previous generation, and we will create two new
     // 'children' for each parent pair.
     // Remove all the objects that are not propagating forward, which are unmarked - the selection
     // vector has pointers to the marked ones.
+#if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton && (! aSkeleton->isMarked()))
+        {
+            delete aSkeleton;
+        }
+    }
+#else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
          ++walker)
     {
@@ -307,8 +435,21 @@ static void doCrossovers(const size_t crossoverCount)
             delete aBody;
         }
     }
+#endif // ! defined(USE_SKELETON_)
     *lPopulation = *lSelection;
     // Clear the marks!
+#if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            aSkeleton->clearMark();
+        }
+    }
+#else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
          ++walker)
     {
@@ -319,6 +460,7 @@ static void doCrossovers(const size_t crossoverCount)
             aBody->clearMark();
         }
     }
+#endif // ! defined(USE_SKELETON_)
     for (bool keepGoing = true; keepGoing; )
     {
         // Pick two 'parent' objects:
@@ -335,13 +477,23 @@ static void doCrossovers(const size_t crossoverCount)
             }
             
         }
-        Body * firstParent = (*lPopulation)[firstChoice];
-        Body * secondParent = (*lPopulation)[secondChoice];
+#if defined(USE_SKELETON_)
+        Skeleton * firstParent = (*lPopulation)[firstChoice];
+        Skeleton * secondParent = (*lPopulation)[secondChoice];
+#else // ! defined(USE_SKELETON_)
+        Body *     firstParent = (*lPopulation)[firstChoice];
+        Body *     secondParent = (*lPopulation)[secondChoice];
+#endif // ! defined(USE_SKELETON_)
         
         if (firstParent && secondParent)
         {
-            Body * firstChild = new Body(*firstParent);
-            Body * secondChild = new Body(*secondParent);
+#if defined(USE_SKELETON_)
+            Skeleton * firstChild = new Skeleton(*firstParent);
+            Skeleton * secondChild = new Skeleton(*secondParent);
+#else // ! defined(USE_SKELETON_)
+            Body *     firstChild = new Body(*firstParent);
+            Body *     secondChild = new Body(*secondParent);
+#endif // ! defined(USE_SKELETON_)
             
             // Crossover an attribute:
             lPopulation->push_back(firstChild);
@@ -361,22 +513,44 @@ static void doMutations(const realType mutationFraction)
 #if defined(PRINT_VALUES_)
     std::cout << "Doing mutations." << std::endl;
 #endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     // Mark the objects to be mutated:
     for (size_t ii = 0, jmax = lPopulation->size(),
          imax = static_cast<size_t>(mutationFraction * jmax); imax > ii;)
     {
         size_t jj = RandUnsignedInRange(jmax - 1);
-        Body * aBody = (*lPopulation)[jj];
+#if defined(USE_SKELETON_)
+        Skeleton * aSkeleton = (*lPopulation)[jj];
+#else // ! defined(USE_SKELETON_)
+        Body *     aBody = (*lPopulation)[jj];
+#endif // ! defined(USE_SKELETON_)
         
+#if defined(USE_SKELETON_)
+        if (aSkeleton && (! aSkeleton->isMarked()))
+        {
+            aSkeleton->setMark();
+            ++ii;
+        }
+#else // ! defined(USE_SKELETON_)
         if (aBody && (! aBody->isMarked()))
         {
             aBody->setMark();
             ++ii;
         }
+#endif // ! defined(USE_SKELETON_)
     }
+#if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton && aSkeleton->isMarked())
+        {
+            aSkeleton->mutate();
+            aSkeleton->clearMark();
+        }
+    }
+#else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -387,6 +561,7 @@ static void doMutations(const realType mutationFraction)
             aBody->clearMark();
         }
     }
+#endif // ! defined(USE_SKELETON_)
 } // doMutations
 
 /*! @brief Make the final selections. */
@@ -395,11 +570,20 @@ static void makeFinalSelection(const size_t selectionSize)
 #if defined(PRINT_VALUES_)
     std::cout << "Making final selection." << std::endl;
 #endif // defined(PRINT_VALUES_)
-#if defined(USE_SKELETON_)
-#else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     realType sumOfScore = 0;
     
+#if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            sumOfScore += aSkeleton->getFitnessScore();
+        }
+    }
+#else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
          ++walker)
     {
@@ -410,6 +594,7 @@ static void makeFinalSelection(const size_t selectionSize)
             sumOfScore += aBody->getFitnessScore();
         }
     }
+#endif // ! defined(USE_SKELETON_)
     lSelection->clear();
     lSelection->resize(selectionSize);
     for (size_t ii = 0, imax = selectionSize; imax > ii; ++ii)
@@ -417,6 +602,29 @@ static void makeFinalSelection(const size_t selectionSize)
         realType sumOfArrayIndices = 0;
         realType chooseArray = RandRealInRange(0, sumOfScore);
         
+#if defined(USE_SKELETON_)
+        for (SkeletonVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
+             ++walker)
+        {
+            Skeleton * aSkeleton = *walker;
+            
+            if (aSkeleton)
+            {
+                realType score = aSkeleton->getFitnessScore();
+                
+                if ((chooseArray > sumOfArrayIndices) &&
+                    (chooseArray < (sumOfArrayIndices + score)))
+                {
+                    sumOfArrayIndices += score;
+                    (*lSelection)[ii] = aSkeleton;
+                }
+                else
+                {
+                    sumOfArrayIndices += score;
+                }
+            }
+        }
+#else // ! defined(USE_SKELETON_)
         for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
              ++walker)
         {
@@ -438,6 +646,7 @@ static void makeFinalSelection(const size_t selectionSize)
                 }
             }
         }
+#endif // ! defined(USE_SKELETON_)
     }
 } // makeFinalSelection
 
@@ -473,17 +682,17 @@ int main(int            argc,
 #if defined(__APPLE__)
 # pragma unused(argc, argv)
 #endif // defined(__APPLE__)
-    
-    
 #if defined(USE_SKELETON_)
+    lPopulation = new SkeletonVector;
+    lSelection = new SkeletonVector;
+    generateSkeletons(kPopulationSize, kNumAngles);
 #else // ! defined(USE_SKELETON_)
-#endif // ! defined(USE_SKELETON_)
     lPopulation = new BodyVector;
     lSelection = new BodyVector;
     generateBodies(kPopulationSize);
+#endif // ! defined(USE_SKELETON_)
     for (int kk = 0; kIterationCount > kk; ++kk)
     {
-        mapQuadrants();
         calculateFitnessValues();
         makeSelection();
         doCrossovers(kCrossoverCount);
@@ -491,6 +700,19 @@ int main(int            argc,
     }
     makeFinalSelection(kFinalSelectionSize);
 #if defined(PRINT_VALUES_)
+# if defined(USE_SKELETON_)
+    for (SkeletonVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
+         ++walker)
+    {
+        Skeleton * aSkeleton = *walker;
+        
+        if (aSkeleton)
+        {
+            std::cout << "Final Selection:" << std::endl;
+            printSkeleton(*aSkeleton);
+        }
+    }
+# else // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
          ++walker)
     {
@@ -498,22 +720,11 @@ int main(int            argc,
         
         if (aBody)
         {
-            std::cout << "Final Selection: " <<
-                        RadiansToDegrees(aBody->getLeftShoulderToElbowAngle()) << "," <<
-                        RadiansToDegrees(aBody->getLeftElbowToWristAngle()) << "," <<
-                        RadiansToDegrees(aBody->getRightShoulderToElbowAngle()) << "," <<
-                        RadiansToDegrees(aBody->getRightElbowToWristAngle()) << "," <<
-                        RadiansToDegrees(aBody->getLeftHipToKneeAngle()) << "," <<
-                        RadiansToDegrees(aBody->getLeftKneeToFootAngle()) << "," <<
-                        RadiansToDegrees(aBody->getRightHipToKneeAngle()) << "," <<
-                        RadiansToDegrees(aBody->getRightKneeToFootAngle()) << "," <<
-                        MapWeightToReal(aBody->getWeight()) << "," <<
-                        MapSpaceToReal(aBody->getSpace()) << "," <<
-                        MapTimeToReal(aBody->getTime()) << "," <<
-                        MapFlowToReal(aBody->getFlow()) << "," <<
-                        MapHeightToReal(aBody->getHeight()) << std::endl;
+            std::cout << "Final Selection: ";
+            printBody(*aBody);
         }
     }
+# endif // ! defined(USE_SKELETON_)
 #endif // defined(PRINT_VALUES_)
     cleanup();
     return 0;

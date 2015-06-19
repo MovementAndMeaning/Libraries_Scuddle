@@ -48,9 +48,6 @@
 # endif // defined(__APPLE__)
 /*! @file
  @brief The class declaration for Body objects. */
-
-/*! @namespace Scuddle
- @brief The classes that implement the Scuddle framework. */
 # if defined(__APPLE__)
 #  pragma clang diagnostic pop
 # endif // defined(__APPLE__)
@@ -97,9 +94,6 @@ namespace Scuddle
             _marked = false;
         } // clearMark
         
-        /*! @brief Determine the quadrants for the various angles. */
-        void determineQuadrants(void);
-        
         /*! @brief Return the calculated fitness score.
          @returns The calculated fitness score. */
         realType getFitnessScore(void)
@@ -108,21 +102,21 @@ namespace Scuddle
             return _accumulatedScore;
         } // getFitnessScore
         
-        /*! @brief Return the Height level.
-         @returns The Height level value. */
+        /*! @brief Return the Flow Quality.
+         @returns The Flow Quality value. */
         FlowQuality getFlow(void)
         const
         {
             return _flow;
-        } // getHeight
+        } // getFlow
         
-        /*! @brief Return the Space Quality.
-         @returns The Space Quality value. */
+        /*! @brief Return the Height level.
+         @returns The Height level value. */
         HeightValue getHeight(void)
         const
         {
             return _height;
-        } // getSpace
+        } // getHeight
         
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left elbow.
@@ -452,6 +446,9 @@ namespace Scuddle
         Body(void);
 # endif // defined(GENERATE_POSITIONS_))
         
+        /*! @brief Determine the quadrants for the various angles. */
+        void determineQuadrants(void);
+        
         /*! @brief Set the attributes to random values. */
         void setAttributes(void);
         
@@ -469,55 +466,89 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief The initial position of the left side of the hips. */
         Coordinate2D _initLeftHip;
+# endif // defined(GENERATE_POSITIONS_)
 
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The initial position of the left shoulder. */
         Coordinate2D _initLeftShoulder;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The initial position of the right side of the hips. */
         Coordinate2D _initRightHip;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The initial position of the right shoulder. */
         Coordinate2D _initRightShoulder;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left elbow. */
         Coordinate2D _leftElbow;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left foot. */
         Coordinate2D _leftFoot;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left side of the hips. */
         Coordinate2D _leftHip;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left knee. */
         Coordinate2D _leftKnee;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left shoulder. */
         Coordinate2D _leftShoulder;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the left wrist. */
         Coordinate2D _leftWrist;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the neck. */
         Coordinate2D _neck;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right elbow. */
         Coordinate2D _rightElbow;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right foot. */
         Coordinate2D _rightFoot;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right side of the hips. */
         Coordinate2D _rightHip;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right knee. */
         Coordinate2D _rightKnee;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right shoulder. */
         Coordinate2D _rightShoulder;
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the right wrist. */
         Coordinate2D _rightWrist;
-        
+# endif // defined(GENERATE_POSITIONS_)
+
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The position of the 'tail'. */
         Coordinate2D _tail;
 # endif // defined(GENERATE_POSITIONS_)

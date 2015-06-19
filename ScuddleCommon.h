@@ -42,6 +42,7 @@
 # include "ScuddleDataTypes.h"
 
 # include <limits>
+# include <vector>
 
 # if defined(__APPLE__)
 #  pragma clang diagnostic push
@@ -50,6 +51,9 @@
 # endif // defined(__APPLE__)
 /*! @file
  @brief The definitions of global functions used in Scuddle. */
+
+/*! @namespace Scuddle
+ @brief The classes that implement the Scuddle framework. */
 # if defined(__APPLE__)
 #  pragma clang diagnostic pop
 # endif // defined(__APPLE__)

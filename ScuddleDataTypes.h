@@ -41,7 +41,7 @@
 
 # include <complex>
 
-//# define USE_SKELETON_ /* Use Skeleton rather than Body. */
+# define USE_SKELETON_ /* Use Skeleton rather than Body. */
 //# define GENERATE_POSITIONS_ /* Generate coordinates as well as angles. */
 
 namespace Scuddle
@@ -111,7 +111,7 @@ namespace Scuddle
     }; // WeightQuality
     
     /*! @brief The floating-point data type to use. */
-    typedef double realType;
+    typedef float realType;
 
 # if (! defined(USE_SKELETON_))
 #  if defined(GENERATE_POSITIONS_)

@@ -70,7 +70,7 @@ static bool lPiSet = false;
 static bool lRandomSeeded = false;
 
 /*! @brief The value of PI. */
-static realType lPi = 3.14159265;
+static realType lPi = static_cast<realType>(3.14159265);
 
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
@@ -100,7 +100,7 @@ realType Scuddle::DegreesToRadians(const realType inAngle)
 {
     if (! lPiSet)
     {
-        lPi = (4 * atan2(1, 1));
+        lPi = (4 * static_cast<realType>(atan2(1, 1)));
         lPiSet = true;
     }
     return (lPi * inAngle / 180);
@@ -299,7 +299,7 @@ realType Scuddle::RadiansToDegrees(const realType inAngle)
 {
     if (! lPiSet)
     {
-        lPi = (4 * atan2(1, 1));
+        lPi = (4 * static_cast<realType>(atan2(1, 1)));
         lPiSet = true;
     }
     return (180 * inAngle / lPi);
@@ -330,7 +330,7 @@ realType Scuddle::RandRealInRange(const realType lowValue,
 
 size_t Scuddle::RandUnsignedInRange(const size_t highValue)
 {
-    realType fraction = (1.0 / (highValue + 1));
+    realType fraction = (static_cast<realType>(1.0) / (highValue + 1));
     realType randNumb = RandRealInRange(0, 1);
     // We need to convert this value into a bucket, so that all the integers in the range
     // 0...highValue, inclusively, are permitted.
