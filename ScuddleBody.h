@@ -63,6 +63,7 @@ namespace Scuddle
     {
     public :
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The constructor.
          @param leftHip The initial coordinates of the left side of the hips.
          @param leftShoulder The initial coordinates of the left shoulder.
@@ -76,7 +77,13 @@ namespace Scuddle
              const Coordinate2D & rightHip,
              const Coordinate2D & rightShoulder,
              const Coordinate2D & tail);
+# endif // defined(GENERATE_POSITIONS_)
 
+# if (! defined(GENERATE_POSITIONS_))
+        /*! @brief The constructor. */
+        Body(void);
+# endif // ! defined(GENERATE_POSITIONS_))
+        
         /*! @brief The copy constructor.
          @param other The Body to be copied. */
         Body(const Body & other);
@@ -117,6 +124,7 @@ namespace Scuddle
             return _height;
         } // getSpace
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left elbow.
          @returns The coordinates of the left elbow. */
         const Coordinate2D & getLeftElbow(void)
@@ -124,6 +132,7 @@ namespace Scuddle
         {
             return _leftElbow;
         } // getLeftElbow
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the left elbow to the left wrist.
          @returns The angle from the left elbow to the left wrist. */
@@ -141,6 +150,7 @@ namespace Scuddle
             return _leftElbowToWristQuadrant;
         } // getLeftElbowToWristQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left foot.
          @returns The coordinates of the left foot. */
         const Coordinate2D & getLeftFoot(void)
@@ -148,7 +158,9 @@ namespace Scuddle
         {
             return _leftFoot;
         } // getLeftFoot
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left side of the hips.
          @returns The coordinates of the left side of the hips. */
         const Coordinate2D & getLeftHip(void)
@@ -156,6 +168,7 @@ namespace Scuddle
         {
             return _leftHip;
         } // getLeftHip
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the left side of the hips to the left knee.
          @returns The angle from the left side of the hips to the left knee. */
@@ -173,6 +186,7 @@ namespace Scuddle
             return _leftHipToKneeQuadrant;
         } // getLeftHipToKneeQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left knee.
          @returns The coordinates of the left knee. */
         const Coordinate2D & getLeftKnee(void)
@@ -180,7 +194,8 @@ namespace Scuddle
         {
             return _leftKnee;
         } // getLeftKnee
-        
+# endif // defined(GENERATE_POSITIONS_)
+
         /*! @brief Return the angle from the left knee to the left foot.
          @returns The angle from the left knee to the left foot. */
         realType getLeftKneeToFootAngle(void)
@@ -197,6 +212,7 @@ namespace Scuddle
             return _leftKneeToFootQuadrant;
         } // getLeftKneeToFootQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left shoulder.
          @returns The coordinates of the left shoulder. */
         const Coordinate2D & getLeftShoulder(void)
@@ -204,7 +220,8 @@ namespace Scuddle
         {
             return _leftShoulder;
         } // getLeftShoulder
-        
+# endif // defined(GENERATE_POSITIONS_)
+
         /*! @brief Return the angle from the left shoulder to the left elbow.
          @returns The angle from the left shoulder to the left elbow. */
         realType getLeftShoulderToElbowAngle(void)
@@ -221,6 +238,7 @@ namespace Scuddle
             return _leftShoulderToElbowQuadrant;
         } // getLeftShoulderToElbowQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left wrist.
          @returns The coordinates of the left wrist. */
         const Coordinate2D & getLeftWrist(void)
@@ -228,7 +246,9 @@ namespace Scuddle
         {
             return _leftWrist;
         } // getLeftWrist
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the neck.
          @returns The coordinates of the neck. */
         const Coordinate2D & getNeck(void)
@@ -236,7 +256,9 @@ namespace Scuddle
         {
             return _neck;
         } // getNeck
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right elbow.
          @returns The coordinates of the right elbow. */
         const Coordinate2D & getRightElbow(void)
@@ -244,6 +266,7 @@ namespace Scuddle
         {
             return _rightElbow;
         } // getRightElbow
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the right elbow to the right wrist.
          @returns The angle from the right elbow to the right wrist. */
@@ -261,6 +284,7 @@ namespace Scuddle
             return _rightElbowToWristQuadrant;
         } // getRightElbowToWristQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right foot.
          @returns The coordinates of the right foot. */
         const Coordinate2D & getRightFoot(void)
@@ -268,7 +292,9 @@ namespace Scuddle
         {
             return _rightFoot;
         } // getRightFoot
+# endif // defined(GENERATE_POSITIONS_)
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right side of the hips.
          @returns The coordinates of the right side of the hips. */
         const Coordinate2D & getRightHip(void)
@@ -276,6 +302,7 @@ namespace Scuddle
         {
             return _rightHip;
         } // getRightHip
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the right side of the hips to the right knee.
          @returns The angle from the right side of the hips to the right knee. */
@@ -294,6 +321,7 @@ namespace Scuddle
             return _rightHipToKneeQuadrant;
         } // getRightHipToKneeQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right knee.
          @returns The coordinates of the right knee. */
         const Coordinate2D & getRightKnee(void)
@@ -301,6 +329,7 @@ namespace Scuddle
         {
             return _rightKnee;
         } // getRightKnee
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the right knee to the right foot.
          @returns The angle from the right knee to the right foot. */
@@ -318,6 +347,7 @@ namespace Scuddle
             return _rightKneeToFootQuadrant;
         } // getRightKneeToFootQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right shoulder.
          @returns The coordinates of the right shoulder. */
         const Coordinate2D & getRightShoulder(void)
@@ -325,6 +355,7 @@ namespace Scuddle
         {
             return _rightShoulder;
         } // getRightShoulder
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the angle from the right shoulder to the right elbow.
          @returns The angle from the right shoulder to the right elbow. */
@@ -342,6 +373,7 @@ namespace Scuddle
             return _rightShoulderToElbowQuadrant;
         } // getRightShoulderToElbowQuadrant
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right wrist.
          @returns The coordinates of the right wrist. */
         const Coordinate2D & getRightWrist(void)
@@ -349,6 +381,7 @@ namespace Scuddle
         {
             return _rightWrist;
         } // getRightWrist
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the Space Quality.
          @returns The Space Quality value. */
@@ -358,6 +391,7 @@ namespace Scuddle
             return _space;
         } // getSpace
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the 'tail'.
          @returns The coordinates of the 'tail'. */
         const Coordinate2D & getTail(void)
@@ -365,6 +399,7 @@ namespace Scuddle
         {
             return _tail;
         } // getTail
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief Return the Time Quality.
          @returns The Time Quality value. */
@@ -412,14 +447,18 @@ namespace Scuddle
     
     private :
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The constructor. */
         Body(void);
+# endif // defined(GENERATE_POSITIONS_))
         
         /*! @brief Set the attributes to random values. */
         void setAttributes(void);
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief Set the joint positions from the angles. */
         void setPositions(void);
+# endif // defined(GENERATE_POSITIONS_)
         
     public :
     
@@ -427,6 +466,7 @@ namespace Scuddle
     
     private :
         
+# if defined(GENERATE_POSITIONS_)
         /*! @brief The initial position of the left side of the hips. */
         Coordinate2D _initLeftHip;
 
@@ -480,6 +520,7 @@ namespace Scuddle
         
         /*! @brief The position of the 'tail'. */
         Coordinate2D _tail;
+# endif // defined(GENERATE_POSITIONS_)
         
         /*! @brief The quadrant of the angle from the left elbow to the left wrist. */
         int _leftElbowToWristQuadrant;

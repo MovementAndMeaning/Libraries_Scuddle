@@ -64,34 +64,47 @@ using namespace Scuddle;
 
 #define PRINT_VALUES_ /* Print out values of interest. */
 
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
+
 typedef std::vector<Body *> BodyVector;
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the left side of the hips for new Body objects. */
 static const Coordinate2D kLeftHip(120, 220);
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the left shoulder for new Body objects. */
 static const Coordinate2D kLeftShoulder(110, 100);
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the neck for new Body objects. */
 static const Coordinate2D kNeck(155, 110);
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the right side of the hips for new Body objects. */
 static const Coordinate2D kRightHip(190, 220);
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the right shoulder for new Body objects. */
 static const Coordinate2D kRightShoulder(200, 100);
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The initial position of the 'tail' for new Body objects. */
 static const Coordinate2D kTail(155, 210);
+#endif // defined(GENERATE_POSITIONS_)
 
 /*! @brief The number of selections to present when finished. */
-static const int kFinalSelectionCount = 5;
+static const int kFinalSelectionSize = 5;
 
 /*! @brief The number of iterations to perform. */
 static const int kIterationCount = 5;
-
-/*! @brief The number of Body objects to generate. */
-static const int kPopulationSize = 200; // MUST BE EVEN!!!
 
 /*! @brief The fraction of the set of Body objects that are to be mutated. */
 static const realType kMutationFraction = 0.10;
@@ -101,6 +114,9 @@ static const realType kSelectionFraction = 0.20;
 
 /*! @brief The number of attributes to swap. */
 static const size_t kCrossoverCount = 2;
+
+/*! @brief The number of Body objects to generate. */
+static const size_t kPopulationSize = 200; // MUST BE EVEN!!!
 
 /*! @brief The set of Body objects that are worked on. */
 static BodyVector * lPopulation = nullptr;
@@ -122,6 +138,9 @@ static void calculateFitnessValues(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Calculating fitness." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -139,6 +158,9 @@ static void cleanup(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Cleaning up." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -155,14 +177,21 @@ static void cleanup(void)
 } // cleanup
 
 /*! @brief Create a set of Body objects to work with. */
-static void generateBodies(void)
+static void generateBodies(const size_t numBodies)
 {
 #if defined(PRINT_VALUES_)
-    std::cout << "Generating " << kPopulationSize << " objects." << std::endl;
+    std::cout << "Generating " << numBodies << " objects." << std::endl;
 #endif // defined(PRINT_VALUES_)
-    for (int ii = 0; kPopulationSize > ii; ++ii)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
+    for (size_t ii = 0; numBodies > ii; ++ii)
     {
+#if defined(GENERATE_POSITIONS_)
         Body * aBody = new Body(kLeftHip, kLeftShoulder, kNeck, kRightHip, kRightShoulder, kTail);
+#else // ! defined(GENERATE_POSITIONS_)
+        Body * aBody = new Body;
+#endif // ! defined(GENERATE_POSITIONS_)
         
         lPopulation->push_back(aBody);
 #if defined(PRINT_VALUES_)
@@ -188,6 +217,9 @@ static void mapQuadrants(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Mapping quadrants." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
     {
         Body * aBody = *walker;
@@ -205,6 +237,9 @@ static void makeSelection(void)
 #if defined(PRINT_VALUES_)
     std::cout << "Making selection." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     realType sumOfScore = 0;
     
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker; ++walker)
@@ -250,11 +285,14 @@ static void makeSelection(void)
 } // makeSelection
 
 /*! @brief Generate a new set of objects, using the selected parents. */
-static void doCrossovers(void)
+static void doCrossovers(const size_t crossoverCount)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing crossovers." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     // We have an initial population, from the previous generation, and we will create two new
     // 'children' for each parent pair.
     // Remove all the objects that are not propagating forward, which are unmarked - the selection
@@ -308,7 +346,7 @@ static void doCrossovers(void)
             // Crossover an attribute:
             lPopulation->push_back(firstChild);
             lPopulation->push_back(secondChild);
-            firstChild->swapValues(*secondChild, kCrossoverCount);
+            firstChild->swapValues(*secondChild, crossoverCount);
             if (kPopulationSize <= lPopulation->size())
             {
                 keepGoing = false;
@@ -318,14 +356,17 @@ static void doCrossovers(void)
 } // doCrossovers
 
 /*! @brief Mutate some of the objects. */
-static void doMutations(void)
+static void doMutations(const realType mutationFraction)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing mutations." << std::endl;
 #endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     // Mark the objects to be mutated:
     for (size_t ii = 0, jmax = lPopulation->size(),
-         imax = static_cast<size_t>(kMutationFraction * jmax); imax > ii;)
+         imax = static_cast<size_t>(mutationFraction * jmax); imax > ii;)
     {
         size_t jj = RandUnsignedInRange(jmax - 1);
         Body * aBody = (*lPopulation)[jj];
@@ -349,8 +390,14 @@ static void doMutations(void)
 } // doMutations
 
 /*! @brief Make the final selections. */
-static void makeFinalSelection(void)
+static void makeFinalSelection(const size_t selectionSize)
 {
+#if defined(PRINT_VALUES_)
+    std::cout << "Making final selection." << std::endl;
+#endif // defined(PRINT_VALUES_)
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     realType sumOfScore = 0;
     
     for (BodyVector::iterator walker(lPopulation->begin()); lPopulation->end() != walker;
@@ -364,8 +411,8 @@ static void makeFinalSelection(void)
         }
     }
     lSelection->clear();
-    lSelection->resize(kFinalSelectionCount);
-    for (size_t ii = 0, imax = kFinalSelectionCount; imax > ii; ++ii)
+    lSelection->resize(selectionSize);
+    for (size_t ii = 0, imax = selectionSize; imax > ii; ++ii)
     {
         realType sumOfArrayIndices = 0;
         realType chooseArray = RandRealInRange(0, sumOfScore);
@@ -426,18 +473,23 @@ int main(int            argc,
 #if defined(__APPLE__)
 # pragma unused(argc, argv)
 #endif // defined(__APPLE__)
+    
+    
+#if defined(USE_SKELETON_)
+#else // ! defined(USE_SKELETON_)
+#endif // ! defined(USE_SKELETON_)
     lPopulation = new BodyVector;
     lSelection = new BodyVector;
-    generateBodies();
+    generateBodies(kPopulationSize);
     for (int kk = 0; kIterationCount > kk; ++kk)
     {
         mapQuadrants();
         calculateFitnessValues();
         makeSelection();
-        doCrossovers();
-        doMutations();
+        doCrossovers(kCrossoverCount);
+        doMutations(kMutationFraction);
     }
-    makeFinalSelection();
+    makeFinalSelection(kFinalSelectionSize);
 #if defined(PRINT_VALUES_)
     for (BodyVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
          ++walker)

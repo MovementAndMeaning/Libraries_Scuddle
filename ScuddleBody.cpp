@@ -61,11 +61,15 @@ using namespace Scuddle;
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The maximum amount to perturb a coordinate. */
 static const realType kPerturbation = 5;
+#endif // defined(GENERATE_POSITIONS_)
 
+#if defined(GENERATE_POSITIONS_)
 /*! @brief The joint radius */
 static const realType kJointRadius = 60;
+#endif // defined(GENERATE_POSITIONS_)
 
 /*! @brief The number of angles that can be mutated. */
 static const size_t kNumAngles = 8;
@@ -81,6 +85,7 @@ static const size_t kNumAttributes = 13;
 # pragma mark Local functions
 #endif // defined(__APPLE__)
 
+#if defined(GENERATE_POSITIONS_)
 static Coordinate2D generateRandomPerturbation(void)
 {
     Coordinate2D result(RandRealInRange(- kPerturbation, kPerturbation),
@@ -88,6 +93,7 @@ static Coordinate2D generateRandomPerturbation(void)
 
     return result;
 } // generateRandomPerturbation
+#endif // defined(GENERATE_POSITIONS_)
 
 /*! @brief Convert an angle (in radians) to the desired quadrant.
  @param angle The input angle.
@@ -137,6 +143,7 @@ static int mapAngleToQuadrant(const realType angle,
 # pragma mark Constructors and Destructors
 #endif // defined(__APPLE__)
 
+#if defined(GENERATE_POSITIONS_)
 Body::Body(const Coordinate2D & leftHip,
            const Coordinate2D & leftShoulder,
            const Coordinate2D & neck,
@@ -149,7 +156,17 @@ Body::Body(const Coordinate2D & leftHip,
     setAttributes();
     setPositions();
 } // Body::Body
+#endif // defined(GENERATE_POSITIONS_)
 
+# if (! defined(GENERATE_POSITIONS_))
+Body::Body(void) :
+    _marked(false)
+{
+    setAttributes();
+} // Body::Body
+# endif // ! defined(GENERATE_POSITIONS_))
+
+#if defined(GENERATE_POSITIONS_)
 Body::Body(const Body & other) :
     _initLeftHip(other._initLeftHip), _initLeftShoulder(other._initLeftShoulder),
     _initRightHip(other._initRightHip), _initRightShoulder(other._initRightShoulder),
@@ -166,6 +183,21 @@ Body::Body(const Body & other) :
 {
     setPositions();
 } // Body::Body
+#else // ! defined(GENERATE_POSITIONS_)
+Body::Body(const Body & other) :
+    _leftElbowToWristAngle(other._leftElbowToWristAngle),
+    _leftHipToKneeAngle(other._leftHipToKneeAngle),
+    _leftKneeToFootAngle(other._leftKneeToFootAngle),
+    _leftShoulderToElbowAngle(other._leftShoulderToElbowAngle),
+    _rightElbowToWristAngle(other._rightElbowToWristAngle),
+    _rightHipToKneeAngle(other._rightHipToKneeAngle),
+    _rightKneeToFootAngle(other._rightKneeToFootAngle),
+    _rightShoulderToElbowAngle(other._rightShoulderToElbowAngle), _flow(other._flow),
+    _height(other._height), _space(other._space), _time(other._time), _weight(other._weight),
+    _marked(false)
+{
+} // Body::Body
+#endif // ! defined(GENERATE_POSITIONS_)
 
 Body::~Body(void)
 {
@@ -241,7 +273,9 @@ void Body::mutate(void)
             break;
             
     }
+#if defined(GENERATE_POSITIONS_)
     setPositions();
+#endif // defined(GENERATE_POSITIONS_)
 } // Body::mutate
 
 void Body::setAttributes(void)
@@ -284,6 +318,7 @@ void Body::setAttributes(void)
     }
 } // Body::setAttributes
 
+#if defined(GENERATE_POSITIONS_)
 void Body::setPositions(void)
 {
     _leftElbow = _initLeftShoulder + std::polar(kJointRadius, _leftShoulderToElbowAngle);
@@ -303,6 +338,7 @@ void Body::setPositions(void)
     _neck.real(centre);
     _tail.real(centre);
 } // Body::setPositions
+#endif // defined(GENERATE_POSITIONS_)
 
 void Body::swapValues(Body &       other,
                       const size_t numSwap)
@@ -407,8 +443,10 @@ void Body::swapValues(Body &       other,
                 
         }
     }
+#if defined(GENERATE_POSITIONS_)
     setPositions();
     other.setPositions();
+#endif // defined(GENERATE_POSITIONS_)
 } // Body::swapValues
 
 void Body::updateFitness(void)

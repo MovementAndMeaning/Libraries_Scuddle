@@ -41,6 +41,9 @@
 
 # include <complex>
 
+//# define USE_SKELETON_ /* Use Skeleton rather than Body. */
+//# define GENERATE_POSITIONS_ /* Generate coordinates as well as angles. */
+
 namespace Scuddle
 {
     /*! @brief Flow Effort Qualities. */
@@ -109,9 +112,13 @@ namespace Scuddle
     
     /*! @brief The floating-point data type to use. */
     typedef double realType;
-    
+
+# if (! defined(USE_SKELETON_))
+#  if defined(GENERATE_POSITIONS_)
     /*! @brief The two-dimensional coordinate data type. */
     typedef std::complex<realType> Coordinate2D;
+#  endif // defined(GENERATE_POSITIONS_)
+# endif // ! defined(USE_SKELETON_)
     
 } // Scuddle
 
