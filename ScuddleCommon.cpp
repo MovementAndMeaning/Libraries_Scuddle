@@ -330,11 +330,11 @@ realType Scuddle::RandRealInRange(const realType lowValue,
 
 size_t Scuddle::RandUnsignedInRange(const size_t highValue)
 {
-    realType fraction = (static_cast<realType>(1.0) / (highValue + 1));
-    realType randNumb = RandRealInRange(0, 1);
+    realType fraction = (static_cast<realType>(1) / (highValue + 1));
+    realType randNumb = RandRealInRange(0, 1 - gEpsilon);
     // We need to convert this value into a bucket, so that all the integers in the range
     // 0...highValue, inclusively, are permitted.
-    size_t   bucket = static_cast<size_t>((randNumb / fraction) + gEpsilon);
+    size_t   bucket = static_cast<size_t>(randNumb / fraction);
     
     return bucket;
 } // Scuddle::RandUnsignedInRange
