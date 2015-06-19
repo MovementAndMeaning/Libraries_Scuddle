@@ -80,6 +80,20 @@ static realType lPi = static_cast<realType>(3.14159265);
 # pragma mark Local functions
 #endif // defined(__APPLE__)
 
+/*! @brief Seed the random number generator. */
+static void initRandom(void)
+{
+    if (! lRandomSeeded)
+    {
+#if defined(__APPLE__)
+        sranddev();
+#else // ! defined(__APPLE__)
+        srand(clock());
+#endif // ! defined(__APPLE__)
+        lRandomSeeded = true;
+    }
+} // initRandom
+
 #if defined(__APPLE__)
 # pragma mark Class methods
 #endif // defined(__APPLE__)
@@ -345,29 +359,16 @@ realType Scuddle::RandRealInRange(const realType lowValue,
                                   const realType highValue)
 {
     realType randNumb;
-    
-    if (! lRandomSeeded)
-    {
-#if defined(__APPLE__)
-        sranddev();
-#else // ! defined(__APPLE__)
-        srand(clock());
-#endif // ! defined(__APPLE__)
-        lRandomSeeded = true;
-    }
+
+    initRandom();
     randNumb = (static_cast<realType>(rand() % kModulus) / (kModulus - 1));
     return (lowValue + (randNumb * (highValue - lowValue)));
 } // Scuddle::RandRealInRange
 
 size_t Scuddle::RandUnsignedInRange(const size_t highValue)
 {
-    realType fraction = (static_cast<realType>(1) / (highValue + 1));
-    realType randNumb = RandRealInRange(0, 1 - gEpsilon);
-    // We need to convert this value into a bucket, so that all the integers in the range
-    // 0...highValue, inclusively, are permitted.
-    size_t   bucket = static_cast<size_t>(randNumb / fraction);
-    
-    return bucket;
+    initRandom();
+    return static_cast<size_t>(static_cast<size_t>(rand() / kModulus) % (highValue + 1));
 } // Scuddle::RandUnsignedInRange
 
 bool Scuddle::ReallyClose(const realType firstValue,

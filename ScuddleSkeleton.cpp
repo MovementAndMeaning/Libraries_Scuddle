@@ -173,18 +173,27 @@ const
 
 void Skeleton::mutate(void)
 {
-    realType newAngleValue = RandomAngle(360);
-    size_t   imax = _angles.size();
-    
-    if (1 < imax)
+    size_t whichAngle = RandUnsignedInRange(_angles.size() - 1);
+
+    switch (whichAngle)
     {
-        size_t whichAngle = RandUnsignedInRange(imax - 1);
-        
-        _angles[whichAngle] = newAngleValue;
-    }
-    else if (1 == imax)
-    {
-        _angles[0] = newAngleValue;
+        case kLeftShoulderToElbow :
+        case kRightShoulderToElbow :
+        case kLeftHipToKnee :
+        case kRightHipToKnee :
+            _angles[whichAngle] = RandomAngle(360);
+            break;
+
+        case kLeftElbowToWrist :
+        case kRightElbowToWrist :
+        case kLeftKneeToFoot :
+        case kRightKneeToFoot :
+            _angles[whichAngle] = RandomAngle(180);
+            break;
+
+        default :
+            break;
+
     }
 } // Skeleton::mutate
 
