@@ -7,14 +7,14 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>E7846B1B-D0C7-4BEA-8819-5F7871CB29E3</string>
 	<key>IDESourceControlProjectName</key>
-	<string>Scuddle</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>3D7F561C636759C53E9F330E809D810CFE619EA1</key>
 		<string>https://github.com/MovementAndMeaning/Libraries_Scuddle</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>Scuddle.xcodeproj</string>
+	<string>Scuddle.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>3D7F561C636759C53E9F330E809D810CFE619EA1</key>
