@@ -7,10 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */; };
-		DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */; };
-		DF8B4E321B31DA1900825935 /* ScuddleCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */; };
-		DF8B4E351B345FDC00825935 /* ScuddleSkeleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF8B4E331B345FDC00825935 /* ScuddleSkeleton.cpp */; };
+		DF1C1CC41B43074400E816A4 /* ScuddleBody.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1C1CBC1B43074300E816A4 /* ScuddleBody.cpp */; };
+		DF1C1CC51B43074400E816A4 /* ScuddleCommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1C1CBE1B43074300E816A4 /* ScuddleCommon.cpp */; };
+		DF1C1CC61B43074400E816A4 /* ScuddleMain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1C1CC11B43074400E816A4 /* ScuddleMain.cpp */; };
+		DF1C1CC71B43074400E816A4 /* ScuddleSkeleton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF1C1CC21B43074400E816A4 /* ScuddleSkeleton.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,16 +26,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		DF1C1CBC1B43074300E816A4 /* ScuddleBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScuddleBody.cpp; path = Source/ScuddleBody.cpp; sourceTree = SOURCE_ROOT; };
+		DF1C1CBD1B43074300E816A4 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScuddleBody.h; path = Source/ScuddleBody.h; sourceTree = SOURCE_ROOT; };
+		DF1C1CBE1B43074300E816A4 /* ScuddleCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScuddleCommon.cpp; path = Source/ScuddleCommon.cpp; sourceTree = SOURCE_ROOT; };
+		DF1C1CBF1B43074400E816A4 /* ScuddleCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScuddleCommon.h; path = Source/ScuddleCommon.h; sourceTree = SOURCE_ROOT; };
+		DF1C1CC01B43074400E816A4 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScuddleDataTypes.h; path = Source/ScuddleDataTypes.h; sourceTree = SOURCE_ROOT; };
+		DF1C1CC11B43074400E816A4 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScuddleMain.cpp; path = Source/ScuddleMain.cpp; sourceTree = SOURCE_ROOT; };
+		DF1C1CC21B43074400E816A4 /* ScuddleSkeleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ScuddleSkeleton.cpp; path = Source/ScuddleSkeleton.cpp; sourceTree = SOURCE_ROOT; };
+		DF1C1CC31B43074400E816A4 /* ScuddleSkeleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ScuddleSkeleton.h; path = Source/ScuddleSkeleton.h; sourceTree = SOURCE_ROOT; };
+		DF1C1CC81B43075200E816A4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		DF8B4E1E1B30D77200825935 /* Scuddle */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Scuddle; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF8B4E281B30D7AB00825935 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = SOURCE_ROOT; };
-		DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleBody.cpp; sourceTree = SOURCE_ROOT; };
-		DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleBody.h; sourceTree = SOURCE_ROOT; };
-		DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleDataTypes.h; sourceTree = SOURCE_ROOT; };
-		DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleMain.cpp; sourceTree = SOURCE_ROOT; };
-		DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleCommon.cpp; sourceTree = SOURCE_ROOT; };
-		DF8B4E311B31DA1900825935 /* ScuddleCommon.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleCommon.h; sourceTree = SOURCE_ROOT; };
-		DF8B4E331B345FDC00825935 /* ScuddleSkeleton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ScuddleSkeleton.cpp; sourceTree = SOURCE_ROOT; };
-		DF8B4E341B345FDC00825935 /* ScuddleSkeleton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScuddleSkeleton.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -52,7 +52,8 @@
 		DF8B4E151B30D77200825935 = {
 			isa = PBXGroup;
 			children = (
-				DF8B4E201B30D77200825935 /* Scuddle */,
+				DF1C1CC81B43075200E816A4 /* README.md */,
+				DF8B4E201B30D77200825935 /* Source */,
 				DF8B4E1F1B30D77200825935 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,19 +66,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		DF8B4E201B30D77200825935 /* Scuddle */ = {
+		DF8B4E201B30D77200825935 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				DF8B4E281B30D7AB00825935 /* README.md */,
-				DF8B4E291B30D7AB00825935 /* ScuddleBody.cpp */,
-				DF8B4E2A1B30D7AB00825935 /* ScuddleBody.h */,
-				DF8B4E301B31DA1900825935 /* ScuddleCommon.cpp */,
-				DF8B4E311B31DA1900825935 /* ScuddleCommon.h */,
-				DF8B4E2B1B30D7AB00825935 /* ScuddleDataTypes.h */,
-				DF8B4E2C1B30D7AB00825935 /* ScuddleMain.cpp */,
-				DF8B4E331B345FDC00825935 /* ScuddleSkeleton.cpp */,
-				DF8B4E341B345FDC00825935 /* ScuddleSkeleton.h */,
+				DF1C1CBC1B43074300E816A4 /* ScuddleBody.cpp */,
+				DF1C1CBD1B43074300E816A4 /* ScuddleBody.h */,
+				DF1C1CBE1B43074300E816A4 /* ScuddleCommon.cpp */,
+				DF1C1CBF1B43074400E816A4 /* ScuddleCommon.h */,
+				DF1C1CC01B43074400E816A4 /* ScuddleDataTypes.h */,
+				DF1C1CC11B43074400E816A4 /* ScuddleMain.cpp */,
+				DF1C1CC21B43074400E816A4 /* ScuddleSkeleton.cpp */,
+				DF1C1CC31B43074400E816A4 /* ScuddleSkeleton.h */,
 			);
+			name = Source;
 			path = Scuddle;
 			sourceTree = "<group>";
 		};
@@ -137,10 +138,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF8B4E321B31DA1900825935 /* ScuddleCommon.cpp in Sources */,
-				DF8B4E351B345FDC00825935 /* ScuddleSkeleton.cpp in Sources */,
-				DF8B4E2F1B30D7AB00825935 /* ScuddleMain.cpp in Sources */,
-				DF8B4E2E1B30D7AB00825935 /* ScuddleBody.cpp in Sources */,
+				DF1C1CC61B43074400E816A4 /* ScuddleMain.cpp in Sources */,
+				DF1C1CC41B43074400E816A4 /* ScuddleBody.cpp in Sources */,
+				DF1C1CC51B43074400E816A4 /* ScuddleCommon.cpp in Sources */,
+				DF1C1CC71B43074400E816A4 /* ScuddleSkeleton.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -205,7 +206,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/**",
+					glm,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
@@ -266,7 +267,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"$(SRCROOT)/**",
+					glm,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;

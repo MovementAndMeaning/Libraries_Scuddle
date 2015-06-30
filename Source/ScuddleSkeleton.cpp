@@ -38,8 +38,6 @@
 
 #include "ScuddleSkeleton.h"
 
-#include <vector>
-
 #if defined(__APPLE__)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -240,12 +238,20 @@ void Skeleton::setAttributes(const size_t numAngles)
     }
 } // Skeleton::setAttributes
 
+# if defined(CROSSOVER_FRACTION_)
+void Skeleton::swapValues(Skeleton &     other,
+                          const realType fraction)
+# else // ! defined(CROSSOVER_FRACTION_)
 void Skeleton::swapValues(Skeleton &   other,
                           const size_t numSwap)
+# endif // ! defined(CROSSOVER_FRACTION_)
 {
     size_t imax = std::min(_angles.size(), other._angles.size());
     size_t numAttributes = kNumFixedAttributes + imax;
     size_t realSwap;
+#if defined(CROSSOVER_FRACTION_)
+    size_t numSwap = static_cast<size_t>(numAttributes * fraction);
+#endif // ! defined(CROSSOVER_FRACTION_)
     
     if (numAttributes < numSwap)
     {

@@ -41,8 +41,14 @@
 
 # include <complex>
 
+# if (! defined(MAC_OR_LINUX_))
+/*! @brief @c TRUE if non-Windows, @c FALSE if Windows. */
+#  define MAC_OR_LINUX_ (defined(__APPLE__) || defined(__linux__))
+# endif // ! defined(MAC_OR_LINUX_)
+
 # define USE_SKELETON_ /* Use Skeleton rather than Body. */
 //# define GENERATE_POSITIONS_ /* Generate coordinates as well as angles. */
+//# define CROSSOVER_FRACTION_ 0.5 /* If defined, the fraction of values to 'crossover'. */
 
 namespace Scuddle
 {

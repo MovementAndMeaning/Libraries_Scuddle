@@ -38,8 +38,6 @@
 
 #include "ScuddleBody.h"
 
-#include <vector>
-
 #if defined(__APPLE__)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wunknown-pragmas"
@@ -300,11 +298,19 @@ void Body::setPositions(void)
 } // Body::setPositions
 #endif // defined(GENERATE_POSITIONS_)
 
+#if defined(CROSSOVER_FRACTION_)
+void Body::swapValues(Body &         other,
+                      const realType fraction)
+#else // ! defined(CROSSOVER_FRACTION_)
 void Body::swapValues(Body &       other,
                       const size_t numSwap)
+#endif // ! defined(CROSSOVER_FRACTION_)
 {
     // We have 13 values that we can work with.
     size_t realSwap;
+#if defined(CROSSOVER_FRACTION_)
+    size_t numSwap = static_cast<size_t>(kNumAttributes * fraction);
+#endif // ! defined(CROSSOVER_FRACTION_)
     
     if (kNumAttributes < numSwap)
     {

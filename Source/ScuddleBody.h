@@ -428,11 +428,19 @@ namespace Scuddle
             _marked = true;
         } // setMark
         
+# if defined(CROSSOVER_FRACTION_)
+        /*! @brief Choose a set of values and swap with another Body.
+         @param other The other Body to be modified.
+         @param fraction The fraction of the values to be exchanged. */
+        void swapValues(Body &         other,
+                        const realType fraction);
+# else // ! defined(CROSSOVER_FRACTION_)
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param numSwap The number of values to be exchanged. */
         void swapValues(Body &       other,
                         const size_t numSwap);
+# endif // ! defined(CROSSOVER_FRACTION_)
         
         /*! @brief Determine the fitness value for this object. */
         void updateFitness(void);

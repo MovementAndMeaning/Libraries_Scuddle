@@ -1,6 +1,6 @@
 //--------------------------------------------------------------------------------------------------
 //
-//  File:       ScuddleBody.cpp
+//  File:       ScuddleMain.cpp
 //
 //  Project:    Scuddle
 //
@@ -40,6 +40,11 @@
 #include "ScuddleSkeleton.h"
 
 #include <iostream>
+#if MAC_OR_LINUX_
+# include <sys/time.h>
+#else // ! MAC_OR_LINUX_
+# include <sys/timeb.h>
+#endif // ! MAC_OR_LINUX_
 
 #if defined(__APPLE__)
 # pragma clang diagnostic push
@@ -119,8 +124,10 @@ static const realType kMutationFraction = static_cast<realType>(0.10);
 /*! @brief The fraction of the set of Body objects that are selected. */
 static const realType kSelectionFraction = static_cast<realType>(0.20);
 
+#if (! defined(CROSSOVER_FRACTION_))
 /*! @brief The number of attributes to swap. */
 static const size_t kCrossoverCount = 2;
+#endif // ! defined(CROSSOVER_FRACTION_)
 
 #if defined(USE_SKELETON_)
 /*! @brief The number of angles in each Skeleton. */
@@ -160,6 +167,25 @@ static IndexVector * lIndices = nullptr;
 #if defined(__APPLE__)
 # pragma mark Local functions
 #endif // defined(__APPLE__)
+
+static double getMillisecondsSinceEpoch(void)
+{
+    double result;
+#if MAC_OR_LINUX_
+    struct timeval tv;
+#else // ! MAC_OR_LINUX_
+    struct _timeb  tt;
+#endif // ! MAC_OR_LINUX_
+    
+#if MAC_OR_LINUX_
+    gettimeofday(&tv, nullptr);
+    result = (tv.tv_sec * 1000.0) + (tv.tv_usec / 1000.0);
+#else // ! MAC_OR_LINUX_
+    _ftime_s(&tt);
+    result = (tt.time * 1000.0) + tt.millitm;
+#endif // ! MAC_OR_LINUX_
+    return result;
+} // getMillisecondsSinceEpoch
 
 /*! @brief Update the fitness value for the Body objects. */
 static void calculateFitnessValues(void)
@@ -320,7 +346,7 @@ static void printSkeleton(Skeleton & aSkeleton)
         {
             std::cout << " ";
         }
-        std::cout << "[" << aQuat.w << "," << aQuat.x << "," << aQuat.y << "," << aQuat.z << "]";
+        std::cout << "[" << aQuat.x << "," << aQuat.y << "," << aQuat.z << aQuat.w << "," << "]";
     }
     std::cout << std::endl;
 } // printSkeleton
@@ -479,7 +505,11 @@ static void makeSelection(void)
 } // makeSelection
 
 /*! @brief Generate a new set of objects, using the selected parents. */
+#if defined(CROSSOVER_FRACTION_)
+static void doCrossovers(const realType crossoverFraction)
+#else // ! defined(CROSSOVER_FRACTION_)
 static void doCrossovers(const size_t crossoverCount)
+#endif // ! defined(CROSSOVER_FRACTION_)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing crossovers." << std::endl;
@@ -570,10 +600,14 @@ static void doCrossovers(const size_t crossoverCount)
             Body *     secondChild = new Body(*secondParent);
 #endif // ! defined(USE_SKELETON_)
             
-            // Crossover an attribute:
+            // Crossover attributes:
             lPopulation->push_back(firstChild);
             lPopulation->push_back(secondChild);
+#if defined(CROSSOVER_FRACTION_)
+            firstChild->swapValues(*secondChild, crossoverFraction);
+#else // ! defined(CROSSOVER_FRACTION_)
             firstChild->swapValues(*secondChild, crossoverCount);
+#endif // ! defined(CROSSOVER_FRACTION_)
             if (kPopulationSize <= lPopulation->size())
             {
                 keepGoing = false;
@@ -757,6 +791,20 @@ int main(int            argc,
 #if defined(__APPLE__)
 # pragma unused(argc, argv)
 #endif // defined(__APPLE__)
+    double timeBeforeFitness;
+    double timeBeforeSelection;
+    double timeBeforeCrossovers;
+    double timeBeforeMutations;
+    double timeBeforeFinalSelection;
+    double timeAfterFinalSelection;
+    double timeAfterMutations;
+    double fitnessTime = 0;
+    double selectionTime = 0;
+    double crossoverTime = 0;
+    double mutationTime = 0;
+    double iterationTime = 0;
+    double finalSelectionTime;
+    
 #if defined(USE_SKELETON_)
     lPopulation = new SkeletonVector;
     lSelection = new SkeletonVector;
@@ -770,12 +818,28 @@ int main(int            argc,
 #endif // ! defined(USE_SKELETON_)
     for (int kk = 0; kIterationCount > kk; ++kk)
     {
+        timeBeforeFitness = getMillisecondsSinceEpoch();
         calculateFitnessValues();
+        timeBeforeSelection = getMillisecondsSinceEpoch();
         makeSelection();
+        timeBeforeCrossovers = getMillisecondsSinceEpoch();
+#if defined(CROSSOVER_FRACTION_)
+        doCrossovers(CROSSOVER_FRACTION_);
+#else // ! defined(CROSSOVER_FRACTION_)
         doCrossovers(kCrossoverCount);
+#endif // ! defined(CROSSOVER_FRACTION_)
+        timeBeforeMutations = getMillisecondsSinceEpoch();
         doMutations(kMutationFraction);
+        timeAfterMutations = getMillisecondsSinceEpoch();
+        fitnessTime += (timeBeforeSelection - timeBeforeFitness);
+        selectionTime += (timeBeforeCrossovers - timeBeforeSelection);
+        crossoverTime += (timeBeforeMutations - timeBeforeCrossovers);
+        mutationTime += (timeAfterMutations - timeBeforeMutations);
+        iterationTime += (timeAfterMutations - timeBeforeFitness);
     }
+    timeBeforeFinalSelection = getMillisecondsSinceEpoch();
     makeFinalSelection(kFinalSelectionSize);
+    timeAfterFinalSelection = getMillisecondsSinceEpoch();
 #if defined(PRINT_VALUES_)
 # if defined(USE_SKELETON_)
     for (SkeletonVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
@@ -803,6 +867,18 @@ int main(int            argc,
     }
 # endif // ! defined(USE_SKELETON_)
 #endif // defined(PRINT_VALUES_)
+    finalSelectionTime = (timeAfterFinalSelection - timeBeforeFinalSelection);
+    std::cerr << "Final selection time: " << finalSelectionTime << " msec" << std::endl;
+    std::cerr << "Fitness time: " << fitnessTime << " (" << (fitnessTime / kIterationCount) <<
+                ") msec" << std::endl;
+    std::cerr << "Selection time: " << selectionTime << " (" << (selectionTime / kIterationCount) <<
+                ") msec" << std::endl;
+    std::cerr << "Crossover time: " << crossoverTime << " (" << (crossoverTime / kIterationCount) <<
+                ") msec" << std::endl;
+    std::cerr << "Mutation time: " << mutationTime << " (" << (mutationTime / kIterationCount) <<
+                ") msec" << std::endl;
+    std::cerr << "Iteration time: " << iterationTime << " (" << (iterationTime / kIterationCount) <<
+                ") msec" << std::endl;
     cleanup();
     return 0;
 } // main
