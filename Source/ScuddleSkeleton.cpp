@@ -106,24 +106,24 @@ Skeleton::~Skeleton(void)
 void Skeleton::determineQuadrants(void)
 {
     // Calculate the quadrants:
-    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow],
-                                                               90, 1, 180, 2, 270, 1, 4);
-    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow],
-                                                               90, 1, 180, 2, 270, 1, 4);
-    _quadrants[kRightShoulderToElbow] = MapAngleToQuadrant(_angles[kRightShoulderToElbow],
-                                                                90, 2, 180, 1, 270, 4, 1);
-    _quadrants[kLeftElbowToWrist] = MapAngleToQuadrant(_angles[kLeftElbowToWrist], 45, 1,
-                                                            90, 2, 135, 1, 4);
-    _quadrants[kRightElbowToWrist] = MapAngleToQuadrant(_angles[kRightElbowToWrist], 45,
-                                                             2, 90, 1, 135, 4, 1);
-    _quadrants[kLeftHipToKnee] = MapAngleToQuadrant(_angles[kLeftHipToKnee], 90, 4, 180,
-                                                         1, 270, 2, 1);
-    _quadrants[kRightHipToKnee] = MapAngleToQuadrant(_angles[kRightHipToKnee], 90, 1, 180,
-                                                          4, 270, 1, 2);
-    _quadrants[kLeftKneeToFoot] = MapAngleToQuadrant(_angles[kLeftKneeToFoot], 45, 4, 90,
-                                                          1, 135, 2, 1);
-    _quadrants[kRightKneeToFoot] = MapAngleToQuadrant(_angles[kRightKneeToFoot], 45, 1,
-                                                           90, 4, 135, 1, 2);
+    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow], 90, 1,
+                                                          180, 2, 270, 1, 4);
+    _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow], 90, 1, 180,
+                                                          2, 270, 1, 4);
+    _quadrants[kRightShoulderToElbow] = MapAngleToQuadrant(_angles[kRightShoulderToElbow], 90, 2,
+                                                           180, 1, 270, 4, 1);
+    _quadrants[kLeftElbowToWrist] = MapAngleToQuadrant(_angles[kLeftElbowToWrist], 45, 1, 90, 2,
+                                                       135, 1, 4);
+    _quadrants[kRightElbowToWrist] = MapAngleToQuadrant(_angles[kRightElbowToWrist], 45, 2, 90, 1,
+                                                        135, 4, 1);
+    _quadrants[kLeftHipToKnee] = MapAngleToQuadrant(_angles[kLeftHipToKnee], 90, 4, 180, 1, 270, 2,
+                                                    1);
+    _quadrants[kRightHipToKnee] = MapAngleToQuadrant(_angles[kRightHipToKnee], 90, 1, 180, 4, 270,
+                                                     1, 2);
+    _quadrants[kLeftKneeToFoot] = MapAngleToQuadrant(_angles[kLeftKneeToFoot], 45, 4, 90, 1, 135, 2,
+                                                     1);
+    _quadrants[kRightKneeToFoot] = MapAngleToQuadrant(_angles[kRightKneeToFoot], 45, 1, 90, 4, 135,
+                                                      1, 2);
     _quadrantScore = 0;
     for (size_t ii = 0, imax = _quadrants.size(); imax > ii; ++ii)
     {
