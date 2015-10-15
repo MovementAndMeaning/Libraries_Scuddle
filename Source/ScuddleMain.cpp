@@ -269,15 +269,15 @@ static void createMapForAngles(void)
         
         switch (ii)
         {
-            case 1 :
+            case 2 :
                 dispIndex = Skeleton::kLeftHipToKnee;
                 break;
                 
-            case 4 :
+            case 3 :
                 dispIndex = Skeleton::kLeftKneeToFoot;
                 break;
                 
-            case 6 :
+            case 8 :
                 dispIndex = Skeleton::kRightHipToKnee;
                 break;
                 
@@ -285,19 +285,19 @@ static void createMapForAngles(void)
                 dispIndex = Skeleton::kRightKneeToFoot;
                 break;
                 
-            case 17 :
+            case 21 :
                 dispIndex = Skeleton::kLeftShoulderToElbow;
                 break;
                 
-            case 19 :
+            case 22 :
                 dispIndex = Skeleton::kLeftElbowToWrist;
                 break;
                 
-            case 24 :
+            case 30 :
                 dispIndex = Skeleton::kRightShoulderToElbow;
                 break;
                 
-            case 26 :
+            case 31 :
                 dispIndex = Skeleton::kRightElbowToWrist;
                 break;
                 
@@ -383,11 +383,14 @@ static void generateSkeletons(const size_t numSkeletons)
         
         lPopulation->push_back(aSkeleton);
 # if defined(PRINT_VALUES_)
-        if (0 < ii)
+        if (0 < lIndices->size())
         {
-            std::cout << std::endl;
+            if (0 < ii)
+            {
+                std::cout << std::endl;
+            }
+            printSkeleton(*aSkeleton);
         }
-        printSkeleton(*aSkeleton);
 # endif // defined(PRINT_VALUES_)
     }
 } // generateSkeletons
@@ -706,7 +709,7 @@ static void makeFinalSelection(const size_t selectionSize)
 #endif // ! defined(USE_SKELETON_)
     lSelection->clear();
     lSelection->resize(selectionSize);
-    for (size_t ii = 0, imax = selectionSize; imax > ii; ++ii)
+    for (size_t ii = 0, imax = selectionSize; imax > ii; )
     {
         realType sumOfArrayIndices = 0;
         realType chooseArray = RandRealInRange(0, sumOfScore);
@@ -726,6 +729,7 @@ static void makeFinalSelection(const size_t selectionSize)
                 {
                     sumOfArrayIndices += score;
                     (*lSelection)[ii] = aSkeleton;
+                    ++ii;
                 }
                 else
                 {
@@ -748,6 +752,7 @@ static void makeFinalSelection(const size_t selectionSize)
                 {
                     sumOfArrayIndices += score;
                     (*lSelection)[ii] = aBody;
+                    ++ii;
                 }
                 else
                 {
@@ -837,6 +842,7 @@ int main(int            argc,
         mutationTime += (timeAfterMutations - timeBeforeMutations);
         iterationTime += (timeAfterMutations - timeBeforeFitness);
     }
+    calculateFitnessValues();
     timeBeforeFinalSelection = getMillisecondsSinceEpoch();
     makeFinalSelection(kFinalSelectionSize);
     timeAfterFinalSelection = getMillisecondsSinceEpoch();
