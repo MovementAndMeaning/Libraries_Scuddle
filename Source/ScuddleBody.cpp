@@ -298,19 +298,19 @@ void Body::setPositions(void)
 } // Body::setPositions
 #endif // defined(GENERATE_POSITIONS_)
 
-#if defined(CROSSOVER_FRACTION_)
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
 void Body::swapValues(Body &         other,
                       const realType fraction)
-#else // ! defined(CROSSOVER_FRACTION_)
+#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 void Body::swapValues(Body &       other,
                       const size_t numSwap)
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 {
     // We have 13 values that we can work with.
     size_t realSwap;
-#if defined(CROSSOVER_FRACTION_)
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
     size_t numSwap = static_cast<size_t>(kNumAttributes * fraction);
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
     
     if (kNumAttributes < numSwap)
     {

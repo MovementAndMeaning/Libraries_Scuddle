@@ -69,6 +69,8 @@ using namespace Scuddle;
 
 #define PRINT_VALUES_ /* Print out values of interest. */
 
+//#define REPORT_TIMES_ /* Print out the time to do various operations. */
+
 #if defined(USE_SKELETON_)
 /*! @brief A sequence of Skeleton objects. */
 typedef std::vector<Skeleton *> SkeletonVector;
@@ -82,35 +84,35 @@ typedef std::vector<Body *> BodyVector;
 typedef std::vector<int> IndexVector;
 #endif // defined(USE_SKELETON_)
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the left side of the hips for new Body objects. */
 static const Coordinate2D kLeftHip(120, 220);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the left shoulder for new Body objects. */
 static const Coordinate2D kLeftShoulder(110, 100);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the neck for new Body objects. */
 static const Coordinate2D kNeck(155, 110);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the right side of the hips for new Body objects. */
 static const Coordinate2D kRightHip(190, 220);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the right shoulder for new Body objects. */
 static const Coordinate2D kRightShoulder(200, 100);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-#if defined(GENERATE_POSITIONS_)
+#if (defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_)))
 /*! @brief The initial position of the 'tail' for new Body objects. */
 static const Coordinate2D kTail(155, 210);
-#endif // defined(GENERATE_POSITIONS_)
+#endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
 /*! @brief The number of selections to present when finished. */
 static const int kFinalSelectionSize = 5;
@@ -118,16 +120,19 @@ static const int kFinalSelectionSize = 5;
 /*! @brief The number of iterations to perform. */
 static const int kIterationCount = 5;
 
-/*! @brief The fraction of the set of Body objects that are to be mutated. */
+/*! @brief The fraction of the set of Body or Skeleton objects that are to be mutated. */
 static const realType kMutationFraction = static_cast<realType>(0.10);
 
-/*! @brief The fraction of the set of Body objects that are selected. */
+/*! @brief The fraction of the set of Body or Skeleton objects that are selected. */
 static const realType kSelectionFraction = static_cast<realType>(0.20);
 
-#if (! defined(CROSSOVER_FRACTION_))
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
+/*! @brief The fraction of attributes to swap. */
+static const realType kCrossoverFraction = static_cast<realType>(0.50);
+#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 /*! @brief The number of attributes to swap. */
 static const size_t kCrossoverCount = 2;
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 
 #if defined(USE_SKELETON_)
 /*! @brief The number of angles in each Skeleton. */
@@ -135,13 +140,15 @@ static const size_t kNumDisplayedAngles = 31;
 #endif // defined(USE_SKELETON_)
 
 #if defined(USE_SKELETON_)
+/*! @brief The number of quaternions to print per row. */
 static const size_t kNumQuaternionsPerRow = 3;
 #endif // defined(USE_SKELETON_)
 
-/*! @brief The number of Body objects to generate. */
+/*! @brief The number of Body or Skeleton objects to generate. */
 static const size_t kPopulationSize = 200; // MUST BE EVEN!!!
 
 #if defined(USE_SKELETON_)
+/*! @brief The set of Skeleton objects that are worked on. */
 static SkeletonVector * lPopulation = nullptr;
 #else // ! defined(USE_SKELETON_)
 /*! @brief The set of Body objects that are worked on. */
@@ -168,26 +175,30 @@ static IndexVector * lIndices = nullptr;
 # pragma mark Local functions
 #endif // defined(__APPLE__)
 
+#if defined(REPORT_TIMES_)
+/*! @brief Return the number of milliseconds since an arbitrary time in the past.
+ @returns The number of milliseconds since an arbitrary time in the past. */
 static double getMillisecondsSinceEpoch(void)
 {
     double result;
-#if MAC_OR_LINUX_
+# if MAC_OR_LINUX_
     struct timeval tv;
-#else // ! MAC_OR_LINUX_
+# else // ! MAC_OR_LINUX_
     struct _timeb  tt;
-#endif // ! MAC_OR_LINUX_
+# endif // ! MAC_OR_LINUX_
     
-#if MAC_OR_LINUX_
+# if MAC_OR_LINUX_
     gettimeofday(&tv, nullptr);
     result = (tv.tv_sec * 1000.0) + (tv.tv_usec / 1000.0);
-#else // ! MAC_OR_LINUX_
+# else // ! MAC_OR_LINUX_
     _ftime_s(&tt);
     result = (tt.time * 1000.0) + tt.millitm;
-#endif // ! MAC_OR_LINUX_
+# endif // ! MAC_OR_LINUX_
     return result;
 } // getMillisecondsSinceEpoch
+#endif // defined(REPORT_TIMES_)
 
-/*! @brief Update the fitness value for the Body objects. */
+/*! @brief Update the fitness value for the Body or Skeleton objects. */
 static void calculateFitnessValues(void)
 {
 #if defined(PRINT_VALUES_)
@@ -507,12 +518,15 @@ static void makeSelection(void)
     }
 } // makeSelection
 
-/*! @brief Generate a new set of objects, using the selected parents. */
-#if defined(CROSSOVER_FRACTION_)
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
+/*! @brief Generate a new set of objects, using the selected parents.
+ @param crossoverFraction The proportion of objects to be generated. */
 static void doCrossovers(const realType crossoverFraction)
-#else // ! defined(CROSSOVER_FRACTION_)
+#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
+/*! @brief Generate a new set of objects, using the selected parents.
+ @param crossoverCount The number of objects to be generated. */
 static void doCrossovers(const size_t crossoverCount)
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing crossovers." << std::endl;
@@ -606,11 +620,11 @@ static void doCrossovers(const size_t crossoverCount)
             // Crossover attributes:
             lPopulation->push_back(firstChild);
             lPopulation->push_back(secondChild);
-#if defined(CROSSOVER_FRACTION_)
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
             firstChild->swapValues(*secondChild, crossoverFraction);
-#else // ! defined(CROSSOVER_FRACTION_)
+#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
             firstChild->swapValues(*secondChild, crossoverCount);
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
             if (kPopulationSize <= lPopulation->size())
             {
                 keepGoing = false;
@@ -619,7 +633,8 @@ static void doCrossovers(const size_t crossoverCount)
     }
 } // doCrossovers
 
-/*! @brief Mutate some of the objects. */
+/*! @brief Mutate some of the objects.
+ @param mutationFraction The proportion of objects to be mutated. */
 static void doMutations(const realType mutationFraction)
 {
 #if defined(PRINT_VALUES_)
@@ -796,6 +811,7 @@ int main(int            argc,
 #if defined(__APPLE__)
 # pragma unused(argc, argv)
 #endif // defined(__APPLE__)
+#if defined(REPORT_TIMES_)
     double timeBeforeFitness;
     double timeBeforeSelection;
     double timeBeforeCrossovers;
@@ -809,6 +825,7 @@ int main(int            argc,
     double mutationTime = 0;
     double iterationTime = 0;
     double finalSelectionTime;
+#endif // defined(REPORT_TIMES_)
     
 #if defined(USE_SKELETON_)
     lPopulation = new SkeletonVector;
@@ -823,29 +840,43 @@ int main(int            argc,
 #endif // ! defined(USE_SKELETON_)
     for (int kk = 0; kIterationCount > kk; ++kk)
     {
+#if defined(REPORT_TIMES_)
         timeBeforeFitness = getMillisecondsSinceEpoch();
+#endif // defined(REPORT_TIMES_)
         calculateFitnessValues();
+#if defined(REPORT_TIMES_)
         timeBeforeSelection = getMillisecondsSinceEpoch();
+#endif // defined(REPORT_TIMES_)
         makeSelection();
+#if defined(REPORT_TIMES_)
         timeBeforeCrossovers = getMillisecondsSinceEpoch();
-#if defined(CROSSOVER_FRACTION_)
-        doCrossovers(CROSSOVER_FRACTION_);
-#else // ! defined(CROSSOVER_FRACTION_)
+#endif // defined(REPORT_TIMES_)
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
+        doCrossovers(kCrossoverFraction);
+#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         doCrossovers(kCrossoverCount);
-#endif // ! defined(CROSSOVER_FRACTION_)
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
+#if defined(REPORT_TIMES_)
         timeBeforeMutations = getMillisecondsSinceEpoch();
+#endif // defined(REPORT_TIMES_)
         doMutations(kMutationFraction);
+#if defined(REPORT_TIMES_)
         timeAfterMutations = getMillisecondsSinceEpoch();
         fitnessTime += (timeBeforeSelection - timeBeforeFitness);
         selectionTime += (timeBeforeCrossovers - timeBeforeSelection);
         crossoverTime += (timeBeforeMutations - timeBeforeCrossovers);
         mutationTime += (timeAfterMutations - timeBeforeMutations);
         iterationTime += (timeAfterMutations - timeBeforeFitness);
+#endif // defined(REPORT_TIMES_)
     }
     calculateFitnessValues();
+#if defined(REPORT_TIMES_)
     timeBeforeFinalSelection = getMillisecondsSinceEpoch();
+#endif // defined(REPORT_TIMES_)
     makeFinalSelection(kFinalSelectionSize);
+#if defined(REPORT_TIMES_)
     timeAfterFinalSelection = getMillisecondsSinceEpoch();
+#endif // defined(REPORT_TIMES_)
 #if defined(PRINT_VALUES_)
 # if defined(USE_SKELETON_)
     for (SkeletonVector::iterator walker(lSelection->begin()); lSelection->end() != walker;
@@ -873,6 +904,7 @@ int main(int            argc,
     }
 # endif // ! defined(USE_SKELETON_)
 #endif // defined(PRINT_VALUES_)
+#if defined(REPORT_TIMES_)
     finalSelectionTime = (timeAfterFinalSelection - timeBeforeFinalSelection);
     std::cerr << "Final selection time: " << finalSelectionTime << " msec" << std::endl;
     std::cerr << "Fitness time: " << fitnessTime << " (" << (fitnessTime / kIterationCount) <<
@@ -885,6 +917,7 @@ int main(int            argc,
                 ") msec" << std::endl;
     std::cerr << "Iteration time: " << iterationTime << " (" << (iterationTime / kIterationCount) <<
                 ") msec" << std::endl;
+#endif // defined(REPORT_TIMES_)
     cleanup();
     return 0;
 } // main

@@ -48,7 +48,7 @@
 
 # define USE_SKELETON_ /* Use Skeleton rather than Body. */
 //# define GENERATE_POSITIONS_ /* Generate coordinates as well as angles. */
-//# define CROSSOVER_FRACTION_ 0.5 /* If defined, the fraction of values to 'crossover'. */
+//# define USE_FRACTION_FOR_CROSSOVER_ /* Use a fraction for crossovers. */
 
 namespace Scuddle
 {

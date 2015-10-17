@@ -76,7 +76,7 @@ namespace Scuddle
         Skeleton(void);
                 
         /*! @brief The copy constructor.
-         @param other The Body to be copied. */
+         @param other The Skeleton to be copied. */
         Skeleton(const Skeleton & other);
         
         /*! @brief The destructor. */
@@ -170,19 +170,19 @@ namespace Scuddle
             _marked = true;
         } // setMark
         
-# if defined(CROSSOVER_FRACTION_)
+# if defined(USE_FRACTION_FOR_CROSSOVER_)
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param fraction The fraction of the values to be exchanged. */
         void swapValues(Skeleton &     other,
                         const realType fraction);
-# else // ! defined(CROSSOVER_FRACTION_)
+# else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param numSwap The number of values to be exchanged. */
         void swapValues(Skeleton &   other,
                         const size_t numSwap);
-# endif // ! defined(CROSSOVER_FRACTION_)
+# endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         
         /*! @brief Determine the fitness value for this object. */
         void updateFitness(void);
