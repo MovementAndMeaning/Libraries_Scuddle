@@ -62,9 +62,54 @@ using namespace Scuddle;
 /*! @brief The number of fixed attributes that can be swapped. */
 static const size_t kNumFixedAttributes = 5;
 
+/*! @brief The initial fitness coefficient for Bartenieff contralateral configurations. */
+static const realType kInitialBartenieffContralateral = static_cast<realType>(1.3);
+
+/*! @brief The initial fitness coefficient for Bartenieff distal configurations. */
+static const realType kInitialBartenieffDistal = static_cast<realType>(0.4);
+
+/*! @brief The initial fitness coefficient for Bartenieff homolateral configurations. */
+static const realType kInitialBartenieffHomolateral = static_cast<realType>(0.5);
+
+/*! @brief The initial fitness coefficient for Bartenieff homologous configurations. */
+static const realType kInitialBartenieffHomologous = static_cast<realType>(0.4);
+
+/*! @brief The initial fitness coefficient for Bartenieff medial configurations. */
+static const realType kInitialBartenieffMedial = static_cast<realType>(0.7);
+
+/*! @brief The initial fitness coefficient for high Effort configurations. */
+static const realType kInitialEffortHigh = static_cast<realType>(1.4);
+
+/*! @brief The initial fitness coefficient for low Effort configurations. */
+static const realType kInitialEffortLow = static_cast<realType>(0.6);
+
+/*! @brief The initial fitness coefficient for medium Effort configurations. */
+static const realType kInitialEffortMedium = static_cast<realType>(1.2);
+
+/*! @brief The initial fitness coefficient for unextended leg configurations. */
+static const realType kInitialUnextendedLegs = static_cast<realType>(0.3);
+
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
 #endif // defined(__APPLE__)
+
+realType Skeleton::gBartenieffContralateral = kInitialBartenieffContralateral;
+
+realType Skeleton::gBartenieffDistal = kInitialBartenieffDistal;
+
+realType Skeleton::gBartenieffHomolateral = kInitialBartenieffHomolateral;
+
+realType Skeleton::gBartenieffHomologous = kInitialBartenieffHomologous;
+
+realType Skeleton::gBartenieffMedial = kInitialBartenieffMedial;
+
+realType Skeleton::gEffortHigh = kInitialEffortHigh;
+
+realType Skeleton::gEffortLow = kInitialEffortLow;
+
+realType Skeleton::gEffortMedium = kInitialEffortMedium;
+
+realType Skeleton::gUnextendedLegs = kInitialUnextendedLegs;
 
 #if defined(__APPLE__)
 # pragma mark Local functions
@@ -79,14 +124,14 @@ static const size_t kNumFixedAttributes = 5;
 #endif // defined(__APPLE__)
 
 Skeleton::Skeleton(void) :
-    _marked(false)
+_marked(false)
 {
     setAttributes(kNumCalculatedAngles);
 } // Skeleton::Skeleton
 
 Skeleton::Skeleton(const Skeleton & other) :
-    _flow(other._flow), _height(other._height), _space(other._space), _time(other._time),
-    _weight(other._weight), _marked(false)
+_flow(other._flow), _height(other._height), _space(other._space), _time(other._time),
+_weight(other._weight), _marked(false)
 {
     for (size_t ii = 0, imax = other._angles.size(); imax > ii; ++ii)
     {
@@ -172,7 +217,7 @@ const
 void Skeleton::mutate(void)
 {
     size_t whichAngle = RandUnsignedInRange(_angles.size() - 1);
-
+    
     switch (whichAngle)
     {
         case kLeftShoulderToElbow :
@@ -181,19 +226,32 @@ void Skeleton::mutate(void)
         case kRightHipToKnee :
             _angles[whichAngle] = RandomAngle(360);
             break;
-
+            
         case kLeftElbowToWrist :
         case kRightElbowToWrist :
         case kLeftKneeToFoot :
         case kRightKneeToFoot :
             _angles[whichAngle] = RandomAngle(180);
             break;
-
+            
         default :
             break;
-
+            
     }
 } // Skeleton::mutate
+
+void Skeleton::resetParameters(void)
+{
+    setBartenieffContralateral(kInitialBartenieffContralateral);
+    setBartenieffDistal(kInitialBartenieffDistal);
+    setBartenieffHomolateral(kInitialBartenieffHomolateral);
+    setBartenieffHomologous(kInitialBartenieffHomologous);
+    setBartenieffMedial(kInitialBartenieffMedial);
+    setEffortHigh(kInitialEffortHigh);
+    setEffortLow(kInitialEffortLow);
+    setEffortMedium(kInitialEffortMedium);
+    setUnextendedLegs(kInitialUnextendedLegs);
+} // Skeleton::resetParameters
 
 void Skeleton::setAttributes(const size_t numAngles)
 {
@@ -237,6 +295,56 @@ void Skeleton::setAttributes(const size_t numAngles)
         _height = kHeightLow;
     }
 } // Skeleton::setAttributes
+
+void Skeleton::setBartenieffContralateral(const realType newParameter)
+{
+    gBartenieffContralateral = ((0 < newParameter) ? newParameter :
+                                kInitialBartenieffContralateral);
+} // Skeleton::setBartenieffContralateral
+
+void Skeleton::setBartenieffDistal(const realType newParameter)
+{
+    gBartenieffDistal = ((0 < newParameter) ? newParameter :
+                         kInitialBartenieffDistal);
+} // Skeleton::setBartenieffDistal
+
+void Skeleton::setBartenieffHomolateral(const realType newParameter)
+{
+    gBartenieffHomolateral = ((0 < newParameter) ? newParameter :
+                              kInitialBartenieffHomolateral);
+} // Skeleton::setBartenieffHomolateral
+
+void Skeleton::setBartenieffHomologous(const realType newParameter)
+{
+    gBartenieffHomologous = ((0 < newParameter) ? newParameter :
+                             kInitialBartenieffHomologous);
+} // Skeleton::setBartenieffHomologous
+
+void Skeleton::setBartenieffMedial(const realType newParameter)
+{
+    gBartenieffMedial = ((0 < newParameter) ? newParameter :
+                         kInitialBartenieffMedial);
+} // Skeleton::setBartenieffMedial
+
+void Skeleton::setEffortHigh(const realType newParameter)
+{
+    gEffortHigh = ((0 < newParameter) ? newParameter : kInitialEffortHigh);
+} // Skeleton::setEffortHigh
+
+void Skeleton::setEffortLow(const realType newParameter)
+{
+    gEffortLow = ((0 < newParameter) ? newParameter : kInitialEffortLow);
+} // Skeleton::setEffortLow
+
+void Skeleton::setEffortMedium(const realType newParameter)
+{
+    gEffortMedium = ((0 < newParameter) ? newParameter : kInitialEffortMedium);
+} // Skeleton::setEffortMedium
+
+void Skeleton::setUnextendedLegs(const realType newParameter)
+{
+    gUnextendedLegs = ((0 < newParameter) ? newParameter : kInitialUnextendedLegs);
+} // Skeleton::setUnextendedLegs
 
 # if defined(USE_FRACTION_FOR_CROSSOVER_)
 void Skeleton::swapValues(Skeleton &     other,
@@ -330,9 +438,9 @@ void Skeleton::swapValues(Skeleton &   other,
 void Skeleton::updateFitness(void)
 {
     realType critAngle = DegreesToRadians(30);
-    realType percentageBartenieff;
-    realType percentageEffort = 0;
-    realType percentageHeight = 0;
+    realType bartenieffFactor;
+    realType effortFactor;
+    realType heightFactor;
     
     determineQuadrants();
     if ((8 == _quadrantScore) &&
@@ -342,7 +450,7 @@ void Skeleton::updateFitness(void)
          (_quadrants[kRightHipToKnee] == _quadrants[kRightKneeToFoot])))
     {
         // Distal
-        percentageBartenieff = static_cast<realType>(0.4);
+        bartenieffFactor = gBartenieffDistal;
     }
     else if ((12 == _quadrantScore) &&
              ((_quadrants[kLeftShoulderToElbow] == _quadrants[kLeftElbowToWrist]) &&
@@ -351,7 +459,7 @@ void Skeleton::updateFitness(void)
               (_quadrants[kRightHipToKnee] == _quadrants[kRightKneeToFoot])))
     {
         // Medial
-        percentageBartenieff = static_cast<realType>(0.7);
+        bartenieffFactor = gBartenieffMedial;
     }
     else if ((((std::abs(_angles[kLeftShoulderToElbow] - _angles[kLeftHipToKnee]) > critAngle) &&
                (std::abs(_angles[kLeftElbowToWrist] - _angles[kLeftKneeToFoot]) > critAngle))) ||
@@ -359,7 +467,7 @@ void Skeleton::updateFitness(void)
                (std::abs(_angles[kRightElbowToWrist] - _angles[kRightKneeToFoot]) > critAngle))))
     {
         // Homolateral
-        percentageBartenieff = static_cast<realType>(0.5);
+        bartenieffFactor = gBartenieffHomolateral;
     }
     else if ((((std::abs(_angles[kLeftShoulderToElbow] - _angles[kRightHipToKnee]) > critAngle) &&
                (std::abs(_angles[kLeftElbowToWrist] - _angles[kRightKneeToFoot]) > critAngle))) ||
@@ -367,7 +475,7 @@ void Skeleton::updateFitness(void)
                (std::abs(_angles[kRightElbowToWrist] - _angles[kLeftKneeToFoot]) > critAngle))))
     {
         // Contralateral
-        percentageBartenieff = static_cast<realType>(1.3);
+        bartenieffFactor = gBartenieffContralateral;
     }
     else if (((_quadrants[kLeftShoulderToElbow] == _quadrants[kRightShoulderToElbow]) &&
               (_quadrants[kLeftElbowToWrist] == _quadrants[kRightElbowToWrist])) ||
@@ -375,18 +483,18 @@ void Skeleton::updateFitness(void)
               (_quadrants[kLeftKneeToFoot] == _quadrants[kRightKneeToFoot])))
     {
         // Homologous
-        percentageBartenieff = static_cast<realType>(0.4);
+        bartenieffFactor = gBartenieffHomologous;
     }
     else
     {
-        percentageBartenieff = 0.0;
+        bartenieffFactor = 0.0;
     }
     // Laban
     if (((kWeightLight == _weight) && (kSpaceIndirect == _space) && (kTimeSustained == _time) &&
          (kFlowFree == _flow)) || ((kWeightStrong == _weight) && (kSpaceDirect == _space) &&
                                    (kTimeSudden == _time) && (kFlowBound == _flow)))
     {
-        percentageEffort = static_cast<realType>(0.6);
+        effortFactor = gEffortLow;
     }
     else if ((ReallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
               ReallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
@@ -395,11 +503,11 @@ void Skeleton::updateFitness(void)
              (ReallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
               ReallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
     {
-        percentageEffort = static_cast<realType>(1.2);
+        effortFactor = gEffortMedium;
     }
     else
     {
-        percentageEffort = static_cast<realType>(1.4);
+        effortFactor = gEffortHigh;
     }
     // Height
     if ((kHeightLow == _height) || (kHeightMiddle == _height) || (kHeightHigh == _height))
@@ -413,13 +521,14 @@ void Skeleton::updateFitness(void)
     }
     if ((kHeightMidLow == _height) || (kHeightMiddle == _height) || (kHeightMidHigh == _height))
     {
-        {
-            // No leg is extended - cannot jump without legs in a crouch!
-            percentageHeight = static_cast<realType>(0.3);
-        }
+        // No leg is extended - cannot jump without legs in a crouch!
+        heightFactor = gUnextendedLegs;
     }
-    _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) *
-                         _quadrantScore);
+    else
+    {
+        heightFactor = 0.0;
+    }
+    _accumulatedScore = ((bartenieffFactor + effortFactor + heightFactor) * _quadrantScore);
 } // Skeleton::updateFitness
 
 #if defined(__APPLE__)

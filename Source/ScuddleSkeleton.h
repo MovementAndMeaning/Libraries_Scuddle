@@ -70,11 +70,11 @@ namespace Scuddle
     /*! @brief The Scuddle Skeleton structure. */
     class Skeleton
     {
-    public :
+        public :
         
         /*! @brief The constructor. */
         Skeleton(void);
-                
+        
         /*! @brief The copy constructor.
          @param other The Skeleton to be copied. */
         Skeleton(const Skeleton & other);
@@ -99,7 +99,63 @@ namespace Scuddle
          @returns The specified angle as a quaternion. */
         glm::quat getAngleAsQuaternion(const size_t index)
         const;
-
+        
+        /*! @brief Get the current Bartenieff contralateral fitness parameter.
+         @returns The current Bartenieff contralateral fitness parameter. */
+        inline static realType getBartenieffContralateral(void)
+        {
+            return gBartenieffContralateral;
+        } // getBartenieffContralateral
+        
+        /*! @brief Get the current Bartenieff distal fitness parameter.
+         @returns The current Bartenieff distal fitness parameter. */
+        inline static realType getBartenieffDistal(void)
+        {
+            return gBartenieffDistal;
+        } // getBartenieffDistal
+        
+        /*! @brief Get the current Bartenieff homolateral fitness parameter.
+         @returns The current Bartenieff homolateral fitness parameter. */
+        inline static realType getBartenieffHomolateral(void)
+        {
+            return gBartenieffHomolateral;
+        } // getBartenieffHomolateral
+        
+        /*! @brief Get the current Bartenieff homologous fitness parameter.
+         @returns The current Bartenieff homologous fitness parameter. */
+        inline static realType getBartenieffHomologous(void)
+        {
+            return gBartenieffHomologous;
+        } // getBartenieffHomologous
+        
+        /*! @brief Get the current Bartenieff medial fitness parameter.
+         @returns The current Bartenieff medial fitness parameter. */
+        inline static realType getBartenieffMedial(void)
+        {
+            return gBartenieffMedial;
+        } // getBartenieffMedial
+        
+        /*! @brief Get the current high Effort fitness parameter.
+         @returns The current high Effort fitness parameter. */
+        inline static realType getEffortHigh(void)
+        {
+            return gEffortHigh;
+        } // getEffortHigh
+        
+        /*! @brief Get the current low Effort fitness parameter.
+         @returns The current low Effort fitness parameter. */
+        inline static realType getEffortLow(void)
+        {
+            return gEffortLow;
+        } // getEffortLow
+        
+        /*! @brief Get the current medium Effort fitness parameter.
+         @returns The current medium Effort fitness parameter. */
+        inline static realType getEffortMedium(void)
+        {
+            return gEffortMedium;
+        } // getEffortMedium
+        
         /*! @brief Return the calculated fitness score.
          @returns The calculated fitness score. */
         realType getFitnessScore(void)
@@ -145,6 +201,13 @@ namespace Scuddle
             return _time;
         } // getTime
         
+        /*! @brief Get the current unextended legs fitness parameter.
+         @returns The current unextended legs fitness parameter. */
+        inline static realType getUnextendedLegs(void)
+        {
+            return gUnextendedLegs;
+        } // getUnextendedLegs
+        
         /*! @brief Return the Weight Quality.
          @returns The Weight Quality value. */
         WeightQuality getWeight(void)
@@ -164,11 +227,50 @@ namespace Scuddle
         /*! @brief Mutate a value of the object. */
         void mutate(void);
         
+        /*! @brief Reset the fitness parameters to their initial settings. */
+        static void resetParameters(void);
+        
+        /*! @brief Change the Bartenieff contralateral fitness parameter.
+         @param newParameter The new Bartenieff contralateral fitness parameter. */
+        static void setBartenieffContralateral(const realType newParameter);
+        
+        /*! @brief Change the Bartenieff distal fitness parameter.
+         @param newParameter The new Bartenieff distal fitness parameter. */
+        static void setBartenieffDistal(const realType newParameter);
+        
+        /*! @brief Change the Bartenieff homolateral fitness parameter.
+         @param newParameter The new homolateral contralateral fitness parameter. */
+        static void setBartenieffHomolateral(const realType newParameter);
+        
+        /*! @brief Change the Bartenieff homologous fitness parameter.
+         @param newParameter The new Bartenieff homologous fitness parameter. */
+        static void setBartenieffHomologous(const realType newParameter);
+        
+        /*! @brief Change the Bartenieff medial fitness parameter.
+         @param newParameter The new Bartenieff medial fitness parameter. */
+        static void setBartenieffMedial(const realType newParameter);
+        
+        /*! @brief Change the high Effort fitness parameter.
+         @param newParameter The new high Effort fitness parameter. */
+        static void setEffortHigh(const realType newParameter);
+        
+        /*! @brief Change the low Effort fitness parameter.
+         @param newParameter The new low Effort fitness parameter. */
+        static void setEffortLow(const realType newParameter);
+        
+        /*! @brief Change the medium Effort fitness parameter.
+         @param newParameter The new medium Effort fitness parameter. */
+        static void setEffortMedium(const realType newParameter);
+        
         /*! @brief Mark the object. */
         void setMark(void)
         {
             _marked = true;
         } // setMark
+        
+        /*! @brief Change the unextended legs fitness parameter.
+         @param newParameter The new unextended legs fitness parameter. */
+        static void setUnextendedLegs(const realType newParameter);
         
 # if defined(USE_FRACTION_FOR_CROSSOVER_)
         /*! @brief Choose a set of values and swap with another Body.
@@ -187,9 +289,9 @@ namespace Scuddle
         /*! @brief Determine the fitness value for this object. */
         void updateFitness(void);
         
-    protected :
-    
-    private :
+        protected :
+        
+        private :
         
         /*! @brief Determine the quadrants for the various angles. */
         void determineQuadrants(void);
@@ -198,8 +300,8 @@ namespace Scuddle
          @param numAngles The number of angles to be set up. */
         void setAttributes(const size_t numAngles);
         
-    public :
-    
+        public :
+        
         /*! @brief The number of angles in each Skeleton. */
         static const size_t kNumCalculatedAngles = 8;
         
@@ -214,7 +316,7 @@ namespace Scuddle
             
             /*! @brief The angle from the right side of the hip to the right knee. */
             kRightHipToKnee,
-
+            
             /*! @brief The angle from the right knee to the right foot. */
             kRightKneeToFoot,
             
@@ -232,22 +334,49 @@ namespace Scuddle
             
         }; // AngleIndices
         
-    protected :
-    
-    private :
+        protected :
+        
+        private :
+        
+        /*! @brief The fitness coefficient for Bartenieff contralateral configurations. */
+        static realType gBartenieffContralateral;
+        
+        /*! @brief The fitness coefficient for Bartenieff distal configurations. */
+        static realType gBartenieffDistal;
+        
+        /*! @brief The fitness coefficient for Bartenieff homolateral configurations. */
+        static realType gBartenieffHomolateral;
+        
+        /*! @brief The fitness coefficient for Bartenieff homologous configurations. */
+        static realType gBartenieffHomologous;
+        
+        /*! @brief The fitness coefficient for Bartenieff medial configurations. */
+        static realType gBartenieffMedial;
+        
+        /*! @brief The fitness coefficient for high Effort configurations. */
+        static realType gEffortHigh;
+        
+        /*! @brief The fitness coefficient for low Effort configurations. */
+        static realType gEffortLow;
+        
+        /*! @brief The fitness coefficient for medium Effort configurations. */
+        static realType gEffortMedium;
+        
+        /*! @brief The fitness coefficient for unextended leg configurations. */
+        static realType gUnextendedLegs;
+        
+        /*! @brief The angles (in radians) to be worked with. */
+        std::vector<realType> _angles;
+        
+        /*! @brief The quadrants corresponding to the angles being worked with. */
+        std::vector<int> _quadrants;
         
         /*! @brief The calculated fitness score. */
         realType _accumulatedScore;
         
-        /*! @brief The angles (in radians) to be worked with. */
-        std::vector<realType> _angles;
-
-        /*! @brief The quadrants corresponding to the angles being worked with. */
-        std::vector<int> _quadrants;
-        
         /*! @brief The score contribution from the quadrants. */
         int _quadrantScore;
-
+        
         /*! @brief The Flow Effort Quality value. */
         FlowQuality _flow;
         
