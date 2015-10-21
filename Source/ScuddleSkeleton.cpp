@@ -59,9 +59,6 @@ using namespace Scuddle;
 # pragma mark Private structures, constants and variables
 #endif // defined(__APPLE__)
 
-/*! @brief The number of fixed attributes that can be swapped. */
-static const size_t kNumFixedAttributes = 5;
-
 /*! @brief The initial fitness coefficient for Bartenieff contralateral configurations. */
 static const realType kInitialBartenieffContralateral = static_cast<realType>(1.3);
 
@@ -143,8 +140,15 @@ static const realType kMinimumEffortMedium = static_cast<realType>(0);
 /*! @brief The minimum fitness coefficient for unextended leg configurations. */
 static const realType kMinimumUnextendedLegs = static_cast<realType>(0);
 
+/*! @brief The number of fixed attributes that can be swapped. */
+static const size_t kNumFixedAttributes = 5;
+
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
+#endif // defined(__APPLE__)
+
+#if defined(__APPLE__)
+# pragma mark Class variables
 #endif // defined(__APPLE__)
 
 ConstrainedRealValue Skeleton::bartenieffContralateral(kMinimumBartenieffContralateral,

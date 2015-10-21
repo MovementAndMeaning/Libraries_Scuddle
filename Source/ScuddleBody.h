@@ -422,6 +422,9 @@ namespace Scuddle
         /*! @brief Mutate a value of the object. */
         void mutate(void);
         
+        /*! @brief Reset the fitness parameters to their initial settings. */
+        static void resetParameters(void);
+        
         /*! @brief Mark the object. */
         void setMark(void)
         {
@@ -467,6 +470,39 @@ namespace Scuddle
         
     public :
     
+        /*! @brief The fitness coefficient for Bartenieff contralateral configurations. */
+        static ConstrainedRealValue bartenieffContralateral;
+        
+        /*! @brief The fitness coefficient for Bartenieff distal configurations. */
+        static ConstrainedRealValue bartenieffDistal;
+        
+        /*! @brief The fitness coefficient for Bartenieff homolateral configurations. */
+        static ConstrainedRealValue bartenieffHomolateral;
+        
+        /*! @brief The fitness coefficient for Bartenieff homologous configurations. */
+        static ConstrainedRealValue bartenieffHomologous;
+        
+        /*! @brief The fitness coefficient for Bartenieff medial configurations. */
+        static ConstrainedRealValue bartenieffMedial;
+        
+        /*! @brief The fitness coefficient for high Effort configurations. */
+        static ConstrainedRealValue effortHigh;
+        
+        /*! @brief The fitness coefficient for low Effort configurations. */
+        static ConstrainedRealValue effortLow;
+        
+        /*! @brief The fitness coefficient for medium Effort configurations. */
+        static ConstrainedRealValue effortMedium;
+        
+        /*! @brief The fitness coefficient for fully extended leg configurations. */
+        static ConstrainedRealValue fullyExtendedLeg;
+        
+        /*! @brief The fitness coefficient for lower leg extended configurations. */
+        static ConstrainedRealValue lowerLegExtended;
+
+        /*! @brief The fitness coefficient for unextended leg configurations. */
+        static ConstrainedRealValue unextendedLegs;
+        
     protected :
     
     private :

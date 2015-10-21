@@ -69,6 +69,105 @@ static const realType kPerturbation = 5;
 static const realType kJointRadius = 60;
 #endif // defined(GENERATE_POSITIONS_)
 
+/*! @brief The initial fitness coefficient for Bartenieff contralateral configurations. */
+static const realType kInitialBartenieffContralateral = static_cast<realType>(1.3);
+
+/*! @brief The initial fitness coefficient for Bartenieff distal configurations. */
+static const realType kInitialBartenieffDistal = static_cast<realType>(0.4);
+
+/*! @brief The initial fitness coefficient for Bartenieff homolateral configurations. */
+static const realType kInitialBartenieffHomolateral = static_cast<realType>(0.5);
+
+/*! @brief The initial fitness coefficient for Bartenieff homologous configurations. */
+static const realType kInitialBartenieffHomologous = static_cast<realType>(0.4);
+
+/*! @brief The initial fitness coefficient for Bartenieff medial configurations. */
+static const realType kInitialBartenieffMedial = static_cast<realType>(0.7);
+
+/*! @brief The initial fitness coefficient for high Effort configurations. */
+static const realType kInitialEffortHigh = static_cast<realType>(1.4);
+
+/*! @brief The initial fitness coefficient for low Effort configurations. */
+static const realType kInitialEffortLow = static_cast<realType>(0.6);
+
+/*! @brief The initial fitness coefficient for medium Effort configurations. */
+static const realType kInitialEffortMedium = static_cast<realType>(1.2);
+
+/*! @brief The initial fitness coefficient for fully extended leg configurations. */
+static const realType kInitialFullyExtendedLeg = static_cast<realType>(1.1);
+
+/*! @brief The initial fitness coefficient for lower leg extended configurations. */
+static const realType kInitialLowerLegExtended = static_cast<realType>(1.3);
+
+/*! @brief The initial fitness coefficient for unextended leg configurations. */
+static const realType kInitialUnextendedLegs = static_cast<realType>(0.3);
+
+/*! @brief The maximum fitness coefficient for Bartenieff contralateral configurations. */
+static const realType kMaximumBartenieffContralateral = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for Bartenieff distal configurations. */
+static const realType kMaximumBartenieffDistal = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for Bartenieff homolateral configurations. */
+static const realType kMaximumBartenieffHomolateral = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for Bartenieff homologous configurations. */
+static const realType kMaximumBartenieffHomologous = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for Bartenieff medial configurations. */
+static const realType kMaximumBartenieffMedial = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for high Effort configurations. */
+static const realType kMaximumEffortHigh = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for low Effort configurations. */
+static const realType kMaximumEffortLow = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for medium Effort configurations. */
+static const realType kMaximumEffortMedium = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for fully extemded leg configurations. */
+static const realType kMaximumFullyExtendedLeg = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for lower leg extemded configurations. */
+static const realType kMaximumLowerLegExtended = static_cast<realType>(10);
+
+/*! @brief The maximum fitness coefficient for unextended leg configurations. */
+static const realType kMaximumUnextendedLegs = static_cast<realType>(10);
+
+/*! @brief The minimum fitness coefficient for Bartenieff contralateral configurations. */
+static const realType kMinimumBartenieffContralateral = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for Bartenieff distal configurations. */
+static const realType kMinimumBartenieffDistal = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for Bartenieff homolateral configurations. */
+static const realType kMinimumBartenieffHomolateral = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for Bartenieff homologous configurations. */
+static const realType kMinimumBartenieffHomologous = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for Bartenieff medial configurations. */
+static const realType kMinimumBartenieffMedial = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for high Effort configurations. */
+static const realType kMinimumEffortHigh = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for low Effort configurations. */
+static const realType kMinimumEffortLow = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for medium Effort configurations. */
+static const realType kMinimumEffortMedium = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for fully extended leg configurations. */
+static const realType kMinimumFullyExtendedLeg = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for lower leg extended configurations. */
+static const realType kMinimumLowerLegExtended = static_cast<realType>(0);
+
+/*! @brief The minimum fitness coefficient for unextended leg configurations. */
+static const realType kMinimumUnextendedLegs = static_cast<realType>(0);
+
 /*! @brief The number of angles that can be mutated. */
 static const size_t kNumAngles = 8;
 
@@ -78,6 +177,44 @@ static const size_t kNumAttributes = 13;
 #if defined(__APPLE__)
 # pragma mark Global constants and variables
 #endif // defined(__APPLE__)
+
+#if defined(__APPLE__)
+# pragma mark Class variables
+#endif // defined(__APPLE__)
+
+ConstrainedRealValue Body::bartenieffContralateral(kMinimumBartenieffContralateral,
+                                                   kMaximumBartenieffContralateral,
+                                                   kInitialBartenieffContralateral);
+
+ConstrainedRealValue Body::bartenieffDistal(kMinimumBartenieffDistal, kMaximumBartenieffDistal,
+                                            kInitialBartenieffDistal);
+
+ConstrainedRealValue Body::bartenieffHomolateral(kMinimumBartenieffHomolateral,
+                                                 kMaximumBartenieffHomolateral,
+                                                 kInitialBartenieffHomolateral);
+
+ConstrainedRealValue Body::bartenieffHomologous(kMinimumBartenieffHomologous,
+                                                kMaximumBartenieffHomologous,
+                                                kInitialBartenieffHomologous);
+
+ConstrainedRealValue Body::bartenieffMedial(kMinimumBartenieffMedial, kMaximumBartenieffMedial,
+                                            kInitialBartenieffMedial);
+
+ConstrainedRealValue Body::effortHigh(kMinimumEffortHigh, kMaximumEffortHigh, kInitialEffortHigh);
+
+ConstrainedRealValue Body::effortLow(kMinimumEffortLow, kMaximumEffortLow, kInitialEffortLow);
+
+ConstrainedRealValue Body::effortMedium(kMinimumEffortMedium, kMaximumEffortMedium,
+                                        kInitialEffortMedium);
+
+ConstrainedRealValue Body::fullyExtendedLeg(kMinimumFullyExtendedLeg, kMaximumFullyExtendedLeg,
+                                            kInitialFullyExtendedLeg);
+
+ConstrainedRealValue Body::lowerLegExtended(kMinimumLowerLegExtended, kMaximumLowerLegExtended,
+                                            kInitialLowerLegExtended);
+
+ConstrainedRealValue Body::unextendedLegs(kMinimumUnextendedLegs, kMaximumUnextendedLegs,
+                                          kInitialUnextendedLegs);
 
 #if defined(__APPLE__)
 # pragma mark Local functions
@@ -235,6 +372,21 @@ void Body::mutate(void)
     setPositions();
 #endif // defined(GENERATE_POSITIONS_)
 } // Body::mutate
+
+void Body::resetParameters(void)
+{
+    bartenieffContralateral.resetValue();
+    bartenieffDistal.resetValue();
+    bartenieffHomolateral.resetValue();
+    bartenieffHomologous.resetValue();
+    bartenieffMedial.resetValue();
+    effortHigh.resetValue();
+    effortLow.resetValue();
+    effortMedium.resetValue();
+    fullyExtendedLeg.resetValue();
+    lowerLegExtended.resetValue();
+    unextendedLegs.resetValue();
+} // Body::resetParameters
 
 void Body::setAttributes(void)
 {
@@ -418,9 +570,9 @@ void Body::swapValues(Body &       other,
 void Body::updateFitness(void)
 {
     realType critAngle = DegreesToRadians(30);
-    realType percentageBartenieff;
-    realType percentageEffort = 0;
-    realType percentageHeight = 0;
+    realType bartenieffFactor;
+    realType effortFactor;
+    realType heightFactor;
     
     determineQuadrants();
     if ((8 == _quadrantScore) &&
@@ -430,7 +582,7 @@ void Body::updateFitness(void)
          (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
     {
         // Distal
-        percentageBartenieff = static_cast<realType>(0.4);
+        bartenieffFactor = bartenieffDistal.getValue();
     }
     else if ((12 == _quadrantScore) &&
              ((_leftShoulderToElbowQuadrant == _leftElbowToWristQuadrant) &&
@@ -439,7 +591,7 @@ void Body::updateFitness(void)
               (_rightHipToKneeQuadrant == _rightKneeToFootQuadrant)))
     {
         // Medial
-        percentageBartenieff = static_cast<realType>(0.7);
+        bartenieffFactor = bartenieffMedial.getValue();
     }
     else if ((((std::abs(_leftShoulderToElbowAngle - _leftHipToKneeAngle) > critAngle) &&
                (std::abs(_leftElbowToWristAngle - _leftKneeToFootAngle) > critAngle))) ||
@@ -447,7 +599,7 @@ void Body::updateFitness(void)
                (std::abs(_rightElbowToWristAngle - _rightKneeToFootAngle) > critAngle))))
     {
         // Homolateral
-        percentageBartenieff = static_cast<realType>(0.5);
+        bartenieffFactor = bartenieffHomolateral.getValue();
     }
     else if ((((std::abs(_leftShoulderToElbowAngle - _rightHipToKneeAngle) > critAngle) &&
                (std::abs(_leftElbowToWristAngle - _rightKneeToFootAngle) > critAngle))) ||
@@ -455,7 +607,7 @@ void Body::updateFitness(void)
                (std::abs(_rightElbowToWristAngle - _leftKneeToFootAngle) > critAngle))))
     {
         // Contralateral
-        percentageBartenieff = static_cast<realType>(1.3);
+        bartenieffFactor = bartenieffContralateral.getValue();
     }
     else if (((_leftShoulderToElbowQuadrant == _rightShoulderToElbowQuadrant) &&
               (_leftElbowToWristQuadrant == _rightElbowToWristQuadrant)) ||
@@ -463,18 +615,18 @@ void Body::updateFitness(void)
               (_leftKneeToFootQuadrant == _rightKneeToFootQuadrant)))
     {
         // Homologous
-        percentageBartenieff = static_cast<realType>(0.4);
+        bartenieffFactor = bartenieffHomologous.getValue();
     }
     else
     {
-        percentageBartenieff = 0.0;
+        bartenieffFactor = 0.0;
     }
     // Laban
     if (((kWeightLight == _weight) && (kSpaceIndirect == _space) && (kTimeSustained == _time) &&
          (kFlowFree == _flow)) || ((kWeightStrong == _weight) && (kSpaceDirect == _space) &&
                                    (kTimeSudden == _time) && (kFlowBound == _flow)))
     {
-        percentageEffort = static_cast<realType>(0.6);
+        effortFactor = effortLow.getValue();
     }
     else if ((ReallyClose(MapWeightToReal(_weight), MapSpaceToReal(_space)) &&
               ReallyClose(MapTimeToReal(_time), MapFlowToReal(_flow))) ||
@@ -483,11 +635,11 @@ void Body::updateFitness(void)
              (ReallyClose(MapWeightToReal(_weight), MapFlowToReal(_flow)) &&
               ReallyClose(MapSpaceToReal(_space), MapTimeToReal(_time))))
     {
-        percentageEffort = static_cast<realType>(1.2);
+        effortFactor = effortMedium.getValue();
     }
     else
     {
-        percentageEffort = static_cast<realType>(1.4);
+        effortFactor = effortHigh.getValue();
     }
     // Height
     if ((kHeightLow == _height) || (kHeightMiddle == _height) || (kHeightHigh == _height))
@@ -507,23 +659,22 @@ void Body::updateFitness(void)
             (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
         {
             // One leg is fully extended
-            percentageHeight = static_cast<realType>(1.1);
+            heightFactor = fullyExtendedLeg.getValue();
         }
         
         else if ((1 == _leftKneeToFootQuadrant) || (2 == _leftKneeToFootQuadrant) ||
                  (1 == _rightKneeToFootQuadrant) || (2 == _rightKneeToFootQuadrant))
         {
             // Only the lower leg is extended
-            percentageHeight = static_cast<realType>(1.3);
+            heightFactor = lowerLegExtended.getValue();
         }
         else
         {
             // No leg is extended - cannot jump without legs in a crouch!
-            percentageHeight = static_cast<realType>(0.3);
+            heightFactor = unextendedLegs.getValue();
         }
     }
-    _accumulatedScore = ((percentageBartenieff + percentageEffort + percentageHeight) *
-                         _quadrantScore);
+    _accumulatedScore = ((bartenieffFactor + effortFactor + heightFactor) * _quadrantScore);
 } // Body::updateFitness
 
 #if defined(__APPLE__)
