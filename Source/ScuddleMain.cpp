@@ -357,7 +357,7 @@ static void printSkeleton(Skeleton & aSkeleton)
         {
             std::cout << " ";
         }
-        std::cout << "[" << aQuat.x << "," << aQuat.y << "," << aQuat.z << aQuat.w << "," << "]";
+        std::cout << "[" << aQuat.x << "," << aQuat.y << "," << aQuat.z << "," << aQuat.w << "]";
     }
     std::cout << std::endl;
 } // printSkeleton

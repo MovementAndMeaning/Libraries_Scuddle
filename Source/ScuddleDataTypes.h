@@ -125,6 +125,90 @@ namespace Scuddle
     typedef std::complex<realType> Coordinate2D;
 #  endif // defined(GENERATE_POSITIONS_)
 # endif // ! defined(USE_SKELETON_)
+
+    /*! @brief The generalized constrained value class template. */
+    template<typename Type> class ConstrainedValue
+    {
+    public :
+        /*! @brief The constructor.
+         @param minValue The lowest acceptable value.
+         @param maxValue The highest acceptable value.
+         @param defaultValue The initial (default) value which is also the 'reset' value. */
+        ConstrainedValue(const Type minValue,
+                         const Type maxValue,
+                         const Type defaultValue) :
+            _defaultValue(defaultValue), _maxValue(maxValue), _minValue(minValue)
+        {
+            if (minValue >= maxValue)
+            {
+                throw 42;
+            }
+            
+            setValue(_defaultValue);
+        } // ContrainedValue
+        
+        /*! @brief Return the range of acceptable values.
+         @param minValue The lowest acceptable value.
+         @param maxValue The highest acceptable value. */
+        inline void getRange(Type & minValue,
+                             Type & maxValue)
+        const
+        {
+            minValue = _minValue;
+            maxValue = _maxValue;
+        } // getRange
+        
+        /*! @brief Return the current value.
+         @returns The current value. */
+        inline Type getValue(void)
+        const
+        {
+            return _currentValue;
+        } // getValue
+        
+        /*! @brief Sets the current value to the default value. */
+        inline void resetValue(void)
+        {
+            setValue(_defaultValue);
+        } // resetValue
+        
+        /*! @brief Sets the current value to a value in the range of acceptable values.
+         @param newValue The value to be used. */
+        void setValue(const Type newValue)
+        {
+            _currentValue = ((_minValue > newValue) ? _minValue :
+                             ((_maxValue < newValue) ? _maxValue : newValue));
+        } // setValue
+        
+    protected :
+        
+    private :
+        
+    public :
+        
+    protected :
+        
+    private :
+        
+        /*! @brief The current value. */
+        Type _currentValue;
+        
+        /*! @brief The default value. */
+        Type _defaultValue;
+        
+        /*! @brief The highest acceptable value. */
+        Type _maxValue;
+        
+        /*! @brief The lowest acceptable value. */
+        Type _minValue;
+        
+    }; // ConstrainedValue
+    
+    /*! @brief The constrained real value type. */
+    typedef ConstrainedValue<realType> ConstrainedRealValue;
+    
+    /*! @brief The constrained unsigned value type. */
+    typedef ConstrainedValue<size_t> ConstrainedUnsignedValue;
     
 } // Scuddle
 
