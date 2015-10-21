@@ -114,11 +114,10 @@ static const Coordinate2D kRightShoulder(200, 100);
 static const Coordinate2D kTail(155, 210);
 #endif // defined(GENERATE_POSITIONS_) && (! defined(USE_SKELETON_))
 
-/*! @brief The number of selections to present when finished. */
-static const int kFinalSelectionSize = 5;
-
-/*! @brief The number of iterations to perform. */
-static const int kIterationCount = 5;
+#if defined(USE_FRACTION_FOR_CROSSOVER_)
+/*! @brief The fraction of attributes to swap. */
+static const realType kCrossoverFraction = static_cast<realType>(0.50);
+#endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 
 /*! @brief The fraction of the set of Body or Skeleton objects that are to be mutated. */
 static const realType kMutationFraction = static_cast<realType>(0.10);
@@ -126,13 +125,16 @@ static const realType kMutationFraction = static_cast<realType>(0.10);
 /*! @brief The fraction of the set of Body or Skeleton objects that are selected. */
 static const realType kSelectionFraction = static_cast<realType>(0.20);
 
-#if defined(USE_FRACTION_FOR_CROSSOVER_)
-/*! @brief The fraction of attributes to swap. */
-static const realType kCrossoverFraction = static_cast<realType>(0.50);
-#else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
+#if (! defined(USE_FRACTION_FOR_CROSSOVER_))
 /*! @brief The number of attributes to swap. */
 static const size_t kCrossoverCount = 2;
 #endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
+
+/*! @brief The number of selections to present when finished. */
+static const size_t kFinalSelectionSize = 5;
+
+/*! @brief The number of iterations to perform. */
+static const size_t kIterationCount = 5;
 
 #if defined(USE_SKELETON_)
 /*! @brief The number of angles in each Skeleton. */
@@ -838,7 +840,7 @@ int main(int            argc,
     lSelection = new BodyVector;
     generateBodies(kPopulationSize);
 #endif // ! defined(USE_SKELETON_)
-    for (int kk = 0; kIterationCount > kk; ++kk)
+    for (size_t kk = 0; kIterationCount > kk; ++kk)
     {
 #if defined(REPORT_TIMES_)
         timeBeforeFitness = getMillisecondsSinceEpoch();
