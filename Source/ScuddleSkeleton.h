@@ -77,7 +77,7 @@ namespace Scuddle
         
         /*! @brief The copy constructor.
          @param other The Skeleton to be copied. */
-        Skeleton(const Skeleton & other);
+        explicit Skeleton(const Skeleton & other);
         
         /*! @brief The destructor. */
         virtual ~Skeleton(void);

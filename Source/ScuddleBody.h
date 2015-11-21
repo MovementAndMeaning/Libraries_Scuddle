@@ -83,7 +83,7 @@ namespace Scuddle
         
         /*! @brief The copy constructor.
          @param other The Body to be copied. */
-        Body(const Body & other);
+        explicit Body(const Body & other);
         
         /*! @brief The destructor. */
         virtual ~Body(void);
