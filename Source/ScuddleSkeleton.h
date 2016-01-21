@@ -77,13 +77,16 @@ namespace Scuddle
         
         /*! @brief The copy constructor.
          @param other The Skeleton to be copied. */
-        explicit Skeleton(const Skeleton & other);
+        explicit
+        Skeleton(const Skeleton & other);
         
         /*! @brief The destructor. */
-        virtual ~Skeleton(void);
+        virtual
+        ~Skeleton(void);
         
         /*! @brief Unmark the object. */
-        void clearMark(void)
+        void
+        clearMark(void)
         {
             _marked = false;
         } // clearMark
@@ -91,18 +94,21 @@ namespace Scuddle
         /*! @brief Return a specific angle (in degrees).
          @param index The index of the angle to be returned.
          @returns The specified angle, in degrees. */
-        realType getAngleAsDegrees(const size_t index)
+        realType
+        getAngleAsDegrees(const size_t index)
         const;
         
         /*! @brief Return a specific angle as a quaternion.
          @param index The index of the angle to be returned.
          @returns The specified angle as a quaternion. */
-        glm::quat getAngleAsQuaternion(const size_t index)
+        glm::quat
+        getAngleAsQuaternion(const size_t index)
         const;
         
         /*! @brief Return the calculated fitness score.
          @returns The calculated fitness score. */
-        realType getFitnessScore(void)
+        realType
+        getFitnessScore(void)
         const
         {
             return _accumulatedScore;
@@ -110,7 +116,8 @@ namespace Scuddle
         
         /*! @brief Return the Flow Quality.
          @returns The Flow Quality value. */
-        FlowQuality getFlow(void)
+        FlowQuality
+        getFlow(void)
         const
         {
             return _flow;
@@ -118,7 +125,8 @@ namespace Scuddle
         
         /*! @brief Return the Height level.
          @returns The Height level value. */
-        HeightValue getHeight(void)
+        HeightValue
+        getHeight(void)
         const
         {
             return _height;
@@ -126,12 +134,14 @@ namespace Scuddle
         
         /*! @brief Return the number of angles.
          @returns The number of angles. */
-        size_t getNumAngles(void)
+        size_t
+        getNumAngles(void)
         const;
         
         /*! @brief Return the Space Quality.
          @returns The Space Quality value. */
-        SpaceQuality getSpace(void)
+        SpaceQuality
+        getSpace(void)
         const
         {
             return _space;
@@ -139,7 +149,8 @@ namespace Scuddle
         
         /*! @brief Return the Time Quality.
          @returns The Time Quality value. */
-        TimeQuality getTime(void)
+        TimeQuality
+        getTime(void)
         const
         {
             return _time;
@@ -147,7 +158,8 @@ namespace Scuddle
         
         /*! @brief Return the Weight Quality.
          @returns The Weight Quality value. */
-        WeightQuality getWeight(void)
+        WeightQuality
+        getWeight(void)
         const
         {
             return _weight;
@@ -155,20 +167,24 @@ namespace Scuddle
         
         /*! @brief Return @c true if the object is marked.
          @returns @c true if the object is marked. */
-        bool isMarked(void)
+        bool
+        isMarked(void)
         const
         {
             return _marked;
         } // isMarked
         
         /*! @brief Mutate a value of the object. */
-        void mutate(void);
+        void
+        mutate(void);
         
         /*! @brief Reset the fitness parameters to their initial settings. */
-        static void resetParameters(void);
+        static void
+        resetParameters(void);
         
         /*! @brief Mark the object. */
-        void setMark(void)
+        void
+        setMark(void)
         {
             _marked = true;
         } // setMark
@@ -177,29 +193,34 @@ namespace Scuddle
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param fraction The fraction of the values to be exchanged. */
-        void swapValues(Skeleton &     other,
-                        const realType fraction);
+        void
+        swapValues(Skeleton &     other,
+                   const realType fraction);
 # else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param numSwap The number of values to be exchanged. */
-        void swapValues(Skeleton &   other,
-                        const size_t numSwap);
+        void
+        swapValues(Skeleton &   other,
+                   const size_t numSwap);
 # endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         
         /*! @brief Determine the fitness value for this object. */
-        void updateFitness(void);
+        void
+        updateFitness(void);
         
     protected :
     
     private :
         
         /*! @brief Determine the quadrants for the various angles. */
-        void determineQuadrants(void);
+        void
+        determineQuadrants(void);
         
         /*! @brief Set the attributes to random values.
          @param numAngles The number of angles to be set up. */
-        void setAttributes(const size_t numAngles);
+        void
+        setAttributes(const size_t numAngles);
         
     public :
         

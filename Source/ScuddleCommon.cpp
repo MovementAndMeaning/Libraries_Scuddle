@@ -81,7 +81,8 @@ static realType lPi = static_cast<realType>(3.14159265);
 #endif // defined(__APPLE__)
 
 /*! @brief Seed the random number generator. */
-static void initRandom(void)
+static void
+initRandom(void)
 {
     if (! lRandomSeeded)
     {
@@ -110,7 +111,8 @@ static void initRandom(void)
 # pragma mark Global functions
 #endif // defined(__APPLE__)
 
-realType Scuddle::DegreesToRadians(const realType inAngle)
+realType
+Scuddle::DegreesToRadians(const realType inAngle)
 {
     if (! lPiSet)
     {
@@ -120,14 +122,15 @@ realType Scuddle::DegreesToRadians(const realType inAngle)
     return (lPi * inAngle / 180);
 } // Scuddle::DegreesToRadians
 
-int Scuddle::MapAngleToQuadrant(const realType angle,
-                                const realType firstAngle,
-                                const int      firstQuadrant,
-                                const realType secondAngle,
-                                const int      secondQuadrant,
-                                const realType thirdAngle,
-                                const int      thirdQuadrant,
-                                const int      fourthQuadrant)
+int
+Scuddle::MapAngleToQuadrant(const realType angle,
+                            const realType firstAngle,
+                            const int      firstQuadrant,
+                            const realType secondAngle,
+                            const int      secondQuadrant,
+                            const realType thirdAngle,
+                            const int      thirdQuadrant,
+                            const int      fourthQuadrant)
 {
     int      result;
     realType asDegrees = RadiansToDegrees(angle) - gEpsilon;
@@ -151,7 +154,8 @@ int Scuddle::MapAngleToQuadrant(const realType angle,
     return result;
 } // Scuddle::MapAngleToQuadrant
 
-realType Scuddle::MapFlowToReal(const FlowQuality aValue)
+realType
+Scuddle::MapFlowToReal(const FlowQuality aValue)
 {
     realType result;
     
@@ -169,7 +173,8 @@ realType Scuddle::MapFlowToReal(const FlowQuality aValue)
     return result;
 } // Scuddle::MapSpaceToReal
 
-realType Scuddle::MapHeightToReal(const HeightValue aValue)
+realType
+Scuddle::MapHeightToReal(const HeightValue aValue)
 {
     realType result;
     
@@ -199,7 +204,8 @@ realType Scuddle::MapHeightToReal(const HeightValue aValue)
     return result;
 } // Scuddle::MapHeightToReal
 
-FlowQuality Scuddle::MapRealToFlow(const realType aValue)
+FlowQuality
+Scuddle::MapRealToFlow(const realType aValue)
 {
     FlowQuality result;
     
@@ -214,7 +220,8 @@ FlowQuality Scuddle::MapRealToFlow(const realType aValue)
     return result;
 } // Scuddle::MapRealToSpace
 
-HeightValue Scuddle::MapRealToHeight(const realType aValue)
+HeightValue
+Scuddle::MapRealToHeight(const realType aValue)
 {
     HeightValue result;
     
@@ -241,7 +248,8 @@ HeightValue Scuddle::MapRealToHeight(const realType aValue)
     return result;
 } // Scuddle::MapRealToHeight
 
-SpaceQuality Scuddle::MapRealToSpace(const realType aValue)
+SpaceQuality
+Scuddle::MapRealToSpace(const realType aValue)
 {
     SpaceQuality result;
     
@@ -256,7 +264,8 @@ SpaceQuality Scuddle::MapRealToSpace(const realType aValue)
     return result;
 } // Scuddle::MapRealToSpace
 
-TimeQuality Scuddle::MapRealToTime(const realType aValue)
+TimeQuality
+Scuddle::MapRealToTime(const realType aValue)
 {
     TimeQuality result;
     
@@ -271,7 +280,8 @@ TimeQuality Scuddle::MapRealToTime(const realType aValue)
     return result;
 } // Scuddle::MapRealToTime
 
-WeightQuality Scuddle::MapRealToWeight(const realType aValue)
+WeightQuality
+Scuddle::MapRealToWeight(const realType aValue)
 {
     WeightQuality result;
     
@@ -286,7 +296,8 @@ WeightQuality Scuddle::MapRealToWeight(const realType aValue)
     return result;
 } // Scuddle::MapRealToWeight
 
-realType Scuddle::MapSpaceToReal(const SpaceQuality aValue)
+realType
+Scuddle::MapSpaceToReal(const SpaceQuality aValue)
 {
     realType result;
     
@@ -304,7 +315,8 @@ realType Scuddle::MapSpaceToReal(const SpaceQuality aValue)
     return result;
 } // Scuddle::MapSpaceToReal
 
-realType Scuddle::MapTimeToReal(const TimeQuality aValue)
+realType
+Scuddle::MapTimeToReal(const TimeQuality aValue)
 {
     realType result;
     
@@ -322,7 +334,8 @@ realType Scuddle::MapTimeToReal(const TimeQuality aValue)
     return result;
 } // Scuddle::MapTimeToReal
 
-realType Scuddle::MapWeightToReal(const WeightQuality aValue)
+realType
+Scuddle::MapWeightToReal(const WeightQuality aValue)
 {
     realType result;
     
@@ -340,7 +353,8 @@ realType Scuddle::MapWeightToReal(const WeightQuality aValue)
     return result;
 } // Scuddle::MapWeightToReal
 
-realType Scuddle::RadiansToDegrees(const realType inAngle)
+realType
+Scuddle::RadiansToDegrees(const realType inAngle)
 {
     if (! lPiSet)
     {
@@ -350,12 +364,14 @@ realType Scuddle::RadiansToDegrees(const realType inAngle)
     return (180 * inAngle / lPi);
 } // Scuddle::RadiansToDegrees
 
-realType Scuddle::RandomAngle(const realType maxAngle)
+realType
+Scuddle::RandomAngle(const realType maxAngle)
 {
     return DegreesToRadians(RandRealInRange(0, maxAngle));
 } // Scuddle::RandomAngle
 
-realType Scuddle::RandRealInRange(const realType lowValue,
+realType
+Scuddle::RandRealInRange(const realType lowValue,
                                   const realType highValue)
 {
     realType randNumb;
@@ -365,13 +381,15 @@ realType Scuddle::RandRealInRange(const realType lowValue,
     return (lowValue + (randNumb * (highValue - lowValue)));
 } // Scuddle::RandRealInRange
 
-size_t Scuddle::RandUnsignedInRange(const size_t highValue)
+size_t
+Scuddle::RandUnsignedInRange(const size_t highValue)
 {
     initRandom();
     return static_cast<size_t>(static_cast<size_t>(rand() / kModulus) % (highValue + 1));
 } // Scuddle::RandUnsignedInRange
 
-bool Scuddle::ReallyClose(const realType firstValue,
+bool
+Scuddle::ReallyClose(const realType firstValue,
                           const realType secondValue)
 {
     return (std::abs(firstValue - secondValue) < gEpsilon);

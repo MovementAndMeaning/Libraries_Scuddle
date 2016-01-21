@@ -150,8 +150,9 @@ namespace Scuddle
         /*! @brief Return the range of acceptable values.
          @param minValue The lowest acceptable value.
          @param maxValue The highest acceptable value. */
-        inline void getRange(Type & minValue,
-                             Type & maxValue)
+        inline void
+        getRange(Type & minValue,
+                 Type & maxValue)
         const
         {
             minValue = _minValue;
@@ -160,21 +161,24 @@ namespace Scuddle
         
         /*! @brief Return the current value.
          @returns The current value. */
-        inline Type getValue(void)
+        inline Type
+        getValue(void)
         const
         {
             return _currentValue;
         } // getValue
         
         /*! @brief Sets the current value to the default value. */
-        inline void resetValue(void)
+        inline void
+        resetValue(void)
         {
             setValue(_defaultValue);
         } // resetValue
         
         /*! @brief Sets the current value to a value in the range of acceptable values.
          @param newValue The value to be used. */
-        void setValue(const Type newValue)
+        void
+        setValue(const Type newValue)
         {
             _currentValue = ((_minValue > newValue) ? _minValue :
                              ((_maxValue < newValue) ? _maxValue : newValue));

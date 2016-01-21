@@ -221,7 +221,8 @@ ConstrainedRealValue Body::unextendedLegs(kMinimumUnextendedLegs, kMaximumUnexte
 #endif // defined(__APPLE__)
 
 #if defined(GENERATE_POSITIONS_)
-static Coordinate2D generateRandomPerturbation(void)
+static Coordinate2D
+generateRandomPerturbation(void)
 {
     Coordinate2D result(RandRealInRange(- kPerturbation, kPerturbation),
                         RandRealInRange(- kPerturbation, kPerturbation));
@@ -302,7 +303,8 @@ Body::~Body(void)
 # pragma mark Actions and Accessors
 #endif // defined(__APPLE__)
 
-void Body::determineQuadrants(void)
+void
+Body::determineQuadrants(void)
 {
     // Calculate the quadrants:
     _leftShoulderToElbowQuadrant = MapAngleToQuadrant(_leftShoulderToElbowAngle, 90, 1, 180, 2, 270,
@@ -322,7 +324,8 @@ void Body::determineQuadrants(void)
                         _rightKneeToFootQuadrant;
 } // Body::determineQuadrants
 
-void Body::mutate(void)
+void
+Body::mutate(void)
 {
     // There are eight angles that can be mutated - pick one!
     realType distalValue = RandomAngle(180);
@@ -373,7 +376,8 @@ void Body::mutate(void)
 #endif // defined(GENERATE_POSITIONS_)
 } // Body::mutate
 
-void Body::resetParameters(void)
+void
+Body::resetParameters(void)
 {
     bartenieffContralateral.resetValue();
     bartenieffDistal.resetValue();
@@ -388,7 +392,8 @@ void Body::resetParameters(void)
     unextendedLegs.resetValue();
 } // Body::resetParameters
 
-void Body::setAttributes(void)
+void
+Body::setAttributes(void)
 {
     // Generate random angles for joints: shoulder and hip locations affect elbow and knees.
     _leftShoulderToElbowAngle = RandomAngle(360);
@@ -429,7 +434,8 @@ void Body::setAttributes(void)
 } // Body::setAttributes
 
 #if defined(GENERATE_POSITIONS_)
-void Body::setPositions(void)
+void
+Body::setPositions(void)
 {
     _leftElbow = _initLeftShoulder + std::polar(kJointRadius, _leftShoulderToElbowAngle);
     _leftWrist = _leftElbow + std::polar(kJointRadius, _leftElbowToWristAngle);
@@ -451,11 +457,13 @@ void Body::setPositions(void)
 #endif // defined(GENERATE_POSITIONS_)
 
 #if defined(USE_FRACTION_FOR_CROSSOVER_)
-void Body::swapValues(Body &         other,
-                      const realType fraction)
+void
+Body::swapValues(Body &         other,
+                 const realType fraction)
 #else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
-void Body::swapValues(Body &       other,
-                      const size_t numSwap)
+void
+Body::swapValues(Body &       other,
+                 const size_t numSwap)
 #endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 {
     // We have 13 values that we can work with.
@@ -567,7 +575,8 @@ void Body::swapValues(Body &       other,
 #endif // defined(GENERATE_POSITIONS_)
 } // Body::swapValues
 
-void Body::updateFitness(void)
+void
+Body::updateFitness(void)
 {
     realType critAngle = DegreesToRadians(30);
     realType bartenieffFactor;

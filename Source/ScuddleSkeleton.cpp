@@ -193,14 +193,14 @@ ConstrainedRealValue Skeleton::unextendedLegs(kMinimumUnextendedLegs, kMaximumUn
 #endif // defined(__APPLE__)
 
 Skeleton::Skeleton(void) :
-_marked(false)
+    _marked(false)
 {
     setAttributes(kNumCalculatedAngles);
 } // Skeleton::Skeleton
 
 Skeleton::Skeleton(const Skeleton & other) :
-_flow(other._flow), _height(other._height), _space(other._space), _time(other._time),
-_weight(other._weight), _marked(false)
+    _flow(other._flow), _height(other._height), _space(other._space), _time(other._time),
+    _weight(other._weight), _marked(false)
 {
     for (size_t ii = 0, imax = other._angles.size(); imax > ii; ++ii)
     {
@@ -217,7 +217,8 @@ Skeleton::~Skeleton(void)
 # pragma mark Actions and Accessors
 #endif // defined(__APPLE__)
 
-void Skeleton::determineQuadrants(void)
+void
+Skeleton::determineQuadrants(void)
 {
     // Calculate the quadrants:
     _quadrants[kLeftShoulderToElbow] = MapAngleToQuadrant(_angles[kLeftShoulderToElbow], 90, 1,
@@ -245,7 +246,8 @@ void Skeleton::determineQuadrants(void)
     }
 } // Skeleton::determineQuadrants
 
-realType Skeleton::getAngleAsDegrees(const size_t index)
+realType
+Skeleton::getAngleAsDegrees(const size_t index)
 const
 {
     realType result;
@@ -261,7 +263,8 @@ const
     return result;
 } // Skeleton::getAngleAsDegrees
 
-glm::quat Skeleton::getAngleAsQuaternion(const size_t index)
+glm::quat
+Skeleton::getAngleAsQuaternion(const size_t index)
 const
 {
     realType angle;
@@ -277,13 +280,15 @@ const
     return glm::quat_cast(glm::rotate(glm::mat4(1), angle, glm::vec3(0, 0, 1)));
 } // Skeleton::getAngleAsQuaternion
 
-size_t Skeleton::getNumAngles(void)
+size_t
+Skeleton::getNumAngles(void)
 const
 {
     return _angles.size();
 } // Skeleton::getNumAngles
 
-void Skeleton::mutate(void)
+void
+Skeleton::mutate(void)
 {
     size_t whichAngle = RandUnsignedInRange(_angles.size() - 1);
     
@@ -309,7 +314,8 @@ void Skeleton::mutate(void)
     }
 } // Skeleton::mutate
 
-void Skeleton::resetParameters(void)
+void
+Skeleton::resetParameters(void)
 {
     bartenieffContralateral.resetValue();
     bartenieffDistal.resetValue();
@@ -322,7 +328,8 @@ void Skeleton::resetParameters(void)
     unextendedLegs.resetValue();
 } // Skeleton::resetParameters
 
-void Skeleton::setAttributes(const size_t numAngles)
+void
+Skeleton::setAttributes(const size_t numAngles)
 {
     for (size_t ii = 0; numAngles > ii; ++ii)
     {
@@ -366,11 +373,13 @@ void Skeleton::setAttributes(const size_t numAngles)
 } // Skeleton::setAttributes
 
 # if defined(USE_FRACTION_FOR_CROSSOVER_)
-void Skeleton::swapValues(Skeleton &     other,
-                          const realType fraction)
+void
+Skeleton::swapValues(Skeleton &     other,
+                     const realType fraction)
 # else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
-void Skeleton::swapValues(Skeleton &   other,
-                          const size_t numSwap)
+void
+Skeleton::swapValues(Skeleton &   other,
+                     const size_t numSwap)
 # endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 {
     size_t imax = std::min(_angles.size(), other._angles.size());
@@ -454,7 +463,8 @@ void Skeleton::swapValues(Skeleton &   other,
     }
 } // Skeleton::swapValues
 
-void Skeleton::updateFitness(void)
+void
+Skeleton::updateFitness(void)
 {
     realType critAngle = DegreesToRadians(30);
     realType bartenieffFactor;

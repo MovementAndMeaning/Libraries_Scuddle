@@ -64,7 +64,8 @@ namespace Scuddle
     /*! @brief Convert an angle in degrees to radians.
      @param inAngle The angle specified in degrees.
      @returns The angle as radians. */
-    realType DegreesToRadians(const realType inAngle);
+    realType
+    DegreesToRadians(const realType inAngle);
     
     /*! @brief Convert an angle (in radians) to the desired quadrant.
      @param angle The input angle.
@@ -76,93 +77,109 @@ namespace Scuddle
      @param thirdQuadrant The quadrant value for the third quadrant.
      @param fourthQuadrant The quadrant value for the fourth quadrant.
      @returns The resulting quadrant. */
-    int MapAngleToQuadrant(const realType angle,
-                           const realType firstAngle,
-                           const int      firstQuadrant,
-                           const realType secondAngle,
-                           const int      secondQuadrant,
-                           const realType thirdAngle,
-                           const int      thirdQuadrant,
-                           const int      fourthQuadrant);
+    int
+    MapAngleToQuadrant(const realType angle,
+                       const realType firstAngle,
+                       const int      firstQuadrant,
+                       const realType secondAngle,
+                       const int      secondQuadrant,
+                       const realType thirdAngle,
+                       const int      thirdQuadrant,
+                       const int      fourthQuadrant);
     
     /*! @brief Convert a Flow Quality value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Flow Quality value as a floating-point number. */
-    realType MapFlowToReal(const FlowQuality aValue);
+    realType
+    MapFlowToReal(const FlowQuality aValue);
     
     /*! @brief Convert a Height level value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Height level value as a floating-point number. */
-    realType MapHeightToReal(const HeightValue aValue);
+    realType
+    MapHeightToReal(const HeightValue aValue);
     
     /*! @brief Convert a floating-point number into a Flow Quality value.
      @param aValue The value to be converted.
      @returns The floating-point number as a Flow Quality value. */
-    FlowQuality MapRealToFlow(const realType aValue);
+    FlowQuality
+    MapRealToFlow(const realType aValue);
     
     /*! @brief Convert a floating-point number into a Height level value.
      @param aValue The value to be converted.
      @returns The floating-point number as a Height level value. */
-    HeightValue MapRealToHeight(const realType aValue);
+    HeightValue
+    MapRealToHeight(const realType aValue);
     
     /*! @brief Convert a floating-point number into a Space Quality value.
      @param aValue The value to be converted.
      @returns The floating-point number as a Space Quality value. */
-    SpaceQuality MapRealToSpace(const realType aValue);
+    SpaceQuality
+    MapRealToSpace(const realType aValue);
     
     /*! @brief Convert a floating-point number into a Time Quality value.
      @param aValue The value to be converted.
      @returns The floating-point number as a Time Quality value. */
-    TimeQuality MapRealToTime(const realType aValue);
+    TimeQuality
+    MapRealToTime(const realType aValue);
     
     /*! @brief Convert a floating-point number into a Weight Quality value.
      @param aValue The value to be converted.
      @returns The floating-point number as a Weight Quality value. */
-    WeightQuality MapRealToWeight(const realType aValue);
+    WeightQuality
+    MapRealToWeight(const realType aValue);
     
     /*! @brief Convert a Space Quality value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Space Quality value as a floating-point number. */
-    realType MapSpaceToReal(const SpaceQuality aValue);
+    realType
+    MapSpaceToReal(const SpaceQuality aValue);
     
     /*! @brief Convert a Time Quality value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Time Quality value as a floating-point number. */
-    realType MapTimeToReal(const TimeQuality aValue);
+    realType
+    MapTimeToReal(const TimeQuality aValue);
     
     /*! @brief Convert a Weight Quality value into a floating-point number.
      @param aValue The value to be converted.
      @returns The Weight Quality value as a floating-point number. */
-    realType MapWeightToReal(const WeightQuality aValue);
+    realType
+    MapWeightToReal(const WeightQuality aValue);
     
     /*! @brief Convert an angle in radians to degrees.
      @param inAngle The angle specified in radians.
      @returns The angle as degrees. */
-    realType RadiansToDegrees(const realType inAngle);
+    realType
+    RadiansToDegrees(const realType inAngle);
 
     /*! @brief Return a uniformly distributed random angle in the range 0..maxAngle, as radians.
      @param maxAngle The upper bound for the output, in degrees.
      @returns A uniformly distributed random angle in the range 0..maxAngle. */
-    realType RandomAngle(const realType maxAngle);
+    realType
+    RandomAngle(const realType maxAngle);
     
     /*! @brief Return a uniformly distributed random number in the range lowValue..highValue.
      @param lowValue The lower bound for the output.
      @param highValue The upper bound for the output.
      @returns A uniformly distributed random number in the range lowValue..highValue. */
-    realType RandRealInRange(const realType lowValue,
-                             const realType highValue);
+    realType
+    RandRealInRange(const realType lowValue,
+                    const realType highValue);
 
     /*! @brief Return a uniformly distributed random number in the range 0..highValue.
      @param highValue The upper bound for the output.
      @returns A uniformly distributed random number in the range 0..highValue. */
-    size_t RandUnsignedInRange(const size_t highValue);
+    size_t
+    RandUnsignedInRange(const size_t highValue);
 
     /*! @brief Compare two floating-point numbers and determine if they are very close in value.
      @param firstValue The first value to compare.
      @param secondValue The second value to compare.
      @returns @c true if the two values are within epsilon of each other and @c false otherwise. */
-    bool ReallyClose(const realType firstValue,
-                     const realType secondValue);
+    bool
+    ReallyClose(const realType firstValue,
+                const realType secondValue);
 
     /*! @brief The comparison threshold used for conversion from floating-point numbers. */
     const realType gEpsilon = std::numeric_limits<realType>::epsilon();

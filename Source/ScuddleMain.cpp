@@ -180,7 +180,8 @@ static IndexVector * lIndices = nullptr;
 #if defined(REPORT_TIMES_)
 /*! @brief Return the number of milliseconds since an arbitrary time in the past.
  @returns The number of milliseconds since an arbitrary time in the past. */
-static double getMillisecondsSinceEpoch(void)
+static double
+getMillisecondsSinceEpoch(void)
 {
     double result;
 # if MAC_OR_LINUX_
@@ -201,7 +202,8 @@ static double getMillisecondsSinceEpoch(void)
 #endif // defined(REPORT_TIMES_)
 
 /*! @brief Update the fitness value for the Body or Skeleton objects. */
-static void calculateFitnessValues(void)
+static void
+calculateFitnessValues(void)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Calculating fitness." << std::endl;
@@ -231,7 +233,8 @@ static void calculateFitnessValues(void)
 } // calculateFitnessValues
 
 /*! @brief Release the objects that were created earlier. */
-static void cleanup(void)
+static void
+cleanup(void)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Cleaning up." << std::endl;
@@ -272,7 +275,8 @@ static void cleanup(void)
 
 #if defined(USE_SKELETON_)
 /*! @brief Generate the mapping information for the quaternion outputs. */
-static void createMapForAngles(void)
+static void
+createMapForAngles(void)
 {
     // DANGER!! DANGER!!
     // Changing the CMU skeleton structure will break this!
@@ -327,7 +331,8 @@ static void createMapForAngles(void)
 #if defined(USE_SKELETON_)
 /*! @brief Print the parameters of a Skeleton object.
  @param aSkeleton The Skeleton object to be printed. */
-static void printSkeleton(Skeleton & aSkeleton)
+static void
+printSkeleton(Skeleton & aSkeleton)
 {
     for (size_t ii = 0, imax = lIndices->size(), jj = 0; imax > ii; ++ii, ++jj)
     {
@@ -366,7 +371,8 @@ static void printSkeleton(Skeleton & aSkeleton)
 #else // ! defined(USE_SKELETON_)
 /*! @brief Print the parameters of a Body object.
  @param aBody The Body object to be printed. */
-static void printBody(Body & aBody)
+static void
+printBody(Body & aBody)
 {
     std::cout << RadiansToDegrees(aBody.getLeftShoulderToElbowAngle()) << "," <<
                 RadiansToDegrees(aBody.getLeftElbowToWristAngle()) << "," <<
@@ -385,7 +391,8 @@ static void printBody(Body & aBody)
 #if defined(USE_SKELETON_)
 /*! @brief Create a set of Skeleton objects to work with.
  @param numSkeletons The number of Skeleton objects to create. */
-static void generateSkeletons(const size_t numSkeletons)
+static void
+generateSkeletons(const size_t numSkeletons)
 {
 # if defined(PRINT_VALUES_)
     std::cout << "Generating " << numSkeletons << " objects." << std::endl;
@@ -410,7 +417,8 @@ static void generateSkeletons(const size_t numSkeletons)
 #else // ! defined(USE_SKELETON_)
 /*! @brief Create a set of Body objects to work with.
  @param numBodies The number of Body objects to create. */
-static void generateBodies(const size_t numBodies)
+static void
+generateBodies(const size_t numBodies)
 {
 # if defined(PRINT_VALUES_)
     std::cout << "Generating " << numBodies << " objects." << std::endl;
@@ -432,7 +440,8 @@ static void generateBodies(const size_t numBodies)
 #endif // ! defined(USE_SKELETON_)
 
 /*! @brief Make the selections for this iteration. */
-static void makeSelection(void)
+static void
+makeSelection(void)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Making selection." << std::endl;
@@ -523,11 +532,13 @@ static void makeSelection(void)
 #if defined(USE_FRACTION_FOR_CROSSOVER_)
 /*! @brief Generate a new set of objects, using the selected parents.
  @param crossoverFraction The proportion of objects to be generated. */
-static void doCrossovers(const realType crossoverFraction)
+static void
+doCrossovers(const realType crossoverFraction)
 #else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 /*! @brief Generate a new set of objects, using the selected parents.
  @param crossoverCount The number of objects to be generated. */
-static void doCrossovers(const size_t crossoverCount)
+static void
+doCrossovers(const size_t crossoverCount)
 #endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
 {
 #if defined(PRINT_VALUES_)
@@ -637,7 +648,8 @@ static void doCrossovers(const size_t crossoverCount)
 
 /*! @brief Mutate some of the objects.
  @param mutationFraction The proportion of objects to be mutated. */
-static void doMutations(const realType mutationFraction)
+static void
+doMutations(const realType mutationFraction)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Doing mutations." << std::endl;
@@ -694,7 +706,8 @@ static void doMutations(const realType mutationFraction)
 } // doMutations
 
 /*! @brief Make the final selections. */
-static void makeFinalSelection(const size_t selectionSize)
+static void
+makeFinalSelection(const size_t selectionSize)
 {
 #if defined(PRINT_VALUES_)
     std::cout << "Making final selection." << std::endl;
@@ -807,8 +820,9 @@ static void makeFinalSelection(const size_t selectionSize)
 # pragma warning(push)
 # pragma warning(disable: 4100)
 #endif // ! defined(__APPLE__)
-int main(int            argc,
-         const char * * argv)
+int
+main(int            argc,
+     const char * * argv)
 {
 #if defined(__APPLE__)
 # pragma unused(argc, argv)

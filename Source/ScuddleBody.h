@@ -83,20 +83,24 @@ namespace Scuddle
         
         /*! @brief The copy constructor.
          @param other The Body to be copied. */
-        explicit Body(const Body & other);
+        explicit
+        Body(const Body & other);
         
         /*! @brief The destructor. */
-        virtual ~Body(void);
+        virtual
+        ~Body(void);
         
         /*! @brief Unmark the object. */
-        void clearMark(void)
+        void
+        clearMark(void)
         {
             _marked = false;
         } // clearMark
         
         /*! @brief Return the calculated fitness score.
          @returns The calculated fitness score. */
-        realType getFitnessScore(void)
+        realType
+        getFitnessScore(void)
         const
         {
             return _accumulatedScore;
@@ -104,7 +108,8 @@ namespace Scuddle
         
         /*! @brief Return the Flow Quality.
          @returns The Flow Quality value. */
-        FlowQuality getFlow(void)
+        FlowQuality
+        getFlow(void)
         const
         {
             return _flow;
@@ -112,7 +117,8 @@ namespace Scuddle
         
         /*! @brief Return the Height level.
          @returns The Height level value. */
-        HeightValue getHeight(void)
+        HeightValue
+        getHeight(void)
         const
         {
             return _height;
@@ -121,7 +127,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left elbow.
          @returns The coordinates of the left elbow. */
-        const Coordinate2D & getLeftElbow(void)
+        const Coordinate2D &
+        getLeftElbow(void)
         const
         {
             return _leftElbow;
@@ -130,7 +137,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the left elbow to the left wrist.
          @returns The angle from the left elbow to the left wrist. */
-        realType getLeftElbowToWristAngle(void)
+        realType
+        getLeftElbowToWristAngle(void)
         const
         {
             return _leftElbowToWristAngle;
@@ -138,7 +146,8 @@ namespace Scuddle
 
         /*! @brief Return the quadrant of the angle from the left elbow to the left wrist.
          @returns The quadrant of the angle from the left elbow to the left wrist. */
-        int getLeftElbowToWristQuadrant(void)
+        int
+        getLeftElbowToWristQuadrant(void)
         const
         {
             return _leftElbowToWristQuadrant;
@@ -147,7 +156,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left foot.
          @returns The coordinates of the left foot. */
-        const Coordinate2D & getLeftFoot(void)
+        const Coordinate2D &
+        getLeftFoot(void)
         const
         {
             return _leftFoot;
@@ -157,7 +167,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left side of the hips.
          @returns The coordinates of the left side of the hips. */
-        const Coordinate2D & getLeftHip(void)
+        const Coordinate2D &
+        getLeftHip(void)
         const
         {
             return _leftHip;
@@ -166,7 +177,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the left side of the hips to the left knee.
          @returns The angle from the left side of the hips to the left knee. */
-        realType getLeftHipToKneeAngle(void)
+        realType
+        getLeftHipToKneeAngle(void)
         const
         {
             return _leftHipToKneeAngle;
@@ -174,7 +186,8 @@ namespace Scuddle
 
         /*! @brief Return the quadrant of the angle from left side of the hips to the left knee.
          @returns The quadrant of the angle from the left side of the hips to the left knee. */
-        int getLeftHipToKneeQuadrant(void)
+        int
+        getLeftHipToKneeQuadrant(void)
         const
         {
             return _leftHipToKneeQuadrant;
@@ -183,7 +196,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left knee.
          @returns The coordinates of the left knee. */
-        const Coordinate2D & getLeftKnee(void)
+        const Coordinate2D &
+        getLeftKnee(void)
         const
         {
             return _leftKnee;
@@ -192,7 +206,8 @@ namespace Scuddle
 
         /*! @brief Return the angle from the left knee to the left foot.
          @returns The angle from the left knee to the left foot. */
-        realType getLeftKneeToFootAngle(void)
+        realType
+        getLeftKneeToFootAngle(void)
         const
         {
             return _leftElbowToWristAngle;
@@ -200,7 +215,8 @@ namespace Scuddle
         
         /*! @brief Return the quadrant of the angle from the left knee to the left foot.
          @returns The quadrant of the angle from the left knee to the left foot. */
-        int getLeftKneeToFootQuadrant(void)
+        int
+        getLeftKneeToFootQuadrant(void)
         const
         {
             return _leftKneeToFootQuadrant;
@@ -209,7 +225,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left shoulder.
          @returns The coordinates of the left shoulder. */
-        const Coordinate2D & getLeftShoulder(void)
+        const Coordinate2D &
+        getLeftShoulder(void)
         const
         {
             return _leftShoulder;
@@ -218,7 +235,8 @@ namespace Scuddle
 
         /*! @brief Return the angle from the left shoulder to the left elbow.
          @returns The angle from the left shoulder to the left elbow. */
-        realType getLeftShoulderToElbowAngle(void)
+        realType
+        getLeftShoulderToElbowAngle(void)
         const
         {
             return _leftShoulderToElbowAngle;
@@ -226,7 +244,8 @@ namespace Scuddle
         
         /*! @brief Return the quadrant of the angle from the left shoulder to the left elbow.
          @returns The quadrant of the angle from the left shoulder to the left elbow. */
-        int getLeftShoulderToElbowQuadrant(void)
+        int
+        getLeftShoulderToElbowQuadrant(void)
         const
         {
             return _leftShoulderToElbowQuadrant;
@@ -235,7 +254,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the left wrist.
          @returns The coordinates of the left wrist. */
-        const Coordinate2D & getLeftWrist(void)
+        const Coordinate2D &
+        getLeftWrist(void)
         const
         {
             return _leftWrist;
@@ -245,7 +265,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the neck.
          @returns The coordinates of the neck. */
-        const Coordinate2D & getNeck(void)
+        const Coordinate2D &
+        getNeck(void)
         const
         {
             return _neck;
@@ -255,7 +276,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right elbow.
          @returns The coordinates of the right elbow. */
-        const Coordinate2D & getRightElbow(void)
+        const Coordinate2D &
+        getRightElbow(void)
         const
         {
             return _rightElbow;
@@ -264,7 +286,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the right elbow to the right wrist.
          @returns The angle from the right elbow to the right wrist. */
-        realType getRightElbowToWristAngle(void)
+        realType
+        getRightElbowToWristAngle(void)
         const
         {
             return _rightElbowToWristAngle;
@@ -272,7 +295,8 @@ namespace Scuddle
         
         /*! @brief Return the quadrant of the angle from the right elbow to the right wrist.
          @returns The quadrant of the angle from the right elbow to the right wrist. */
-        int getRightElbowToWristQuadrant(void)
+        int
+        getRightElbowToWristQuadrant(void)
         const
         {
             return _rightElbowToWristQuadrant;
@@ -281,7 +305,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right foot.
          @returns The coordinates of the right foot. */
-        const Coordinate2D & getRightFoot(void)
+        const Coordinate2D &
+        getRightFoot(void)
         const
         {
             return _rightFoot;
@@ -291,7 +316,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right side of the hips.
          @returns The coordinates of the right side of the hips. */
-        const Coordinate2D & getRightHip(void)
+        const Coordinate2D &
+        getRightHip(void)
         const
         {
             return _rightHip;
@@ -300,7 +326,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the right side of the hips to the right knee.
          @returns The angle from the right side of the hips to the right knee. */
-        realType getRightHipToKneeAngle(void)
+        realType
+        getRightHipToKneeAngle(void)
         const
         {
             return _rightHipToKneeAngle;
@@ -309,7 +336,8 @@ namespace Scuddle
         /*! @brief Return the quadrant of the angle from the right side of the hips to the right
          knee.
          @returns The quadrant of the angle from the right side of the hips to the right knee. */
-        int getRightHipToKneeQuadrant(void)
+        int
+        getRightHipToKneeQuadrant(void)
         const
         {
             return _rightHipToKneeQuadrant;
@@ -318,7 +346,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right knee.
          @returns The coordinates of the right knee. */
-        const Coordinate2D & getRightKnee(void)
+        const
+        Coordinate2D & getRightKnee(void)
         const
         {
             return _rightKnee;
@@ -327,7 +356,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the right knee to the right foot.
          @returns The angle from the right knee to the right foot. */
-        realType getRightKneeToFootAngle(void)
+        realType
+        getRightKneeToFootAngle(void)
         const
         {
             return _rightElbowToWristAngle;
@@ -335,7 +365,8 @@ namespace Scuddle
         
         /*! @brief Return the quadrant of the angle from the right knee to the right foot.
          @returns The quadrant of the angle from the right knee to the right foot. */
-        int getRightKneeToFootQuadrant(void)
+        int
+        getRightKneeToFootQuadrant(void)
         const
         {
             return _rightKneeToFootQuadrant;
@@ -344,7 +375,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right shoulder.
          @returns The coordinates of the right shoulder. */
-        const Coordinate2D & getRightShoulder(void)
+        const Coordinate2D &
+        getRightShoulder(void)
         const
         {
             return _rightShoulder;
@@ -353,7 +385,8 @@ namespace Scuddle
         
         /*! @brief Return the angle from the right shoulder to the right elbow.
          @returns The angle from the right shoulder to the right elbow. */
-        realType getRightShoulderToElbowAngle(void)
+        realType
+        getRightShoulderToElbowAngle(void)
         const
         {
             return _rightShoulderToElbowAngle;
@@ -361,7 +394,8 @@ namespace Scuddle
         
         /*! @brief Return the quadrant of the angle from the right shoulder to the right elbow.
          @returns The quadrant of the angle from the right shoulder to the right elbow. */
-        int getRightShoulderToElbowQuadrant(void)
+        int
+        getRightShoulderToElbowQuadrant(void)
         const
         {
             return _rightShoulderToElbowQuadrant;
@@ -370,7 +404,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the right wrist.
          @returns The coordinates of the right wrist. */
-        const Coordinate2D & getRightWrist(void)
+        const Coordinate2D &
+        getRightWrist(void)
         const
         {
             return _rightWrist;
@@ -379,7 +414,8 @@ namespace Scuddle
         
         /*! @brief Return the Space Quality.
          @returns The Space Quality value. */
-        SpaceQuality getSpace(void)
+        SpaceQuality
+        getSpace(void)
         const
         {
             return _space;
@@ -388,7 +424,8 @@ namespace Scuddle
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Return the coordinates of the 'tail'.
          @returns The coordinates of the 'tail'. */
-        const Coordinate2D & getTail(void)
+        const Coordinate2D &
+        getTail(void)
         const
         {
             return _tail;
@@ -397,7 +434,8 @@ namespace Scuddle
         
         /*! @brief Return the Time Quality.
          @returns The Time Quality value. */
-        TimeQuality getTime(void)
+        TimeQuality
+        getTime(void)
         const
         {
             return _time;
@@ -405,7 +443,8 @@ namespace Scuddle
         
         /*! @brief Return the Weight Quality.
          @returns The Weight Quality value. */
-        WeightQuality getWeight(void)
+        WeightQuality
+        getWeight(void)
         const
         {
             return _weight;
@@ -413,20 +452,24 @@ namespace Scuddle
         
         /*! @brief Return @c true if the object is marked.
          @returns @c true if the object is marked. */
-        bool isMarked(void)
+        bool
+        isMarked(void)
         const
         {
             return _marked;
         } // isMarked
         
         /*! @brief Mutate a value of the object. */
-        void mutate(void);
+        void
+        mutate(void);
         
         /*! @brief Reset the fitness parameters to their initial settings. */
-        static void resetParameters(void);
+        static void
+        resetParameters(void);
         
         /*! @brief Mark the object. */
-        void setMark(void)
+        void
+        setMark(void)
         {
             _marked = true;
         } // setMark
@@ -435,18 +478,21 @@ namespace Scuddle
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param fraction The fraction of the values to be exchanged. */
-        void swapValues(Body &         other,
-                        const realType fraction);
+        void
+        swapValues(Body &         other,
+                   const realType fraction);
 # else // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         /*! @brief Choose a set of values and swap with another Body.
          @param other The other Body to be modified.
          @param numSwap The number of values to be exchanged. */
-        void swapValues(Body &       other,
-                        const size_t numSwap);
+        void
+        swapValues(Body &       other,
+                   const size_t numSwap);
 # endif // ! defined(USE_FRACTION_FOR_CROSSOVER_)
         
         /*! @brief Determine the fitness value for this object. */
-        void updateFitness(void);
+        void
+        updateFitness(void);
         
     protected :
     
@@ -458,14 +504,17 @@ namespace Scuddle
 # endif // defined(GENERATE_POSITIONS_))
         
         /*! @brief Determine the quadrants for the various angles. */
-        void determineQuadrants(void);
+        void
+        determineQuadrants(void);
         
         /*! @brief Set the attributes to random values. */
-        void setAttributes(void);
+        void
+        setAttributes(void);
         
 # if defined(GENERATE_POSITIONS_)
         /*! @brief Set the joint positions from the angles. */
-        void setPositions(void);
+        void
+        setPositions(void);
 # endif // defined(GENERATE_POSITIONS_)
         
     public :
